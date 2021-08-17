@@ -11,6 +11,7 @@ from numpy import genfromtxt
 import sys
 import sklearn
 from sklearn import linear_model
+import hcp_utils as hcp
 
 #### load in nonSubj TS data
 # load in principal gradient
@@ -33,8 +34,11 @@ for T in range(len(tasks)):
 	# load in time series (masked, bp filtered)
 	filepath=parentfp + str(subj) + '_p2mm_masked_filtered_' + tasks[T] + '.dtseries.nii'
 	subjData=nb.load(filepath)
+	# select just cortex
+	subjDataCort=subjData.dataobj[:,hcp.struct.cortex]
+	PGCort=PG.dataobj[:,hcp.struct.cortex]
 	# load in time series
-	procTS=subjData.dataobj
+	procTS=subjDataCort
 	# normalize to mean and SD
 	Avg=np.mean(procTS,axis=0)
 	SD=np.std(procTS,axis=0)
@@ -42,13 +46,13 @@ for T in range(len(tasks)):
 	# convert TS to numpy array to allow for indexing
 	procTS=np.array(procTS)
 	# initialize empty array for gradient bins
-	procTS_bins=np.zeros((len(procTS),100))
+	procTS_bins=np.zeros((len(procTS),70))
 	# bin vertices at same position on gradient
-	for b in range(100):
-		gradPrctile=np.percentile(PG.dataobj[1,:],b)
-		gradPrctile_upper=np.percentile(PG.dataobj[1,:],b+1)
+	for b in range(70):
+		gradPrctile=np.percentile(PGCort[1,:],(b*1.42857))
+		gradPrctile_upper=np.percentile(PGCort[1,:],(b*1.42857)+1.42857)
 		# index of vertices belonging to this percentile
-		boolean_of_interest=np.logical_and(PG.dataobj[1,:] > gradPrctile, PG.dataobj[1,:] < gradPrctile_upper)
+		boolean_of_interest=np.logical_and(PGCort[1,:] > gradPrctile, PGCort[1,:] < gradPrctile_upper)
 		PGindices=np.nonzero(boolean_of_interest)
 		PGindices_array=np.array(PGindices)
 		# initialize array of all these vertices to average over
@@ -70,16 +74,16 @@ for T in range(len(tasks)):
 	GS_troughs, _ = find_peaks(-GS, distance=8)
 	# make an array for each percentile bin and each trough
 	troughsNum=len(GS_troughs)-1
-	delayMatrix=np.zeros((100,troughsNum))
+	delayMatrix=np.zeros((70,troughsNum))
 	# and a relative magnitude matrix
-	magMatrix=np.zeros((100,troughsNum))
+	magMatrix=np.zeros((70,troughsNum))
 	# for each trough-trough interval, find peak of bin timeseries
 	for t in range(troughsNum):
 		tstart=GS_troughs[t]
 		tend=GS_troughs[t+1]
 		# get GS peak here
 		GS_peak, _ = find_peaks(GS[tstart:tend],distance=(tend-tstart))
-		for b in range(100):
+		for b in range(70):
 			# isolate time series sequence
 			iso_ts=procTS_bins[tstart:tend,b]
 			# find peak in this bin (set min distance to be temporal width of bin)
@@ -97,8 +101,8 @@ for T in range(len(tasks)):
 	
 	# ID columns with < 20% 999s, sep out non-999 values
 	# matrix to count instances of no peak detection by PG bin
-	npMatrix=np.zeros((100,troughsNum))
-	for b in range(100):
+	npMatrix=np.zeros((70,troughsNum))
+	for b in range(70):
 		nineninenines = delayMatrix[b,:] == 999
 		npMatrix[b,:]=nineninenines
 	
@@ -124,8 +128,8 @@ for T in range(len(tasks)):
 		# index out nans
 		validVec=valid[:,i]!=0
 		delayNoNan=mostHavePeaks[validVec,i]
-		PGnoNan=np.arange(100)[validVec]
-		CorDistr[0,i], _ =stats.pearsonr(delayNoNan,PGnoNan)
+		PGnoNan=np.arange(70)[validVec]
+		CorDistr[0,i], _ =stats.spearmanr(delayNoNan,PGnoNan)
 		# set x to relative magnitude
 		my_x = magMatrix[validVec,i]
 		# set y to position in gradient
