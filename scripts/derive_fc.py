@@ -51,7 +51,7 @@ for T in range(len(tasks)):
 		WithinConAdjusted=WithinCon-((len(NetIndex)*.5)/((len(NetIndex)*len(NetIndex))))
 		NL_fcMat[N,N]=WithinConAdjusted
 	# save out grayordinate fc matrix for diffusion map embedding, save out 17x17 fc matrix for network stats
-	Gfp=childfp+str(subj)+'FullFCmat_'+tasks[T]
-	NLfp=childfp+str(subj)+'NLFcmat'+tasks[T]
+	Gfp=parentfp+str(subj)+'_FullFCmat_'+tasks[T]
+	NLfp=childfp+str(subj)+'_NLFcmat'+tasks[T]
 	np.save(Gfp,GO_fcMat)
 	np.save(NLfp,NL_fcMat)
