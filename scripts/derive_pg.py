@@ -1,4 +1,5 @@
 import sys
+import hcp_utils as hcp
 import numpy as np
 import nibabel as nib
 import csv
@@ -54,3 +55,19 @@ PGfp=childfp+str(subj)+'_PGs'
 resFP=childfp+str(subj)+'_res'
 np.save(emb,PGfp)
 np.save(res,resFP)
+# select PG based on max absolute corr with group-level PG
+Grads=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients.dscalar.nii')
+GradsCort=Grads.dataobj[:,hcp.struct.cortex]
+gPG=GradsCort[0,:]
+# initialize correlation list for each of this subject's first five gradients
+gradCors=np.zeros(5)
+# checking first five gradients is probably overkill but there are a lot of abcd subjs to be potential edge cases
+for g in range(5):
+	gradCors[g]=np.absolute(np.corrcoef(gPG,emb[:,g]))
+
+print(max(gradCors))
+# argmax to find location of best PG-equivalent estimate
+subjPG_ind=np.argmax(gradCors)
+subjPG=emb[:,subjPG_ind]
+subjPGfn=childfp+str(subj)+'_PG1'
+np.save(subjPG,subjPGfn)

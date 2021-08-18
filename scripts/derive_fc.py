@@ -23,7 +23,7 @@ parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/a
 childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 
 # initialize master time series for aggregate fc matrix for dmap
-aggregateTS=np.empty([1,59142])
+aggregateTS=np.empty([1,59412])
 
 # for each task
 for T in range(len(tasks)):
