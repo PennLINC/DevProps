@@ -1,33 +1,7 @@
 ### Aggregate group-level principal wave stats
 
-# define a function to load in each subj file and stack wave instances on prev. subjs
-#LoadNstack <- function(x){
-	# for each listed file
-#	file=paste0(x,'/',list.files(x,pattern=fileExtn))
-#	loadedFile=read.csv(file,header=F)
-        # transpose loaded file so each row is a wave
-#        loadedFile=t(loadedFile)
-#        colnames(loadedFile)=c(colnames(InitDf),'TRs')
-        # make next W rows this subject's data
-#        InitDf=rbind(InitDf,loadedFile[,1:4])
-#}
-
-# for second PG
-#LoadNstack2 <- function(x){
-        # for each listed file
-#        file=paste0(x,'/',list.files(x,pattern=fileExtn2))
-#        loadedFile=read.csv(file,header=F)
-        # transpose loaded file so each row is a wave
-#	loadedFile=t(loadedFile)
-#	colnames(loadedFile)=c(colnames(InitDf2),'TRs')
-	# make next W rows this subject's data
-#        InitDf2=rbind(InitDf2,loadedFile[,1:4])
-#}
-
-
-
 # For each task
-tasks = c('rest','sst','nback','mid')
+tasks = c('rest','SST','nback','mid')
 
 for (i in 1:4){
 	# initialize dataframeto tack a new row onto for each wave instance

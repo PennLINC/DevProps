@@ -20,6 +20,10 @@ for t=1:4
 		% get size
 		ciftisize=size(ts);
 		numTRs=ciftisize(2);
+		% get cortex indices
+		CL_ind=ts_cif.diminfo{1}.models{1}.vertlist+ts_cif.diminfo{1}.models{1}.start;
+                CR_ind=ts_cif.diminfo{1}.models{2}.vertlist+ts_cif.diminfo{1}.models{2}.start;
+		C_ind=vertcat(CL_ind,CR_ind);
 		% load in mask
 		masfp=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_desc-filtered_motion_mask.mat'],'');
 		if exist(masfp,'file')
@@ -55,7 +59,9 @@ for t=1:4
 				if exist(fp,'file')
 					ts_cif=read_cifti(fp);
 					ts=ts_cif.cdata;
-					GSTS=[GSTS mean(ts)];
+					% extract just cortex
+					tsCL=ts(C_ind,:);
+					GSTS=[GSTS mean(tsCL)];
 				end
 			end
 			% remove initialization pseudovolume
