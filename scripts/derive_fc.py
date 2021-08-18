@@ -22,6 +22,9 @@ parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/a
 # child (output) filepath
 childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 
+# initialize master time series for aggregate fc matrix for dmap
+aggregateTS=np.empty([1,59142])
+
 # for each task
 for T in range(len(tasks)):
 	# load Concat-maskedtime series
@@ -29,7 +32,9 @@ for T in range(len(tasks)):
 	subjData=nb.load(filepath)
 	# extract cortical TS
 	subjDataCort=subjData.dataobj[:,hcp.struct.cortex]
-	# gen fc matrix (grayOrd)
+	# stack on to aggregate TS
+	aggregateTS=np.append(aggregateTS,subjDataCort,axis=0)
+	# gen fc matrix (All)
 	GO_fcMat=np.corrcoef(subjDataCort,rowvar=False)	
 	# initialize network-level FC matrix
 	NL_fcMat=np.zeros((17,17))
@@ -50,8 +55,14 @@ for T in range(len(tasks)):
 		WithinCon=NL_fcMat[N,N]
 		WithinConAdjusted=WithinCon-((len(NetIndex)*.5)/((len(NetIndex)*len(NetIndex))))
 		NL_fcMat[N,N]=WithinConAdjusted
-	# save out grayordinate fc matrix for diffusion map embedding, save out 17x17 fc matrix for network stats
-	Gfp=parentfp+str(subj)+'_FullFCmat_'+tasks[T]
+	# save out 17x17 for within-task network stats
 	NLfp=childfp+str(subj)+'_NLFcmat'+tasks[T]
-	np.save(Gfp,GO_fcMat)
 	np.save(NLfp,NL_fcMat)
+
+# remove null column of aggregate TS
+aggregateTS=np.delete(aggregateTS,0,0)
+# make an all-TR fc matrix
+aggregateFC=np.corrcoef(aggregateTS,rowvar=False)
+# save out full grayord fc mat for diffusion map embedding
+Gfp=parentfp+str(subj)+'_FullFCmat'
+np.save(Gfp,aggregateFC)
