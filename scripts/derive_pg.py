@@ -1,3 +1,4 @@
+import scipy
 import sys
 import hcp_utils as hcp
 import numpy as np
@@ -63,11 +64,15 @@ gPG=GradsCort[0,:]
 gradCors=np.zeros(5)
 # checking first five gradients is probably overkill but there are a lot of abcd subjs to be potential edge cases
 for g in range(5):
-	gradCors[g]=np.absolute(np.corrcoef(gPG,emb[:,g]))
+	spear_man=scipy.stats.spearmanr(gPG,emb[:,g]))
+	gradCors[g]=np.absoute(spear_man.correlation)
 
 print(max(gradCors))
 # argmax to find location of best PG-equivalent estimate
 subjPG_ind=np.argmax(gradCors)
 subjPG=emb[:,subjPG_ind]
+# match gradient directionality (i.e., is transmodal pos and unimodal neg?)
+if scipy.stats.spearmanr(subjPG,gPG).correlation < 0:
+	subjPG=subjPG * -1
 subjPGfn=childfp+str(subj)+'_PG1'
-np.save(subjPG,subjPGfn)
+np.save(subjPGfn,subjPG)

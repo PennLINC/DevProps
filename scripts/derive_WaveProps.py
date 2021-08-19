@@ -13,9 +13,9 @@ import sklearn
 from sklearn import linear_model
 import hcp_utils as hcp
 
-#### load in nonSubj TS data
 # load in principal gradient
-PG=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients.dscalar.nii')
+subjPGfn=childfp+str(subj)+'_PG1.dscalar.nii'
+PG=nb.load(subjPGfn)
 
 # Subject is set to the passed argument
 subj = sys.argv[1]
