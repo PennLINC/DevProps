@@ -110,7 +110,7 @@ for T in range(len(tasks)):
 	# number of bins w/o detected peak per wave
 	noPeakPwave=sum(npMatrix)
 	# if peak detected in > 80% of waves, keep it
-	mostHavePeaks=delayMatrix[:,noPeakPwave<20]
+	mostHavePeaks=delayMatrix[:,noPeakPwave<14]
 	# replace 999s with NAs	
 	mostHavePeaks[mostHavePeaks==999]=np.nan
 	# get nan index for stats
@@ -153,3 +153,9 @@ for T in range(len(tasks)):
 	saveoutMat[4,:]=len(GS)
 	saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps.csv'
 	np.savetxt(saveFN,saveoutMat,delimiter=",")
+	# report difference between all instances of PW and those not meeting >80% threshold
+	UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
+	print('OG delayMat wave count: ' + str(troughsNum))
+	print('Waves removed w/ 80% thresh: ' +str(UnThreshThreshDif))
+	saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves'
+	np.savetxt(saveFN_thr,[UnThreshThreshDif])

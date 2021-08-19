@@ -33,6 +33,16 @@ apply_motion_mask_extractGS(subj)
 % bandpass the global signal and time series to isolate freqs of interest
 BandPass_ts(subj)
 
+% derive FC - grayOrd level and network level
+deriveFCcommand=['python derive_fc.py ' subj ' &'];
+system(deriveFCcommand)
+pause(750)
+
+% derive personalized PG
+derivePGcommand=['python derive_pg.py' subj ' &'];
+system(derivePGcommand)
+pause(28800)
+
 % derive wave properties w/ python
 wavePropCommand=['python /cbica/projects/abcdfnets/scripts/2021_pipeline/derive_WaveProps.py ' subj ' &'];
 system(wavePropCommand)

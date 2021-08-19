@@ -21,27 +21,34 @@ for (i in 1:4){
 	for (s in 1:length(dirs)){
 		if (length(list.files(dirs[s],pattern=fileExtn)) != 0) {
 	        	file=paste0(dirs[s],'/',list.files(dirs[s],pattern=fileExtn))
-			loadedFile=read.csv(file,header=F)
-        		# transpose loaded file so each row is a wave
-        		loadedFile=t(loadedFile)
-        		colnames(loadedFile)=c(colnames(InitDf),'TRs')
-        		# make next W rows this subject's data
-        		InitDf=rbind(InitDf,loadedFile[,1:4])
+			# try to read, record 0-line instances for subjects with no PWs
+			mtry <- try(read.csv(file, header = F),silent=T)
+			if (class(mtry) != "try-error") { 
+				loadedFile=read.csv(file, header = F)
+        			# transpose loaded file so each row is a wave
+        			loadedFile=t(loadedFile)
+        			colnames(loadedFile)=c(colnames(InitDf),'TRs')
+        			# make next W rows this subject's data
+        			InitDf=rbind(InitDf,loadedFile[,1:4])
+			} else {
+				message(paste(file, ": 0-line file"))	
 			}
 	}
+	
 	#pg2
-        for (s in 1:length(dirs)){
-                if (length(list.files(dirs[s],pattern=fileExtn2)) != 0) {	
-			file=paste0(dirs[s],'/',list.files(dirs[s],pattern=fileExtn2))
-			loadedFile=read.csv(file,header=F)
-               		# transpose loaded file so each row is a wave
-                	loadedFile=t(loadedFile)
-                	colnames(loadedFile)=c(colnames(InitDf2),'TRs')
+#        for (s in 1:length(dirs)){
+#                if (length(list.files(dirs[s],pattern=fileExtn2)) != 0) {	
+#			file=paste0(dirs[s],'/',list.files(dirs[s],pattern=fileExtn2))
+#			loadedFile=read.csv(file,header=F)
+#              		# transpose loaded file so each row is a wave
+#                	loadedFile=t(loadedFile)
+#                	colnames(loadedFile)=c(colnames(InitDf2),'TRs')
                 	# make next W rows this subject's data
-                	InitDf2=rbind(InitDf2,loadedFile[,1:4])
-        	}
-	}
+#                	InitDf2=rbind(InitDf2,loadedFile[,1:4])
+#        	}
+#	}
 	# save out group-level arrays
 	saveRDS(InitDf,paste0('/cbica/projects/abcdfnets/results/',tasks[i],'Group-level_waves'))
-	saveRDS(InitDf2,paste0('/cbica/projects/abcdfnets/results/',tasks[i],'Group-level_waves2'))  	
+#	saveRDS(InitDf2,paste0('/cbica/projects/abcdfnets/results/',tasks[i],'Group-level_waves2'))  	
+}
 }

@@ -76,3 +76,6 @@ if scipy.stats.spearmanr(subjPG,gPG).correlation < 0:
 	subjPG=subjPG * -1
 subjPGfn=childfp+str(subj)+'_PG1'
 np.save(subjPGfn,subjPG)
+# save index of "PG" for later - which gradient matched THE principal gradient for this subject
+subjPGfn_index=childfp+str(subj)+'_PG1_index'
+np.save(subjPGfn_index,[subjPG_ind])
