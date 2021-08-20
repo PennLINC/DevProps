@@ -13,6 +13,10 @@ import sklearn
 from sklearn import linear_model
 import hcp_utils as hcp
 
+#### load in nonSubj TS data
+# load in principal gradient
+PG=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients.dscalar.nii')
+
 # Subject is set to the passed argument
 subj = sys.argv[1]
 
@@ -23,11 +27,6 @@ tasks=['rest','SST','nback','mid'];
 parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' + str(subj) + '/ses-baselineYear1Arm1/func/'
 # child (output) filepath
 childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
-
-# load in PG
-subjPGfn=childfp+str(subj)+'_PG1.dscalar.nii'
-PG=nb.load(subjPGfn)
-
 # for each task
 for T in range(len(tasks)):
 	# initialize big array for distribution of all PG delay correlations
@@ -50,7 +49,6 @@ for T in range(len(tasks)):
 	procTS_bins=np.zeros((len(procTS),70))
 	# bin vertices at same position on gradient
 	for b in range(70):
-		# 1.42857 is modifier to allow "70" to fill 70 percentile bins all the way up to 100
 		gradPrctile=np.percentile(PGCort[0,:],(b*1.42857))
 		gradPrctile_upper=np.percentile(PGCort[0,:],(b*1.42857)+1.42857)
 		# index of vertices belonging to this percentile
@@ -111,7 +109,7 @@ for T in range(len(tasks)):
 	# number of bins w/o detected peak per wave
 	noPeakPwave=sum(npMatrix)
 	# if peak detected in > 80% of waves, keep it
-	mostHavePeaks=delayMatrix[:,noPeakPwave<14]
+	mostHavePeaks=delayMatrix[:,noPeakPwave<20]
 	# replace 999s with NAs	
 	mostHavePeaks[mostHavePeaks==999]=np.nan
 	# get nan index for stats
@@ -152,11 +150,5 @@ for T in range(len(tasks)):
 	saveoutMat[3,:]=Wslopes
 	# this row will be redudant, will only have one value, number of TRs
 	saveoutMat[4,:]=len(GS)
-	saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps.csv'
+	saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps_gPG.csv'
 	np.savetxt(saveFN,saveoutMat,delimiter=",")
-	# report difference between all instances of PW and those not meeting >80% threshold
-	UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
-	print('OG delayMat wave count: ' + str(troughsNum))
-	print('Waves removed w/ 80% thresh: ' +str(UnThreshThreshDif))
-	saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves'
-	np.savetxt(saveFN_thr,[UnThreshThreshDif])

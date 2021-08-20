@@ -14,17 +14,17 @@ from sklearn.metrics.pairwise import cosine_similarity
 # https://stackoverflow.com/questions/40900608/cosine-similarity-on-large-sparse-matrix-with-numpy
 
 def cosine_similarity_n_space(m, batch_size=200):
-    ret = np.ndarray((m.shape[0], m.shape[0]))
-    for row_i in range(0, int(m.shape[0] / batch_size) + 1):
-        print(row_i)
-	start = row_i * batch_size
-        end = min([(row_i + 1) * batch_size, m.shape[0]])
-        if end <= start:
-            break
-        rows = m[start: end]
-        sim = cosine_similarity(rows, m) # rows is O(1) size
-        ret[start: end] = sim
-    return ret
+	ret = np.ndarray((m.shape[0], m.shape[0]))
+	for row_i in range(0, int(m.shape[0] / batch_size) + 1):
+		print(row_i)
+		start = row_i * batch_size
+		end = min([(row_i + 1) * batch_size, m.shape[0]])
+		if end <= start:
+			break
+		rows = m[start: end]
+		sim = cosine_similarity(rows, m) # rows is O(1) size
+		ret[start: end] = sim
+	return ret
 
 subj = sys.argv[1]
 
@@ -64,7 +64,7 @@ gPG=GradsCort[0,:]
 gradCors=np.zeros(5)
 # checking first five gradients is probably overkill but there are a lot of abcd subjs to be potential edge cases
 for g in range(5):
-	spear_man=scipy.stats.spearmanr(gPG,emb[:,g]))
+	spear_man=scipy.stats.spearmanr(gPG,emb[:,g])
 	gradCors[g]=np.absoute(spear_man.correlation)
 
 print(max(gradCors))
@@ -76,6 +76,10 @@ if scipy.stats.spearmanr(subjPG,gPG).correlation < 0:
 	subjPG=subjPG * -1
 subjPGfn=childfp+str(subj)+'_PG1'
 np.save(subjPGfn,subjPG)
+# extract variance explained by this grad
+lambdas=res.item()['lambdas']
+PGlambd=lambdas[subjPG_ind]
 # save index of "PG" for later - which gradient matched THE principal gradient for this subject
+# also save variance explained by this gradient
 subjPGfn_index=childfp+str(subj)+'_PG1_index'
-np.save(subjPGfn_index,[subjPG_ind])
+np.save(subjPGfn_index,[subjPG_ind,PGlambd])

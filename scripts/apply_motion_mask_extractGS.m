@@ -25,11 +25,11 @@ for t=1:4
                 CR_ind=ts_cif.diminfo{1}.models{2}.vertlist+ts_cif.diminfo{1}.models{2}.start;
 		C_ind=vertcat(CL_ind,CR_ind);
 		% load in mask
-		masfp=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_desc-filtered_motion_mask.mat'],'');
+		masfp=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_desc-filteredwithoutliers_motion_mask.mat'],'');
 		if exist(masfp,'file')
 			mask=load(masfp);
 			% get to FD_thresh of .2 mm, corresponds to threshold 21
-			maskp2mm=mask.motion_data{1,21}.frame_removal;
+			maskp2mm=mask.motion_data{1,21}.combined_removal;
 			TRwise_mask=logical(maskp2mm);
 			% length of mask corresponds to number of TRs
 			% 1 indicates flagged for FD over selected threshold, reverse 'em so 0 indicates removal

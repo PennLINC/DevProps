@@ -36,21 +36,26 @@ BandPass_ts(subj)
 % derive FC - grayOrd level and network level
 deriveFCcommand=['python derive_fc.py ' subj ' &'];
 system(deriveFCcommand)
-pause(750)
+pause(2000)
 
 % derive personalized PG
 derivePGcommand=['python derive_pg.py' subj ' &'];
 system(derivePGcommand)
-pause(28800)
+pause(30000)
+
+% save dscalar of it
+dscalarPGcommand=['python viz_pg.py' subj ' &'];
+system(dscalarPGcommand)
+pause(300)
 
 % derive wave properties w/ python
-wavePropCommand=['python /cbica/projects/abcdfnets/scripts/2021_pipeline/derive_WaveProps.py ' subj ' &'];
+wavePropCommand=['python derive_WaveProps.py ' subj ' &'];
 system(wavePropCommand)
-pause(120)
+pause(200)
 
-wavePropCommand=['python /cbica/projects/abcdfnets/scripts/2021_pipeline/derive_WaveProps_PG2.py ' subj ' &'];
+wavePropCommand=['python derive_WaveProps_gPG.py ' subj ' &'];
 system(wavePropCommand)
-pause(120)
+pause(200)
 
 % delete input data
-Delete_input_data_w(subj)
+%Delete_input_data_w(subj)

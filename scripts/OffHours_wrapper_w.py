@@ -2,7 +2,7 @@ import subprocess
 import time
 import datetime
 # grab some subjs as list
-my_file = open("/cbica/projects/abcdfnets/scripts/2021_pipeline/testSubjs.txt", "r")
+my_file = open("/cbica/projects/abcdfnets/scripts/2021_pipeline/testSubjs2.txt", "r")
 content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)
@@ -24,6 +24,6 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 16 :
       newsub = subjects.pop()
       # submit job (if above conditions are met)
-      subprocess.run(["qsub","-l","h_vmem=11G,s_vmem=10G","qsubMatlab_w.sh",newsub])
+      subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab_w.sh",newsub])
       time.sleep(60) #wait a minute
 
