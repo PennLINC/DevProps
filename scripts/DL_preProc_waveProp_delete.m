@@ -34,28 +34,23 @@ apply_motion_mask_extractGS(subj)
 BandPass_ts(subj)
 
 % derive FC - grayOrd level and network level
-deriveFCcommand=['python derive_fc.py ' subj ' &'];
+deriveFCcommand=['python derive_fc.py ' subj];
 system(deriveFCcommand)
-pause(2000)
 
 % derive personalized PG
-derivePGcommand=['python derive_pg.py' subj ' &'];
+derivePGcommand=['python derive_pg.py ' subj];
 system(derivePGcommand)
-pause(30000)
 
 % save dscalar of it
-dscalarPGcommand=['python viz_pg.py' subj ' &'];
+dscalarPGcommand=['python viz_pg.py ' subj];
 system(dscalarPGcommand)
-pause(300)
 
 % derive wave properties w/ python
-wavePropCommand=['python derive_WaveProps.py ' subj ' &'];
+wavePropCommand=['python derive_WaveProps.py ' subj];
 system(wavePropCommand)
-pause(200)
 
-wavePropCommand=['python derive_WaveProps_gPG.py ' subj ' &'];
+wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
 system(wavePropCommand)
-pause(200)
 
 % delete input data
 %Delete_input_data_w(subj)
