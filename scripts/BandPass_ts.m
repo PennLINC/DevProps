@@ -11,8 +11,8 @@ midfp=[parentfp sname '_ses-baselineYear1Arm1_task-MID_p2mm_masked.dtseries.nii'
 % construct bandpass filter
 tr = .8; % sampling interval (s)
 Fs = 1/tr; % sampling rate (Hz)
-hp_thresh = .01; % lower bound
-lp_thresh = .1; % higher bound
+hp_thresh = .008; % lower bound
+lp_thresh = .09; % higher bound
 [b,a] = butter(2,[hp_thresh,lp_thresh]/(Fs/2));
 
 % set up 

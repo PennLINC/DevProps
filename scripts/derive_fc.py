@@ -61,8 +61,21 @@ for T in range(len(tasks)):
 
 # remove null column of aggregate TS
 aggregateTS=np.delete(aggregateTS,0,0)
+# create new image axis to represent expanded TRs in merged file
+newAxis=nb.cifti2.SeriesAxis(start=0,size=aggregateTS.shape[0],step=1)
+# create new scalars to populate non-cort with 0, cort with time series
+FullBrain=np.zeros((aggregateTS.shape[0],91282))
+# make cortical values non-zero (aggregated time series)
+FullBrain[:,hcp.struct.cortex]=aggregateTS
+# preserved CortgrayOrd axis
+gOrdAx=subjData.header.get_axis(1)
+new_img=nb.Cifti2Image(FullBrain,(newAxis,gOrdAx))
+# save out aggregate time series as cifti for downsampling and diffusion map embedding
+subjAggTS=parentfp+str(subj)+'_AggTS.dtseries.nii'
+new_img.to_filename(subjAggTS)
+
 # make an all-TR fc matrix
-aggregateFC=np.corrcoef(aggregateTS,rowvar=False)
+# aggregateFC=np.corrcoef(aggregateTS,rowvar=False)
 # save out full grayord fc mat for diffusion map embedding
-Gfp=parentfp+str(subj)+'_FullFCmat'
-np.save(Gfp,aggregateFC)
+# Gfp=parentfp+str(subj)+'_FullFCmat'
+# np.save(Gfp,aggregateFC)
