@@ -37,13 +37,17 @@ BandPass_ts(subj)
 deriveFCcommand=['python derive_fc.py ' subj];
 system(deriveFCcommand)
 
+% downsample aggregated TS 
+dsCommand=['downsample_FC.sh ' subj];
+system(dsCommand)
+
 % derive personalized PG
 derivePGcommand=['python derive_pg.py ' subj];
 system(derivePGcommand)
 
-% save dscalar of it
-dscalarPGcommand=['python viz_pg.py ' subj];
-system(dscalarPGcommand)
+% upsample derived principal gradient
+usCommand=['upsample_PG.sh ' subj];
+system(usCommand)
 
 % derive wave properties w/ python
 wavePropCommand=['python derive_WaveProps.py ' subj];
