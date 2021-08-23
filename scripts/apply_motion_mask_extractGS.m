@@ -39,7 +39,7 @@ for t=1:4
 			% reconfig cifti metadata to reflect new number of TRs
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
-			%s-2 because we start at 3
+			% overwite diminfo
 			ts_cif.diminfo{2}.length=newTRnum;
 			% overwrite TRs for new file
 			ts_cif.cdata=masked_trs;
@@ -49,6 +49,12 @@ for t=1:4
 			ofp=convertStringsToChars(ofp);
 			% write out motion masked cifti
 			write_cifti(ts_cif,ofp);
+			%%% initialize array to record start/stop of > 10 continuous frames (col1, start, col2, stop)
+			%%% for each TRwise_mask, TRwise_mask[n] - TRwise_mask[n-1]? Save instances > 10?
+			%%% for each sep. span of >10 surviving TRs
+				%%% get TR index
+				%%% get end TR index
+				%%% writeout 
 			% manually concatenate time series from individ. runs
 			GSTS=zeros(1,1);
 			% for each "run", calculate global signal
