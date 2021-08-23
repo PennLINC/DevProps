@@ -25,8 +25,9 @@ parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/a
 childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 
 # load in PG
-subjPGfn=childfp+str(subj)+'_PG1.dscalar.nii'
+subjPGfn=childfp+str(subj)+'_PG_LR_32k.dscalar.nii'
 PG=nb.load(subjPGfn)
+PGdataObject=PG.dataobj
 
 # for each task
 for T in range(len(tasks)):
@@ -37,7 +38,7 @@ for T in range(len(tasks)):
 	subjData=nb.load(filepath)
 	# select just cortex
 	subjDataCort=subjData.dataobj[:,hcp.struct.cortex]
-	PGCort=PG.dataobj[:,hcp.struct.cortex]
+	PGCort=PGdataObject[:,hcp.struct.cortex]
 	# load in time series
 	procTS=subjDataCort
 	# normalize to mean and SD
@@ -110,8 +111,8 @@ for T in range(len(tasks)):
 	
 	# number of bins w/o detected peak per wave
 	noPeakPwave=sum(npMatrix)
-	# if peak detected in > 80% of waves, keep it
-	mostHavePeaks=delayMatrix[:,noPeakPwave<14]
+	# if peak detected in most PG bins, keep it
+	mostHavePeaks=delayMatrix[:,noPeakPwave<35]
 	# replace 999s with NAs	
 	mostHavePeaks[mostHavePeaks==999]=np.nan
 	# get nan index for stats
@@ -157,6 +158,6 @@ for T in range(len(tasks)):
 	# report difference between all instances of PW and those not meeting >80% threshold
 	UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
 	print('OG delayMat wave count: ' + str(troughsNum))
-	print('Waves removed w/ 80% thresh: ' +str(UnThreshThreshDif))
+	print('Waves removed w/ > 50% thresh: ' +str(UnThreshThreshDif))
 	saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves'
 	np.savetxt(saveFN_thr,[UnThreshThreshDif])

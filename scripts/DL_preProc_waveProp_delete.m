@@ -38,7 +38,7 @@ deriveFCcommand=['python derive_fc.py ' subj];
 system(deriveFCcommand)
 
 % downsample aggregated TS 
-dsCommand=['downsample_FC.sh ' subj];
+dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
 system(dsCommand)
 
 % derive personalized PG
@@ -46,7 +46,7 @@ derivePGcommand=['python derive_pg.py ' subj];
 system(derivePGcommand)
 
 % upsample derived principal gradient
-usCommand=['upsample_PG.sh ' subj];
+usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
 system(usCommand)
 
 % derive wave properties w/ python
