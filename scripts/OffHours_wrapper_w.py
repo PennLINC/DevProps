@@ -2,7 +2,7 @@ import subprocess
 import time
 import datetime
 # grab some subjs as list
-my_file = open("/cbica/projects/abcdfnets/scripts/2021_pipeline/testSubjs2.txt", "r")
+my_file = open("/cbica/projects/abcdfnets/scripts/2021_pipeline/testSubjs.txt", "r")
 content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)

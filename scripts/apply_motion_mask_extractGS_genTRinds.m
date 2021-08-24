@@ -39,7 +39,7 @@ for t=1:4
 			% reconfig cifti metadata to reflect new number of TRs
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
-			% temp code - try a few thresholds of continuous frame requirements
+			%%% temp code - try a few thresholds of continuous frame requirements
 			Thresholds=[12,18,24];
 			ThreshTRvec=cell(1,3);
 			for i=1:3
@@ -67,7 +67,26 @@ for t=1:4
        			TRcounts(5)=ThreshTRvec(3);
        			fn=strjoin(['/cbica/projects/abcdfnets/scripts/PWs/PWs/ThreshDirec/' sname '_' tasks(t)],'');
        			save(fn,'TRcounts')
-			% end temp code segment for now
+			%%% end temp code segment for now, next section uses last thresh tapped in loop
+			% index of which TR valid segments start at
+			ValidTRStarts=dInd(logical(maskValAtChange));
+			% adjust to grab instances over threshold
+			ValidTRStartsThreshed=ValidTRStarts(OverThreshSegments);
+			% adjust continuous segments to relfect only instances over threshold
+			ContSegmentsThreshed=ContSegments(OverThreshSegments);
+			% number of distinct segments
+			SegSize=size(ContSegments(OverThreshSegments));
+			SegNum=SegSize(2);
+			% initialize segment output
+			ValidSegCell=cell(SegNum,2);
+			for i=1:SegNum
+				ValidSegCell(i,1)=num2cell(ValidTRStartsThreshed(i));
+				% -1 because of how diff() works (last indexed TR is start of TRmask)
+				ValidSegCell(i,2)=num2cell((ContSegmentsThreshed(i)-1));
+			end
+			% save 2-column df indicating start of valid segments and length
+			segmentfn=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments'],'');
+			writetable(cell2table(ValidSegCell),segmentfn,'WriteVariableNames',0)
 			% overwite diminfo
 			ts_cif.diminfo{2}.length=newTRnum;
 			% overwrite TRs for new file
