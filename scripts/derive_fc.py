@@ -5,6 +5,18 @@ import nibabel as nb
 import hcp_utils as hcp
 import numpy as np
 
+# function from:
+# https://stackoverflow.com/questions/30143417/computing-the-correlation-coefficient-between-two-multi-dimensional-arrays
+def corr2_coeff(A, B):
+    # Rowwise mean of input arrays & subtract from input arrays themeselves
+    A_mA = A - A.mean(1)[:, None]
+    B_mB = B - B.mean(1)[:, None]
+    # Sum of squares across rows
+    ssA = (A_mA**2).sum(1)
+    ssB = (B_mB**2).sum(1)
+    # Finally get corr coeff
+    return np.dot(A_mA, B_mB.T) / np.sqrt(np.dot(ssA[:, None],ssB[None]))
+
 # all the scan types
 tasks=['rest','SST','nback','mid']
 
@@ -34,8 +46,6 @@ for T in range(len(tasks)):
 	subjDataCort=subjData.dataobj[:,hcp.struct.cortex]
 	# stack on to aggregate TS
 	aggregateTS=np.append(aggregateTS,subjDataCort,axis=0)
-	# gen fc matrix (All)
-	GO_fcMat=np.corrcoef(subjDataCort,rowvar=False)	
 	# initialize network-level FC matrix
 	NL_fcMat=np.zeros((17,17))
 	# Individual network metrics (FC matrix of all 17 networks, summary-level)
@@ -43,15 +53,18 @@ for T in range(len(tasks)):
 		# index of which vertices belong to this network
 		# +1 to resolve python-everything else counting discordance
 		_,NetIndex=np.where(parcelCort==(N+1))
+		NetTS=subjDataCort[:,NetIndex]
 		# index all other networks
 		for OtherNet in range(17):
+			# initialize array of Net * OtherNet corrs (vertexwise)
 			_,OtherNetIndex=np.where(parcelCort==(OtherNet+1))
-			# get elements from both, np.newaxis makes them play nicely together
-			NetOtherNetFC=np.mean(GO_fcMat[NetIndex[:,np.newaxis],OtherNetIndex])
-			NL_fcMat[N,OtherNet]=NetOtherNetFC
+			OtherNetTS=subjDataCort[:,OtherNetIndex]
+			# correlations between Net and OtherNet elements
+			Cors=corr2_coeff(NetTS.T,OtherNetTS.T)
+			NL_fcMat[N,OtherNet]=np.mean(Cors)
 		# correct for same-cell autocorrelation: 
 		# subtract ((Vertex#inNet*.5)/NumberOfCells) from mean
-		# .5 because diagonals only show up once in symmetric fc, other elements show up tiwce
+		# .5 because diagonals only show up once in symmetric fc, other elements show up twice
 		WithinCon=NL_fcMat[N,N]
 		WithinConAdjusted=WithinCon-((len(NetIndex)*.5)/((len(NetIndex)*len(NetIndex))))
 		NL_fcMat[N,N]=WithinConAdjusted
@@ -73,9 +86,3 @@ new_img=nb.Cifti2Image(FullBrain,(newAxis,gOrdAx))
 # save out aggregate time series as cifti for downsampling and diffusion map embedding
 subjAggTS=parentfp+str(subj)+'_AggTS.dtseries.nii'
 new_img.to_filename(subjAggTS)
-
-# make an all-TR fc matrix
-# aggregateFC=np.corrcoef(aggregateTS,rowvar=False)
-# save out full grayord fc mat for diffusion map embedding
-# Gfp=parentfp+str(subj)+'_FullFCmat'
-# np.save(Gfp,aggregateFC)
