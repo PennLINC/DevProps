@@ -24,6 +24,6 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 16 :
       newsub = subjects.pop()
       # submit job (if above conditions are met)
-      subprocess.run(["qsub","-l","h_vmem=12G,s_vmem=11G","qsubMatlab_w.sh",newsub])
+      subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
       time.sleep(60) #wait a minute
 

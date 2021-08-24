@@ -108,8 +108,8 @@ for T in range(len(tasks)):
 	
 	# number of bins w/o detected peak per wave
 	noPeakPwave=sum(npMatrix)
-	# if peak detected in > 80% of waves, keep it
-	mostHavePeaks=delayMatrix[:,noPeakPwave<20]
+	# if peak detected in > 50% of waves, keep it
+	mostHavePeaks=delayMatrix[:,noPeakPwave<35]
 	# replace 999s with NAs	
 	mostHavePeaks[mostHavePeaks==999]=np.nan
 	# get nan index for stats

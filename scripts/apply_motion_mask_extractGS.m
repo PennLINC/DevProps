@@ -39,6 +39,26 @@ for t=1:4
 			% reconfig cifti metadata to reflect new number of TRs
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
+			% temp code - try a few thresholds of continuous frame requirements
+			Thresholds=[12,18,24];
+			ThreshTRvec=cell(1,3);
+			for i=1:3
+				% find changepoints in binary bask
+				d = [true, diff(TRwise_mask') ~= 0];
+				% index of changepoints
+				dInd=find(d);
+				% find difference in indices of changepoints (span of mask/non-mask epochs)
+				n = diff([dInd, numTRs]); 
+				% find which segments correspond to non-mask
+				maskValAtChange=TRwise_mask(dInd);
+				ContSegments=n(:,logical(maskValAtChange));
+				% find segments with more continuous TRs than threshold
+				OverThreshSegments=find(ContSegments>Thresholds(i));
+				% sum remaining segments to get included TRs if this thresh chosen
+				RemainingTRs=sum(ContSegments(OverThreshSegments))
+				ThreshTRvec(i)=RemainingTRs;
+			end
+			% end temp code segment for now
 			% overwite diminfo
 			ts_cif.diminfo{2}.length=newTRnum;
 			% overwrite TRs for new file
@@ -49,12 +69,6 @@ for t=1:4
 			ofp=convertStringsToChars(ofp);
 			% write out motion masked cifti
 			write_cifti(ts_cif,ofp);
-			%%% initialize array to record start/stop of > 10 continuous frames (col1, start, col2, stop)
-			%%% for each TRwise_mask, TRwise_mask[n] - TRwise_mask[n-1]? Save instances > 10?
-			%%% for each sep. span of >10 surviving TRs
-				%%% get TR index
-				%%% get end TR index
-				%%% writeout 
 			% manually concatenate time series from individ. runs
 			GSTS=zeros(1,1);
 			% for each "run", calculate global signal
@@ -93,4 +107,13 @@ for t=1:4
 		missingFile=[missingDir '/MissingData.txt'];
 		system(['echo BOLD_missing >> ' missingFile]);
 	end
+	% save array of tr counts across thresholds for this task
+	TRcounts=cell(1,5);
+	TRcounts(1)=numTRs;
+	TRcounts(2)=newTRnum;
+	TRcounts(3)=ThreshTRvec(1);
+	TRcounts(4)=ThreshTRvec(2);
+	TRcounts(5)=ThreshTRvec(3);
+	fn=['/cbica/projects/abcdfnets/scripts/PWs/PWs/ThreshDirec/' sname '_' tasks(t)];
+	save(fn,'TRcounts')
 end
