@@ -1,0 +1,92 @@
+---
+title: "DataVolPhenoRelations"
+author: "Adam"
+date: "8/25/2021"
+output: html_document
+---
+
+```{r}
+# resting state
+rest=read.csv('~/Downloads/rest-trthreshes.csv')
+# convert last row to subjID
+subjNames<-gsub("/gpfs/fs001/cbica/projects/abcdfnets/scripts/PWs/PWs/ThreshDirec/","",rest$output6)
+subjNames<-gsub('_rest.mat','',subjNames)
+rest$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjNames)
+
+# nback
+nback=read.csv('~/Downloads/nback-trthreshes.csv')
+# convert last row to subjID
+subjNames<-gsub("/gpfs/fs001/cbica/projects/abcdfnets/scripts/PWs/PWs/ThreshDirec/","",nback$output6)
+subjNames<-gsub('_nback.mat','',subjNames)
+nback$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjNames)
+
+# MID
+mid=read.csv('~/Downloads/mid-trthreshes.csv')
+# convert last row to subjID
+subjNames<-gsub("/gpfs/fs001/cbica/projects/abcdfnets/scripts/PWs/PWs/ThreshDirec/","",mid$output6)
+subjNames<-gsub('_MID.mat','',subjNames)
+mid$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjNames)
+
+# sst
+sst=read.csv('~/Downloads/sst-trthreshes.csv')
+# convert last row to subjID
+subjNames<-gsub("/gpfs/fs001/cbica/projects/abcdfnets/scripts/PWs/PWs/ThreshDirec/","",sst$output6)
+subjNames<-gsub('_SST.mat','',subjNames)
+sst$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjNames)
+
+```
+
+```{r}
+library(ggplot2)
+library(reshape2)
+# resting
+dataR<-melt(rest[,2:5])
+ggplot(dataR,aes(x=value,fill=variable))+geom_density(alpha=.25)+ggtitle('resting-state TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+ggplot(dataR,aes(x=value,fill=variable))+geom_histogram(binwidth=50,alpha=.4,position='identity')+ggtitle('resting-state TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+
+# nback
+dataN<-melt(nback[,2:5])
+ggplot(dataN,aes(x=value,fill=variable))+geom_density(alpha=.25)+ggtitle('nback TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+ggplot(dataN,aes(x=value,fill=variable))+geom_histogram(binwidth=50,alpha=.4,position='identity')+ggtitle('nback-state TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+
+# sst
+datas<-melt(sst[,2:5])
+ggplot(datas,aes(x=value,fill=variable))+geom_density(alpha=.25)+ggtitle('sst TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+ggplot(datas,aes(x=value,fill=variable))+geom_histogram(binwidth=50,alpha=.4,position='identity')+ggtitle('sst-state TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+
+# mid
+datam<-melt(mid[,2:5])
+ggplot(datam,aes(x=value,fill=variable))+geom_density(alpha=.25)+ggtitle('mid TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+ggplot(datam,aes(x=value,fill=variable))+geom_histogram(binwidth=50,alpha=.4,position='identity')+ggtitle('mid-state TRs remaining')+scale_fill_manual(labels=c('Just .2mm FD and outliers','segments < 12 TRs discarded','< 18','< 24'),values = c("red", "blue","green","yellow"))
+```
+
+```{r}
+# load in nda's gordon network rsfc
+gordon=read.delim('~/Downloads/Package_1191523/abcd_betnet02.txt')
+df<-merge(gordon,rest,by='subjectkey')
+```
+
+```{r}
+df$rsfmri_c_ngd_dt_ngd_dla<-as.numeric(df$rsfmri_c_ngd_dt_ngd_dla)
+df$rsfmri_c_ngd_dt_ngd_dt<-as.numeric(df$rsfmri_c_ngd_dt_ngd_dt)
+df$rsfmri_c_ngd_smh_ngd_smh<-as.numeric(df$rsfmri_c_ngd_smh_ngd_smh)
+df$rsfmri_c_ngd_smh_ngd_fo<-as.numeric(df$rsfmri_c_ngd_smh_ngd_fo)
+```
+
+```{r}
+# DMN metrics and included TRs
+cor.test(df$rsfmri_c_ngd_dt_ngd_dt,df$output2)
+cor.test(df$rsfmri_c_ngd_dt_ngd_dt,df$output3)
+cor.test(df$rsfmri_c_ngd_dt_ngd_dt,df$output4)
+cor.test(df$rsfmri_c_ngd_dt_ngd_dt,df$output5)
+
+ggplot(df,aes(df$rsfmri_c_ngd_dt_ngd_dt,df$output2))+geom_point()+geom_smooth(method='lm')+xlab('Within-DMN FC')+ylab('TRs passing thresh')
+
+
+cor.test(df$rsfmri_c_ngd_dt_ngd_dla,df$output2)
+cor.test(df$rsfmri_c_ngd_dt_ngd_dla,df$output3)
+cor.test(df$rsfmri_c_ngd_dt_ngd_dla,df$output4)
+cor.test(df$rsfmri_c_ngd_dt_ngd_dla,df$output5)
+
+ggplot(df,aes(df$rsfmri_c_ngd_dt_ngd_dla,df$output2))+geom_point()+geom_smooth(method='lm')+xlab('DMN-DAN FC')+ylab('TRs passing thresh')
+```

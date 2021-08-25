@@ -1,0 +1,24 @@
+---
+title: "T1Exclusion"
+author: "Adam"
+date: "8/25/2021"
+output: html_document
+---
+
+```{r}
+# generate T1 inclusion list
+t1qc<-read.delim('~/Downloads/Package_1191607/mriqcrp102.txt')
+tp1<-subset(t1qc,t1qc$eventname=='baseline_year_1_arm_1')
+
+# includes vs. excludes
+paste0('Subjects with passing T1s: ',sum(unlist(as.numeric(tp1$iqc_t1_1_qc_score)),na.rm = T))
+
+paste0('Subjects with failing T1s: ',(length(as.numeric(tp1$iqc_t1_1_qc_score))-sum(unlist(as.numeric(tp1$iqc_t1_1_qc_score)),na.rm = T)))
+
+# subset includes, printout subj list
+includes<-subset(tp1,tp1$iqc_t1_1_qc_score==1)
+SubjsToInclude<-includes$subjectkey
+# convert to 3165 subj name style
+SubjsToInclude_3165<-gsub('NDAR_INV','sub-NDARINV',SubjsToInclude)
+write.table(SubjsToInclude_3165,'~/test.txt',col.names = F,row.names = F,quote=F)
+```
