@@ -39,51 +39,60 @@ for t=1:4
 			% reconfig cifti metadata to reflect new number of TRs
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
-			%%% temp code - try a few thresholds of continuous frame requirements
-			Thresholds=[12,18,24];
-			ThreshTRvec=cell(1,3);
-			for i=1:3
-				% find changepoints in binary bask
-				d = [true, diff(TRwise_mask') ~= 0];
-				% index of changepoints
-				dInd=find(d);
-				% find difference in indices of changepoints (span of mask/non-mask epochs)
-				n = diff([dInd, numTRs]); 
-				% find which segments correspond to non-mask
-				maskValAtChange=TRwise_mask(dInd);
-				ContSegments=n(:,logical(maskValAtChange));
-				% find segments with more continuous TRs than threshold
-				OverThreshSegments=find(ContSegments>Thresholds(i));
-				% sum remaining segments to get included TRs if this thresh chosen
-				RemainingTRs=sum(ContSegments(OverThreshSegments))
-				ThreshTRvec(i)=num2cell(RemainingTRs);
+
+
+			% setting continuous frame threshold to 15 TRs in a row
+			Threshold=15;
+			% find changepoints in binary bask
+			d = [true, diff(TRwise_mask') ~= 0];
+			% index of changepoints
+			dInd=find(d);
+			% find difference in indices of changepoints (span of mask/non-mask epochs)
+			n = diff([dInd, numTRs]); 
+			% find which segments correspond to non-mask
+			maskValAtChange=TRwise_mask(dInd);
+			ContSegments=n(:,maskValAtChange);
+			% create list of starting TR and duration of segments uninterupt. by combined mask
+			UTSegSize=size(ContSegments);
+			UTSegNum=UTSegSize(2);
+			UTSegCell=cell(UTSegNum,2);
+			% plant in TR start and duration of clean segments
+			for i=1:UTSegNum
+				UTSegCell(i,2)=num2cell(ContSegments(i));
 			end
-			% save array of tr counts across thresholds for this task
-		        TRcounts=cell(1,5);
-		        TRcounts(1)=num2cell(numTRs);
-        		TRcounts(2)=num2cell(newTRnum);
-       			TRcounts(3)=ThreshTRvec(1);
-       			TRcounts(4)=ThreshTRvec(2);
-       			TRcounts(5)=ThreshTRvec(3);
-       			fn=strjoin(['/cbica/projects/abcdfnets/scripts/PWs/PWs/ThreshDirec/' sname '_' tasks(t)],'');
-       			save(fn,'TRcounts')
-			%%% end temp code segment for now, next section uses last thresh tapped in loop
-			% index of which TR valid segments start at
-			ValidTRStarts=dInd(logical(maskValAtChange));
-			% adjust to grab instances over threshold
-			ValidTRStartsThreshed=ValidTRStarts(OverThreshSegments);
-			% adjust continuous segments to relfect only instances over threshold
-			ContSegmentsThreshed=ContSegments(OverThreshSegments);
-			% number of distinct segments
-			SegSize=size(ContSegments(OverThreshSegments));
-			SegNum=SegSize(2);
+			% make 1st column start position in .2mm outlier masked sequence
+			% (just the start where prev. segment left off, no masked TRs in gaps b/w)
+			UTSegCell(1,1)=num2cell(1);
+			for i=2:UTSegNum
+				UTSegCell(i,1)=num2cell(UTSegCell{i-1,1}+UTSegCell{i-1,2});
+			end
+			% check that sum of TRs matches field from 3165 mask
+			allRetainedSegmentTRLengths=UTSegCell(:,2);
+			if (sum([allRetainedSegmentTRLengths{:}])==~mask.motion_data{1,21}.remaining_combined_count)
+				error('3165 remaining combined count does not match internal representation')
+			end
+                        % find segments with more continuous TRs than threshold
+                        OverThreshSegments=find(ContSegments>Threshold);
+                        % sum remaining segments to get included TRs if this thresh chosen
+                        RemainingTRs=sum(ContSegments(OverThreshSegments))
+                        % index of which TR valid segments start at
+                        ValidTRStarts=dInd(maskValAtChange);
+                        % adjust to grab instances over threshold
+                        ValidTRStartsThreshed=ValidTRStarts(OverThreshSegments);
+                        % adjust continuous segments to relfect only instances over threshold
+                        % ContSegmentsThreshed=ContSegments(OverThreshSegments);
+                        % number of distinct segments
+                        %SegSize=size(ContSegments(OverThreshSegments));
+                        %SegNum=SegSize(2);
+			% index out segments greater than TR thresh from UnThreshSegmentCellstruct
+			ValidSegCell=UTSegCell(OverThreshSegments,:);
 			% initialize segment output
-			ValidSegCell=cell(SegNum,2);
-			for i=1:SegNum
-				ValidSegCell(i,1)=num2cell(ValidTRStartsThreshed(i));
-				% -1 because of how diff() works (last indexed TR is start of TRmask)
-				ValidSegCell(i,2)=num2cell((ContSegmentsThreshed(i)-1));
-			end
+			%ValidSegCell=cell(SegNum,2);
+			%for i=1:SegNum
+			%	ValidSegCell(i,1)=num2cell(ValidTRStartsThreshed(i));
+			%	% -1 because of how diff() works (last indexed TR is start of TRmask)
+			%	ValidSegCell(i,2)=num2cell((ContSegmentsThreshed(i)-1));
+			%end
 			% save 2-column df indicating start of valid segments and length
 			segmentfn=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments'],'');
 			writetable(cell2table(ValidSegCell),segmentfn,'WriteVariableNames',0)
