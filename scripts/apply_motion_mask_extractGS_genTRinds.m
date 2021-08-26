@@ -95,7 +95,7 @@ for t=1:4
 			% manually concatenate time series from individ. runs
 			GSTS=zeros(1,1);
 			% for each "run", calculate global signal
-			for r=1:5
+			for r=1:6
 				fpParent=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' sname '/ses-baselineYear1Arm1/func/'];
 				fp=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_run-' string(r) '_bold_timeseries.dtseries.nii'],'');
 				% not flagging missing tasks for now, added this conditional to reflect that

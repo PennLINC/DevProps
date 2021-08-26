@@ -29,6 +29,7 @@ pause(320)
 
 % now the matlab portions. Apply the motion mask to the downloaded data and extract global signal from the non-proc'ed scans
 apply_motion_mask_extractGS_genTRinds(subj)
+
 % bandpass the global signal and time series to isolate freqs of interest
 BandPass_ts(subj)
 
@@ -52,8 +53,9 @@ system(usCommand)
 wavePropCommand=['python derive_WaveProps.py ' subj];
 system(wavePropCommand)
 
-%wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
-%system(wavePropCommand)
+% group PG rather than individualized
+wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
+system(wavePropCommand)
 
 % delete input data
 Delete_input_data_w(subj)

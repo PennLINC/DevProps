@@ -88,7 +88,7 @@ if exist(rsfp,'file')
 	for s = 1:numSegs
 		% -1 because duration of clean window includes first TR indexed
 		segment=gs_r(rsCSm(s,1):(rsCSm(s,1)+rsCSm(s,2)-1));
-		segSignal=filtfilt(b,a,gs_r);
+		segSignal=filtfilt(b,a,segment);
 		gs_filt=[gs_filt segSignal];
 	end
 	% save out GS
@@ -141,7 +141,7 @@ if exist(sstfp,'file')
         for s = 1:numSegs
                 % -1 because duration of clean window includes first TR indexed
                 segment=gs_s(sstCSm(s,1):(sstCSm(s,1)+sstCSm(s,2)-1));
-                segSignal=filtfilt(b,a,gs_s);
+                segSignal=filtfilt(b,a,segment);
                 gs_filt=[gs_filt segSignal];
         end	
 	% save out GS
@@ -194,7 +194,7 @@ if exist(nbackfp,'file')
         for s = 1:numSegs
                 % -1 because duration of clean window includes first TR indexed
                 segment=gs_n(nbCSm(s,1):(nbCSm(s,1)+nbCSm(s,2)-1));
-                segSignal=filtfilt(b,a,gs_n);
+                segSignal=filtfilt(b,a,segment);
                 gs_filt=[gs_filt segSignal];
         end
 	% save out GS
@@ -247,7 +247,7 @@ if exist(midfp,'file')
         for s = 1:numSegs
                 % -1 because duration of clean window includes first TR indexed
                 segment=gs_m(midCSm(s,1):(midCSm(s,1)+midCSm(s,2)-1));
-                segSignal=filtfilt(b,a,gs_m);
+                segSignal=filtfilt(b,a,segment);
                 gs_filt=[gs_filt segSignal];
         end	
 	% save out GS
