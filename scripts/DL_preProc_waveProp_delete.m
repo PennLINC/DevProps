@@ -30,27 +30,27 @@ pause(320)
 % now the matlab portions. Apply the motion mask to the downloaded data and extract global signal from the non-proc'ed scans
 apply_motion_mask_extractGS_genTRinds(subj)
 % bandpass the global signal and time series to isolate freqs of interest
-%BandPass_ts(subj)
+BandPass_ts(subj)
 
 % derive FC - grayOrd level and network level
-%deriveFCcommand=['python derive_fc.py ' subj];
-%system(deriveFCcommand)
+deriveFCcommand=['python derive_fc.py ' subj];
+system(deriveFCcommand)
 
 % downsample aggregated TS 
-%dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
-%system(dsCommand)
+dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
+system(dsCommand)
 
 % derive personalized PG
-%derivePGcommand=['python derive_pg.py ' subj];
-%system(derivePGcommand)
+derivePGcommand=['python derive_pg.py ' subj];
+system(derivePGcommand)
 
 % upsample derived principal gradient
-%usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
-%system(usCommand)
+usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
+system(usCommand)
 
 % derive wave properties w/ python
-%wavePropCommand=['python derive_WaveProps.py ' subj];
-%system(wavePropCommand)
+wavePropCommand=['python derive_WaveProps.py ' subj];
+system(wavePropCommand)
 
 %wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
 %system(wavePropCommand)

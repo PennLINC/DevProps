@@ -105,7 +105,7 @@ if exist(sstfp,'file')
 	sstts=sst.cdata;
 	% load in continuous segments mask
 	sstCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-SST_ValidSegments.txt'];
-	sstCSm=dlmread(sstCSm_fn)
+	sstCSm=dlmread(sstCSm_fn);
         % number of segments
         segShape=size(sstCSm);
         numSegs=segShape(1);
@@ -158,7 +158,7 @@ if exist(nbackfp,'file')
 	nbackts=nback.cdata;
 	% load in continuous segments mask
 	nbCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-nback_ValidSegments.txt'];
-	nbCSm=dlmread(nbCSm_fn)
+	nbCSm=dlmread(nbCSm_fn);
         % number of segments
         segShape=size(nbCSm);
         numSegs=segShape(1);
@@ -211,7 +211,7 @@ if exist(midfp,'file')
 	midts=mid.cdata;
 	% load in continuous segments mask
 	midCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-MID_ValidSegments.txt'];
-	midCSm=dlmread(midCSm_fn)
+	midCSm=dlmread(midCSm_fn);
         % number of segments
         segShape=size(midCSm);
         numSegs=segShape(1);
@@ -236,7 +236,7 @@ if exist(midfp,'file')
         % reset temporal dimension to reflect thresholding of short segments
         mid.diminfo{2}.length=TSsize(2);
 	% save out cifti
-	fpe=[parentfp sname '_p2mm_masked_filtered_mid.dtseries.nii'];
+	fpe=[parentfp sname '_p2mm_masked_filtered_MID.dtseries.nii'];
 	write_cifti(mid,fpe);
 	% load in GS to filter
 	gsfpm=[parentfp sname '_p2mm_masked_MID_GS.csv'];
@@ -251,7 +251,7 @@ if exist(midfp,'file')
                 gs_filt=[gs_filt segSignal];
         end	
 	% save out GS
-	gsfpmf=[parentfp sname '_p2mm_masked_filtered_mid_GS.csv'];
+	gsfpmf=[parentfp sname '_p2mm_masked_filtered_MID_GS.csv'];
 	writetable(array2table(gs_filt),gsfpmf,'WriteVariableNames',0);
 end
 %%%%%%%%%%

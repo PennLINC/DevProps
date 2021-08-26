@@ -90,3 +90,23 @@ cor.test(df$rsfmri_c_ngd_dt_ngd_dla,df$output5)
 
 ggplot(df,aes(df$rsfmri_c_ngd_dt_ngd_dla,df$output2))+geom_point()+geom_smooth(method='lm')+xlab('DMN-DAN FC')+ylab('TRs passing thresh')
 ```
+
+
+```{r}
+# read in mental health (cbcl) items
+cbcl<-read.delim('~/Downloads/Package_1191879/abcd_cbcls01.txt')
+cbcl_bv=subset(cbcl,cbcl$eventname=='baseline_year_1_arm_1')
+df<-merge(df,cbcl_bv,by='subjectkey')
+cor.test(as.numeric(df$cbcl_scr_syn_internal_t),df$output3)
+cor.test(as.numeric(df$cbcl_scr_syn_external_t),df$output3)
+
+nihTB<-read.delim('~/Downloads/Package_1191879/abcd_tbss01.txt')
+nihTB_bv=subset(nihTB,nihTB$eventname=='baseline_year_1_arm_1')
+df<-merge(df,nihTB_bv,by='subjectkey')
+cor.test(as.numeric(df$nihtbx_cryst_fc),df$output3)
+cor.test(as.numeric(df$nihtbx_fluidcomp_fc),df$output3)
+```
+
+```{r}
+
+```

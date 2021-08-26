@@ -39,8 +39,6 @@ for t=1:4
 			% reconfig cifti metadata to reflect new number of TRs
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
-
-
 			% setting continuous frame threshold to 15 TRs in a row
 			Threshold=15;
 			% find changepoints in binary bask
@@ -79,20 +77,8 @@ for t=1:4
                         ValidTRStarts=dInd(maskValAtChange);
                         % adjust to grab instances over threshold
                         ValidTRStartsThreshed=ValidTRStarts(OverThreshSegments);
-                        % adjust continuous segments to relfect only instances over threshold
-                        % ContSegmentsThreshed=ContSegments(OverThreshSegments);
-                        % number of distinct segments
-                        %SegSize=size(ContSegments(OverThreshSegments));
-                        %SegNum=SegSize(2);
 			% index out segments greater than TR thresh from UnThreshSegmentCellstruct
 			ValidSegCell=UTSegCell(OverThreshSegments,:);
-			% initialize segment output
-			%ValidSegCell=cell(SegNum,2);
-			%for i=1:SegNum
-			%	ValidSegCell(i,1)=num2cell(ValidTRStartsThreshed(i));
-			%	% -1 because of how diff() works (last indexed TR is start of TRmask)
-			%	ValidSegCell(i,2)=num2cell((ContSegmentsThreshed(i)-1));
-			%end
 			% save 2-column df indicating start of valid segments and length
 			segmentfn=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments'],'');
 			writetable(cell2table(ValidSegCell),segmentfn,'WriteVariableNames',0)
