@@ -1,7 +1,7 @@
 ### Aggregate group-level principal wave stats
 
 # For each task
-tasks = c('rest','SST','nback','mid')
+tasks = c('rest','SST','nback','MID')
 
 # individualized PG
 for (i in 1:4){
@@ -10,7 +10,7 @@ for (i in 1:4){
 	InitDf2<-data.frame(0,0,0,0)  
 	# column names to match output structure
 	colnames(InitDf)<-c('PGCor','TempSpan','EarliestPG_Bin','RelMagSlope')
-	colnames(InitDf2)<-c('PG2Cor','TempSpan2','EarliestPG2_Bin','RelMagSlope2')
+	colnames(InitDf2)<-c('PGCor','TempSpan','EarliestPG_Bin','RelMagSlope')
 	# file extension of this task
 	fileExtn=paste0('*',tasks[i],'_waveProps.csv')
 	fileExtn2=paste0('*',tasks[i],'_waveProps_gPG.csv')

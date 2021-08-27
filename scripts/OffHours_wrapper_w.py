@@ -2,7 +2,7 @@ import subprocess
 import time
 import datetime
 # grab some subjs as list
-my_file = open("/cbica/projects/abcdfnets/scripts/2021_pipeline/testSubjs.txt", "r")
+my_file = open("/cbica/projects/abcdfnets/GoodT1s.txt", "r")
 content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)
@@ -15,7 +15,7 @@ while len(subjects)>0:
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 5 job slots (one is occupied by this script)
-  if que < 6:
+  if que < 5:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
