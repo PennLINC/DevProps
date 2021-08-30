@@ -4,6 +4,35 @@ author: "Adam"
 date: "8/30/2021"
 output: html_document
 ---
+```{r}
+# delta r^2 functions
+# difference in R2
+#DeltaR2EstVec<-function(x){
+#  
+#  # relevant df
+#  DR2df<-data.frame(cbind(as.numeric(masterdf$Age),as.factor(masterdf$Sex),mastrdf$TRs_r,masterdf$mri_info_deviceserialnumber,masterdf$mri_info_manufacturer,masterdf$rsfmri_c_ngd_meanmotion,x))
+#  colnames(scaledf)<-c('Age','Sex','TRs','Serial','Manufact','Motion','varofint')
+#  
+#  # no-age model (segreg ~ sex + motion)
+#  noAgeGam<-gam(varofint~Sex+Motion,data=scaledf)
+#  noAgeSum<-summary(noAgeGam)
+#  # age-included model for measuring difference
+#  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=3),data=scaledf)
+#  AgeSum<-summary(AgeGam)
+#  
+#  dif<-AgeSum$r.sq-noAgeSum$r.sq
+#  
+#  # partial spearmans to extract age relation (for direction)
+#  pspear=pcor(scaledf,method='spearman')$estimate
+#  corest<-pspear[4]
+#  if(corest<0){
+#    dif=dif*-1
+#  }
+#  
+#  return(dif)
+#  
+#}
+```
 
 ```{r}
 library(mclust)
@@ -11,6 +40,7 @@ library(mclust)
 mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
 mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
 gordon=read.delim('~/Downloads/Package_1191523/abcd_betnet02.txt')
+gordon$rsfmri_c_ngd_dt_ngd_dla<-as.numeric(gordon$rsfmri_c_ngd_dt_ngd_dla)
 df<-merge(gordon,mfc,by='subjectkey')
 # just baseline
 df<-subset(df,df$eventname=='baseline_year_1_arm_1')
@@ -23,6 +53,55 @@ lowMotSubjs<-df$subjectkey[df$rsfmri_c_ngd_meanmotion < 0.06]
 # save out for aggregate group level lowmot script
 lowMotSubjs<-gsub('NDAR_INV','sub-NDARINV',lowMotSubjs)
 saveRDS(lowMotSubjs,'/cbica/projects/abcdfnets/dropbox/vLowMotSubjs.rds')
+```
+
+```{r}
+# read in demographics
+demo<-read.delim('~/Downloads/Package_1192012/abcd_lpds01.txt')
+demo<-subset(demo,eventname=='baseline_year_1_arm_1')
+# read in cbcl
+cbcl<-read.delim('~/Downloads/Package_1191879/abcd_cbcls01.txt')
+cbcl<-subset(cbcl,eventname=='baseline_year_1_arm_1')
+# read in nih TB
+nihTB<-read.delim('~/Downloads/Package_1191879/abcd_tbss01.txt')
+nihTB<-subset(nihTB,eventname=='baseline_year_1_arm_1')
+# read in scanner info
+scnerInf<-read.delim('~/Downloads/Package_1192010/abcd_mri01.txt')
+scnerInf<-subset(scnerInf,eventname=='baseline_year_1_arm_1')
+
+# merge
+masterdf<-merge(demo,cbcl,by='subjectkey')
+masterdf<-merge(masterdf,nihTB,by='subjectkey')
+masterdf<-merge(masterdf,scnerInf,by='subjectkey')
+# merge w/ gordo and fc
+masterdf<-merge(masterdf,df)
+
+# load in subject-level waves
+subjW<-readRDS('/cbica/projects/abcdfnets/results/Subject-level_waves')
+subjW$subjectkey<-unlist(lapply(subjW$ID, function(x){
+  strs<-strsplit(x,'/')[[1]]
+  return(strs[7])
+} ))
+subjW$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjW$subjectkey)
+
+# final merge
+masterdf<-merge(masterdf,subjW,by='subjectkey')
+
+# few variables remaining as char
+masterdf$interview_age<-as.numeric(masterdf$interview_age)
+masterdf$rsfmri_c_ngd_dt_ngd_dt<-as.numeric(masterdf$rsfmri_c_ngd_dt_ngd_dt)
+masterdf$nihtbx_totalcomp_uncorrected<-as.numeric(masterdf$nihtbx_totalcomp_uncorrected)
+```
+
+```{r}
+# big linear models
+Internalizing<-lm(cbcl_scr_syn_internal_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+
+Externalizing <-lm(cbcl_scr_syn_external_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+
+Attention<-lm(cbcl_scr_syn_attention_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+
+DR2df<-data.frame(cbind(as.numeric(masterdf$Age),as.factor(masterdf$Sex),mastrdf$TRs_r,masterdf$mri_info_deviceserialnumber,masterdf$mri_info_manufacturer,masterdf$rsfmri_c_ngd_meanmotion,master))
 ```
 
 ```{r}
@@ -61,5 +140,5 @@ hist(midG$TempSpan*.8,breaks = seq(0,90,by=5))
 restG_GM<-Mclust(restG$PGCor,G=3)
 nbG_GM<-Mclust(nbG$PGCor,G=3)
 midG_GM<-Mclust(midG$PGCor,G=3)
-#sstG_GM<-Mclust(sstG$PGCor,G=3)
+sstG_GM<-Mclust(sstG$PGCor,G=3)
 ```
