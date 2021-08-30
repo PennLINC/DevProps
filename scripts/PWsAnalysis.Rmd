@@ -9,9 +9,28 @@ output: html_document
 library(mclust)
 # read in master fc
 mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
+mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
+gordon=read.delim('~/Downloads/Package_1191523/abcd_betnet02.txt')
+df<-merge(gordon,mfc,by='subjectkey')
+# just baseline
+df<-subset(df,df$eventname=='baseline_year_1_arm_1')
 ```
 
 ```{r}
+# very low motion subjects
+df$rsfmri_c_ngd_meanmotion<-as.numeric(df$rsfmri_c_ngd_meanmotion)
+lowMotSubjs<-df$subjectkey[df$rsfmri_c_ngd_meanmotion < 0.06]
+# save out for aggregate group level lowmot script
+lowMotSubjs<-gsub('NDAR_INV','sub-NDARINV',lowMotSubjs)
+saveRDS(lowMotSubjs,'/cbica/projects/abcdfnets/dropbox/vLowMotSubjs.rds')
+```
+
+```{r}
+# low motion group level waves
+restG_LM<-readRDS('~/restGroup-level_waves_LM')
+restG_gPG_LM<-readRDS('~/restGroup-level_waves2_LM')
+hist(restG_LM$PGCor,breaks = seq(-1,1,by=.1))
+hist(restG_gPG_LM$PGCor,breaks = seq(-1,1,by=.1))
 # group level waves
 restG<-readRDS('~/restGroup-level_waves')
 restG_gPG<-readRDS('~/restGroup-level_waves2')

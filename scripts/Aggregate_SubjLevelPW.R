@@ -43,7 +43,12 @@ for (s in 1:length(dirs)){
 				message(paste(file,' is empty'))	
 			} else { loadedFile=read.csv(file,header=F)
 			# remove columns NA on PG*delay cor or TR span
+			if (length(loadedFile)>1){
 			loadedFile=data.frame(loadedFile[,colSums(is.na(loadedFile[1:2,]))==0])
+			} else {
+			# if else to allow for handling of single-wave files
+			loadedFile=data.frame(loadedFile[,sum(is.na(loadedFile[1:2,]))==0])
+			}
 			# if i=1 (resting)
 			if (i == 1){
 				# record used TRs (after motion mask)
