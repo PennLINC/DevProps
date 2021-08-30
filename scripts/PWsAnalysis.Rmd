@@ -1,0 +1,46 @@
+---
+title: "PWsAnalysis"
+author: "Adam"
+date: "8/30/2021"
+output: html_document
+---
+
+```{r}
+library(mclust)
+# read in master fc
+mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
+```
+
+```{r}
+# group level waves
+restG<-readRDS('~/restGroup-level_waves')
+restG_gPG<-readRDS('~/restGroup-level_waves2')
+nbG<-readRDS('~/nbackGroup-level_waves')
+nbG_gPG<-readRDS('~/nbackGroup-level_waves2')
+midG<-readRDS('~/midGroup-level_waves')
+midG_gPG<-readRDS('~/midGroup-level_waves2')
+sstG<-readRDS('~/sstGroup-level_waves')
+sstG_gPG<-readRDS('~/sstGroup-level_waves2')
+
+hist(restG$PGCor,breaks = seq(-1,1,by=.1))
+hist(restG_gPG$PGCor,breaks = seq(-1,1,by=.1))
+hist(midG$PGCor,breaks = seq(-1,1,by=.1))
+
+restG_GM<-Mclust(na.omit(restG$PGCor),G=3)
+restG_gPG_GM<-Mclust(na.omit(restG_gPG$PGCor),G=3)
+midG_GM<-Mclust(na.omit(midG$PGCor),G=3)
+
+hist(nbG$PGCor,breaks = seq(-1,1,by=.1))
+hist(midG$PGCor,breaks = seq(-1,1,by=.1))
+
+hist(restG$TempSpan*.8,breaks = seq(0,60,by=5))
+hist(restG_gPG$TempSpan*.8,breaks = seq(0,60,by=5))
+hist(nbG$TempSpan*.8,breaks = seq(0,90,by=5))
+hist(midG$TempSpan*.8,breaks = seq(0,90,by=5))
+
+
+restG_GM<-Mclust(restG$PGCor,G=3)
+nbG_GM<-Mclust(nbG$PGCor,G=3)
+midG_GM<-Mclust(midG$PGCor,G=3)
+#sstG_GM<-Mclust(sstG$PGCor,G=3)
+```

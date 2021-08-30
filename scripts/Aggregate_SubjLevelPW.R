@@ -42,6 +42,8 @@ for (s in 1:length(dirs)){
 				df[s,pcn]=0
 				message(paste(file,' is empty'))	
 			} else { loadedFile=read.csv(file,header=F)
+			# remove columns NA on PG*delay cor or TR span
+			loadedFile=data.frame(loadedFile[,colSums(is.na(loadedFile[1:2,]))==0])
 			# if i=1 (resting)
 			if (i == 1){
 				# record used TRs (after motion mask)
@@ -59,46 +61,46 @@ for (s in 1:length(dirs)){
 			# if i=2 (nback)
 			} else if (i == 2) {
 				# record used TRs (after motion mask)
-                                df$TRs_n[s]=loadedFile[5,1]
-                                # get number of observed waves
-                                df$numW_n[s]=length(loadedFile)
-                                # get number of top downs
-                                df$numTD_n[s]=length(loadedFile[,loadedFile[1,]<TDthresh])
-                                # get number of bottom ups
-                                df$numBU_n[s]=length(loadedFile[,loadedFile[1,]>BUthresh])
-                                # get average speed in TRs
-                                df$avgS_n[s]=mean(as.numeric(loadedFile[2,]))
-                                # get speed SD
-                                df$sdS_n[s]=sd(as.numeric(loadedFile[2,]))
-                        # if i=3 (mid)
-                        } else if (i == 3) {
-                                # record used TRs (after motion mask)
-                                df$TRs_m[s]=loadedFile[5,1]
-                                # get number of observed waves
-                                df$numW_m[s]=length(loadedFile)
-                                # get number of top downs
-                                df$numTD_m[s]=length(loadedFile[,loadedFile[1,]<TDthresh])
-                                # get number of bottom ups
-                                df$numBU_m[s]=length(loadedFile[,loadedFile[1,]>BUthresh])
-                                # get average speed in TRs
-                                df$avgS_m[s]=mean(as.numeric(loadedFile[2,]))
-                                # get speed SD
-                                df$sdS_m[s]=sd(as.numeric(loadedFile[2,]))  
-                        # if i=4 (sst)
-                        } else if (i == 4) {
-                                # record used TRs (after motion mask)
-                                df$TRs_s[s]=loadedFile[5,1]
-                                # get number of observed waves
-                                df$numW_s[s]=length(loadedFile)
-                                # get number of top downs
-                                df$numTD_s[s]=length(loadedFile[,loadedFile[1,]<TDthresh])
-                                # get number of bottom ups
-                                df$numBU_s[s]=length(loadedFile[,loadedFile[1,]>BUthresh])
-                                # get average speed in TRs
-                                df$avgS_s[s]=mean(as.numeric(loadedFile[2,]))
-                                # get speed SD
-                                df$sdS_s[s]=sd(as.numeric(loadedFile[2,]))
-                        }  			
+        df$TRs_n[s]=loadedFile[5,1]
+        # get number of observed waves
+        df$numW_n[s]=length(loadedFile)
+        # get number of top downs
+        df$numTD_n[s]=length(loadedFile[,loadedFile[1,]<TDthresh])
+        # get number of bottom ups
+        df$numBU_n[s]=length(loadedFile[,loadedFile[1,]>BUthresh])
+        # get average speed in TRs
+        df$avgS_n[s]=mean(as.numeric(loadedFile[2,]))
+        # get speed SD
+        df$sdS_n[s]=sd(as.numeric(loadedFile[2,]))
+      # if i=3 (mid)
+      } else if (i == 3) {
+        # record used TRs (after motion mask)
+        df$TRs_m[s]=loadedFile[5,1]
+        # get number of observed waves
+        df$numW_m[s]=length(loadedFile)
+        # get number of top downs
+        df$numTD_m[s]=length(loadedFile[,loadedFile[1,]<TDthresh])
+        # get number of bottom ups
+        df$numBU_m[s]=length(loadedFile[,loadedFile[1,]>BUthresh])
+        # get average speed in TRs
+        df$avgS_m[s]=mean(as.numeric(loadedFile[2,]))
+        # get speed SD
+        df$sdS_m[s]=sd(as.numeric(loadedFile[2,]))  
+       # if i=4 (sst)
+       } else if (i == 4) {
+        # record used TRs (after motion mask)
+        df$TRs_s[s]=loadedFile[5,1]
+        # get number of observed waves
+        df$numW_s[s]=length(loadedFile)
+        # get number of top downs
+        df$numTD_s[s]=length(loadedFile[,loadedFile[1,]<TDthresh])
+        # get number of bottom ups
+        df$numBU_s[s]=length(loadedFile[,loadedFile[1,]>BUthresh])
+        # get average speed in TRs
+        df$avgS_s[s]=mean(as.numeric(loadedFile[2,]))
+        # get speed SD
+        df$sdS_s[s]=sd(as.numeric(loadedFile[2,]))
+        }  			
 	}
 	}	
 }
