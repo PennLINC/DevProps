@@ -75,10 +75,16 @@ for t=1:4
                         RemainingTRs=sum(ContSegments(OverThreshSegments))
                         % index of which TR valid segments start at
                         ValidTRStarts=dInd(maskValAtChange);
-                        % adjust to grab instances over threshold
-                        ValidTRStartsThreshed=ValidTRStarts(OverThreshSegments);
 			% index out segments greater than TR thresh from UnThreshSegmentCellstruct
 			ValidSegCell=UTSegCell(OverThreshSegments,:);
+			% adjust ValidSegCell to describe in terms of retained TRs only
+			ValidSegCell(1,1)=num2cell(1);
+			for s=2:length(OverThreshSegments)
+				prevStart=ValidSegCell(s-1,1);
+				prevLength=ValidSegCell(s-1,2);
+				NewStart=prevStart{:}+prevLength{:};
+				ValidSegCell(s,1)=num2cell(NewStart);
+			end	
 			% save 2-column df indicating start of valid segments and length
 			segmentfn=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments'],'');
 			writetable(cell2table(ValidSegCell),segmentfn,'WriteVariableNames',0)
