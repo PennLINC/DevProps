@@ -13,6 +13,7 @@ import sklearn
 from sklearn import linear_model
 import hcp_utils as hcp
 import os.path
+import matplotlib.pyplot as plt
 # Subject is set to the passed argument
 subj = sys.argv[1]
 # all the scan types
@@ -121,9 +122,9 @@ for T in range(len(tasks)):
 						else:
 							delayMatrix_Seg[b,t]=999
 							magMatrix_Seg[b,t]=999
-				delayMatrix=np.concatenate((delayMatrix,delayMatrix_Seg),axis=1)
-				magMatrix=np.concatenate((magMatrix,magMatrix_Seg),axis=1)
-				totalTroughNum += troughsNum
+			delayMatrix=np.concatenate((delayMatrix,delayMatrix_Seg),axis=1)
+			magMatrix=np.concatenate((magMatrix,magMatrix_Seg),axis=1)
+			totalTroughNum += troughsNum
 		# remove initialization volume of delay and mag matrices
 		delayMatrix=delayMatrix[:,1:]
 		magMatrix=magMatrix[:,1:]
@@ -139,6 +140,12 @@ for T in range(len(tasks)):
 		mostHavePeaks=delayMatrix[:,noPeakPwave<35]
 		# replace 999s with NAs	
 		mostHavePeaks[mostHavePeaks==999]=np.nan
+		# print out wave instances as pyplot
+		for m in range(mostHavePeaks.shape[1]):
+			plt.plot(mostHavePeaks[:,m]);
+			figName='wave'+str(m)+'.png'
+			plt.savefig(figName,bbox_inches='tight')
+			plt.close()
 		# get nan index for stats
 		nas = np.isnan(mostHavePeaks)
 		# opposite is valid
