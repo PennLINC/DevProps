@@ -13,6 +13,8 @@ import sklearn
 from sklearn import linear_model
 import hcp_utils as hcp
 import os.path
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 # Subject is set to the passed argument
 subj = sys.argv[1]
@@ -80,6 +82,8 @@ for T in range(len(tasks)):
 		# initialize delay and magnitude matrix (unknown how many wave instances there will be at this point, bin # known
 		delayMatrix=np.zeros((70,1))
 		magMatrix=np.zeros((70,1))
+		# and signal matrix to plot wave unfolding in dif. pg bins - 100 is erring on the side of inclusion
+		sigMatrix=np.zeros((100,6))
 		totalTroughNum=0
 		# for each continuous segment
 		for seg in range(SegNum):
@@ -122,12 +126,25 @@ for T in range(len(tasks)):
 						else:
 							delayMatrix_Seg[b,t]=999
 							magMatrix_Seg[b,t]=999
-			delayMatrix=np.concatenate((delayMatrix,delayMatrix_Seg),axis=1)
-			magMatrix=np.concatenate((magMatrix,magMatrix_Seg),axis=1)
-			totalTroughNum += troughsNum
+					# record the GS across this wave instance in plot signal matrix
+					thisWaveSigMatrix=np.zeros((100,6))
+					# record from evenly spaced pgbins as well
+					thisWaveSigMatrix[0:(tend-tstart),0]=GSinSeg[tstart:tend]
+					thisWaveSigMatrix[0:(tend-tstart),0]=GSinSeg[tstart:tend]
+					thisWaveSigMatrix[0:(tend-tstart),1]=procTS_bins_inSeg[tstart:tend,0]
+					thisWaveSigMatrix[0:(tend-tstart),2]=procTS_bins_inSeg[tstart:tend,17]
+					thisWaveSigMatrix[0:(tend-tstart),3]=procTS_bins_inSeg[tstart:tend,35]
+					thisWaveSigMatrix[0:(tend-tstart),4]=procTS_bins_inSeg[tstart:tend,53]
+					thisWaveSigMatrix[0:(tend-tstart),5]=procTS_bins_inSeg[tstart:tend,69]
+					# tag it onto the master sigMatrix (append into 3d, index out later)
+					sigMatrix=np.dstack((sigMatrix,thisWaveSigMatrix))			
+				delayMatrix=np.concatenate((delayMatrix,delayMatrix_Seg),axis=1)
+				magMatrix=np.concatenate((magMatrix,magMatrix_Seg),axis=1)
+				totalTroughNum += troughsNum
 		# remove initialization volume of delay and mag matrices
 		delayMatrix=delayMatrix[:,1:]
 		magMatrix=magMatrix[:,1:]
+		sigMatrix=sigMatrix[:,:,1:]
 		# ID columns with < 20% 999s, sep out non-999 values
 		# matrix to count instances of no peak detection by PG bin
 		npMatrix=np.zeros((70,totalTroughNum))
@@ -140,10 +157,29 @@ for T in range(len(tasks)):
 		mostHavePeaks=delayMatrix[:,noPeakPwave<35]
 		# replace 999s with NAs	
 		mostHavePeaks[mostHavePeaks==999]=np.nan
+		# use same thresholding for sigMatrix
+		sigMatrix=sigMatrix[:,:,noPeakPwave<35]
+		# for surviving waves
+		for m in range(mostHavePeaks.shape[1]):
+			plotGS=sigMatrix[:,0,m]
+			plt.plot(plotGS[np.nonzero(plotGS)],c='black')
+			plotPGB1=sigMatrix[:,1,m]
+			plt.plot(plotPGB1[np.nonzero(plotGS)],c='#070291')
+			plotPGB2=sigMatrix[:,2,m]
+			plt.plot(plotPGB2[np.nonzero(plotGS)],c='#8202ac')
+			plotPGB3=sigMatrix[:,3,m]
+			plt.plot(plotPGB3[np.nonzero(plotGS)],c='#c8016a')
+			plotPGB4=sigMatrix[:,4,m]
+			plt.plot(plotPGB4[np.nonzero(plotGS)],c='#e32b01')
+			plotPGB5=sigMatrix[:,5,m]
+			plt.plot(plotPGB5[np.nonzero(plotGS)],c='#ffe700')
+			figName=childfp+str(subj)+'_'+str(tasks[t])+'_Wave'+str(m)+'.png'
+			plt.savefig(figName,bbox_inches='tight')
+			plt.close()
 		# print out wave instances as pyplot
 		for m in range(mostHavePeaks.shape[1]):
 			plt.plot(mostHavePeaks[:,m]);
-			figName='wave'+str(m)+'.png'
+			figName=childfp+str(subj)+'_'+str(tasks[t])+'_Delay'+str(m)+'.png'
 			plt.savefig(figName,bbox_inches='tight')
 			plt.close()
 		# get nan index for stats
