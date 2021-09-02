@@ -173,13 +173,13 @@ for T in range(len(tasks)):
 			plt.plot(plotPGB4[np.nonzero(plotGS)],c='#e32b01')
 			plotPGB5=sigMatrix[:,5,m]
 			plt.plot(plotPGB5[np.nonzero(plotGS)],c='#ffe700')
-			figName=childfp+str(subj)+'_'+str(tasks[t])+'_Wave'+str(m)+'.png'
+			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Wave'+str(m)+'.png'
 			plt.savefig(figName,bbox_inches='tight')
 			plt.close()
 		# print out wave instances as pyplot
 		for m in range(mostHavePeaks.shape[1]):
 			plt.plot(mostHavePeaks[:,m]);
-			figName=childfp+str(subj)+'_'+str(tasks[t])+'_Delay'+str(m)+'.png'
+			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
 			plt.savefig(figName,bbox_inches='tight')
 			plt.close()
 		# get nan index for stats

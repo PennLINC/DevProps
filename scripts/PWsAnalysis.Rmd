@@ -84,6 +84,10 @@ subjW$subjectkey<-unlist(lapply(subjW$ID, function(x){
 } ))
 subjW$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjW$subjectkey)
 
+groupW<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves')
+
+groupW2<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves2')
+
 # merge in
 masterdf<-merge(masterdf,subjW,by='subjectkey')
 
@@ -228,11 +232,11 @@ restG_gPG_LM<-readRDS('~/restGroup-level_waves2_LM')
 hist(restG_LM$PGCor,breaks = seq(-1,1,by=.1))
 hist(restG_gPG_LM$PGCor,breaks = seq(-1,1,by=.1))
 # group level waves
-restG<-readRDS('~/restGroup-level_waves')
+restG<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves')
 restG_gPG<-readRDS('~/restGroup-level_waves2')
 nbG<-readRDS('~/nbackGroup-level_waves')
 nbG_gPG<-readRDS('~/nbackGroup-level_waves2')
-midG<-readRDS('~/midGroup-level_waves')
+midG<-readRDS('/cbica/projects/abcdfnets/results/MIDGroup-level_waves')
 midG_gPG<-readRDS('~/midGroup-level_waves2')
 sstG<-readRDS('~/sstGroup-level_waves')
 sstG_gPG<-readRDS('~/sstGroup-level_waves2')
