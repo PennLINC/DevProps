@@ -21,9 +21,11 @@ for t=1:4
 		ciftisize=size(ts);
 		numTRs=ciftisize(2);
 		% get cortex indices
-		CL_ind=ts_cif.diminfo{1}.models{1}.vertlist+ts_cif.diminfo{1}.models{1}.start;
-                CR_ind=ts_cif.diminfo{1}.models{2}.vertlist+ts_cif.diminfo{1}.models{2}.start;
-		C_ind=vertcat(CL_ind,CR_ind);
+		%CL_vertlist=ts_cif.diminfo{1}.models{1}.vertlist+1
+		%CL_ind=ts_cif.diminfo{1}.models{1}.vertlist+ts_cif.diminfo{1}.models{1}.start;
+                %CR_ind=ts_cif.diminfo{1}.models{2}.vertlist+ts_cif.diminfo{1}.models{2}.start;
+		%C_ind=vertcat(CL_ind,CR_ind);
+		C_ind=1:59412;
 		% load in mask
 		masfp=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_desc-filteredwithoutliers_motion_mask.mat'],'');
 		if exist(masfp,'file')
@@ -100,17 +102,21 @@ for t=1:4
 			write_cifti(ts_cif,ofp);
 			% manually concatenate time series from individ. runs
 			GSTS=zeros(1,1);
+			% segment to extract and concat minimally proc. over equiv. TRs
+       			WholeCortTS=zeros(59412,0);
 			% for each "run", calculate global signal
 			for r=1:6
 				fpParent=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' sname '/ses-baselineYear1Arm1/func/'];
 				fp=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_run-' string(r) '_bold_timeseries.dtseries.nii'],'');
 				% not flagging missing tasks for now, added this conditional to reflect that
 				if exist(fp,'file')
-					ts_cif=read_cifti(fp);
-					ts=ts_cif.cdata;
+					ts_cif_r=read_cifti(fp);
+					ts_r=ts_cif_r.cdata;
 					% extract just cortex
-					tsCL=ts(C_ind,:);
+					tsCL=ts_r(C_ind,:);
 					GSTS=[GSTS mean(tsCL)];
+					% segment to extract and concat minimally proc. over equiv. TRs
+                                        WholeCortTS=[WholeCortTS tsCL];
 				end
 			end
 			% remove initialization pseudovolume
@@ -122,6 +128,31 @@ for t=1:4
 			end
 			% use same mask as filtered/concat
 			GSTS=GSTS(TRwise_mask);
+			% segment to extract and concat minimally proc. over equiv. TRs
+			WholeCortTS=WholeCortTS(:,TRwise_mask);
+			% number of segments
+        		segShape=size(ValidSegCell);
+        		numSegs=segShape(1);
+        		% new time series to only include valid segments
+			Oords=zeros(59412,0);
+			% for each segment
+       			for s = 1:numSegs
+        	       		% select all vertices from this segment
+        	       		% first column is start of clean window, second column is length of clean window
+        	     		% -1 because duration of clean window includes first TR indexed
+        		        segment=WholeCortTS(:,ValidSegCell{s,1}:(ValidSegCell{s,1}+ValidSegCell{s,2}-1));
+               			% append segment onto grayOrds
+               			Oords = [Oords segment];
+			end
+			% reset cdata to be proper size - non cortical vertices set to 0
+			ts_cif.cdata=zeros(91282,RemainingTRs);
+			ts_cif.cdata(C_ind,:)=Oords;
+        		% reset temporal dimension to reflect thresholding of short segments
+        		ts_cif.diminfo{2}.length=RemainingTRs;
+			% save out cifti
+			WCTSfp=strjoin([fpParent,sname '_p2mm_masked_' tasks(t) '_min_proc.dtseries.nii'],'');
+			write_cifti(ts_cif,char(WCTSfp));
+			%%%%%%%%
 			gsfp=strjoin([fpParent,sname '_p2mm_masked_' tasks(t) '_GS.csv'],'');
 			writetable(array2table(GSTS),gsfp,'WriteVariableNames',0);
 		else

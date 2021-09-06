@@ -40,8 +40,8 @@ for t=1:4
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
 			% temp code - try a few thresholds of continuous frame requirements
-			Thresholds=[12,18,24];
-			ThreshTRvec=cell(1,3);
+			%Thresholds=[12,18,24];
+			%ThreshTRvec=cell(1,3);
 			for i=1:3
 				% find changepoints in binary bask
 				d = [true, diff(TRwise_mask') ~= 0];
@@ -80,6 +80,8 @@ for t=1:4
 			write_cifti(ts_cif,ofp);
 			% manually concatenate time series from individ. runs
 			GSTS=zeros(1,1);
+			% segment to extract and concat minimally proc. over equiv. TRs
+			WholeCortTS=zeros(59412,0);
 			% for each "run", calculate global signal
 			for r=1:5
 				fpParent=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' sname '/ses-baselineYear1Arm1/func/'];
@@ -91,10 +93,13 @@ for t=1:4
 					% extract just cortex
 					tsCL=ts(C_ind,:);
 					GSTS=[GSTS mean(tsCL)];
+					% segment to extract and concat minimally proc. over equiv. TRs
+					WholeCortTS=[WholeCortTS tsCL];
 				end
 			end
 			% remove initialization pseudovolume
 			GSTS(1)=[];
+			WholeCortTS(:,1)=[];
 			% ensure concat volumes are same size
 			sizeGS=size(GSTS);
 			if sizeGS(2)~=numTRs

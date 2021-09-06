@@ -85,6 +85,8 @@ for T in range(len(tasks)):
 		# and signal matrix to plot wave unfolding in dif. pg bins - 100 is erring on the side of inclusion
 		sigMatrix=np.zeros((100,6))
 		totalTroughNum=0
+		# and an empty 2-column matrix to record which segment and how far into segment detected GS troughs occur
+		waveTRs=np.zeros((1,3))
 		# for each continuous segment
 		for seg in range(SegNum):
 			SegStart=CSI[seg,0]
@@ -137,7 +139,10 @@ for T in range(len(tasks)):
 					thisWaveSigMatrix[0:(tend-tstart),4]=procTS_bins_inSeg[tstart:tend,53]
 					thisWaveSigMatrix[0:(tend-tstart),5]=procTS_bins_inSeg[tstart:tend,69]
 					# tag it onto the master sigMatrix (append into 3d, index out later)
-					sigMatrix=np.dstack((sigMatrix,thisWaveSigMatrix))			
+					sigMatrix=np.dstack((sigMatrix,thisWaveSigMatrix))
+					# save segment number and TR within segment for grayOrd plotting later
+					waveTR=np.array([SegStart,tstart,tend],ndmin=2)
+					waveTRs=np.vstack((waveTRs,waveTR))			
 				delayMatrix=np.concatenate((delayMatrix,delayMatrix_Seg),axis=1)
 				magMatrix=np.concatenate((magMatrix,magMatrix_Seg),axis=1)
 				totalTroughNum += troughsNum
@@ -145,6 +150,8 @@ for T in range(len(tasks)):
 		delayMatrix=delayMatrix[:,1:]
 		magMatrix=magMatrix[:,1:]
 		sigMatrix=sigMatrix[:,:,1:]
+		# and waveTRs
+		waveTRs=waveTRs[1:,:]
 		# ID columns with < 20% 999s, sep out non-999 values
 		# matrix to count instances of no peak detection by PG bin
 		npMatrix=np.zeros((70,totalTroughNum))
@@ -157,8 +164,8 @@ for T in range(len(tasks)):
 		mostHavePeaks=delayMatrix[:,noPeakPwave<35]
 		# replace 999s with NAs	
 		mostHavePeaks[mostHavePeaks==999]=np.nan
-		# use same thresholding for sigMatrix
-		sigMatrix=sigMatrix[:,:,noPeakPwave<35]
+		# and same thresholding for waveTR matrix
+		waveTRs=waveTRs[noPeakPwave<35,:]
 		# for surviving waves
 		for m in range(mostHavePeaks.shape[1]):
 			plotGS=sigMatrix[:,0,m]
@@ -182,6 +189,9 @@ for T in range(len(tasks)):
 			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
 			plt.savefig(figName,bbox_inches='tight')
 			plt.close()
+		# saveout table of which segments waves occur within and which TR within segments
+		saveFNwTR=childfp + str(subj) + '_' + str(tasks[T]) + '_waveTRs.csv'
+		np.savetxt(saveFNwTR,waveTRs,delimiter=",")
 		# get nan index for stats
 		nas = np.isnan(mostHavePeaks)
 		# opposite is valid
