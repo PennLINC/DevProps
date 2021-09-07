@@ -33,7 +33,7 @@ for T in range(len(tasks)):
 	# initialize big array for distribution of all PG delay correlations
 	PGD_arr=[]
 	# load in continuous segment indices
-	CSIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-' + tasks[T] + '_ValidSegments.txt'
+	CSIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-' + tasks[T] + '_ValidSegments_Trunc.txt'
 	# add "if exists" clause to skip processing attempts on non-existent scans
 	if os.path.isfile(CSIfp): 
 		CSI=np.genfromtxt(CSIfp,delimiter=',')
@@ -45,6 +45,13 @@ for T in range(len(tasks)):
 		PGCort=PGdataObject[:,hcp.struct.cortex]
 		# load in time series
 		procTS=subjDataCort
+		# check that procTS matches truncated valid segments file
+		numTRsPTS=subjDataCort.shape[0]
+		numTRsVS=CSI[-1,0]+CSI[-1,1]-1
+		try:
+			numTRsPTS==numTRsVS
+		except:
+			raise Exception('TRs from Valid Segments txt and cifti do not match')
 		# normalize to mean and SD
 		Avg=np.mean(procTS,axis=0)
 		SD=np.std(procTS,axis=0)
@@ -72,6 +79,10 @@ for T in range(len(tasks)):
 		# load in global signal
 		GSfFP=parentfp + str(subj) + '_p2mm_masked_filtered_' + tasks[T] + '_GS.csv'
 		GS=np.genfromtxt(GSfFP,delimiter=",")
+		try:
+			GS.shape[0]==numTRsVS
+		except:
+			raise Exception('TRs from Valid Segments txt and GS do not match')
 		# normalize GS
 		GAvg=np.mean(GS)
 		GSD=np.std(GS)

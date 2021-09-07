@@ -1,5 +1,10 @@
 function apply_motion_mask_extractGS(subj)
 % this function motion masks the individual runs (non-filtered) and the concatenated (filtered)
+% note that both validsegcell_full and validsegcell_trunc are saved out
+% validsegcell_full refers to the TR and span of segment in the outlier FD masked images
+% validsegcell truncated refers to the TR and span of segment in the outlierFD masked AND short segment masked images
+% minproc and FD leave this script matching truncated, proc TS and GS leave this script matching full
+% (full for BandPass, Trunc for deriveWaveProps)
 % load in subj
 topleveldir='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/sub-*'
 direc=dir(topleveldir);
@@ -21,10 +26,6 @@ for t=1:4
 		ciftisize=size(ts);
 		numTRs=ciftisize(2);
 		% get cortex indices
-		%CL_vertlist=ts_cif.diminfo{1}.models{1}.vertlist+1
-		%CL_ind=ts_cif.diminfo{1}.models{1}.vertlist+ts_cif.diminfo{1}.models{1}.start;
-                %CR_ind=ts_cif.diminfo{1}.models{2}.vertlist+ts_cif.diminfo{1}.models{2}.start;
-		%C_ind=vertcat(CL_ind,CR_ind);
 		C_ind=1:59412;
 		% load in mask
 		masfp=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_desc-filteredwithoutliers_motion_mask.mat'],'');
@@ -79,18 +80,22 @@ for t=1:4
                         ValidTRStarts=dInd(maskValAtChange);
 			% index out segments greater than TR thresh from UnThreshSegmentCellstruct
 			ValidSegCell=UTSegCell(OverThreshSegments,:);
-			% adjust ValidSegCell to describe in terms of retained TRs only
-			ValidSegCell(1,1)=num2cell(1);
+			% save out version for bandpassing - matches TRs of dtseries when it is at that point
+			segmentfnFu=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Full'],'');
+                        writetable(cell2table(ValidSegCell),segmentfnFu,'WriteVariableNames',0)
+			% adjust ValidSegCell_Trunc to describe in terms of retained TRs only
+			ValidSegCell_Trunc=ValidSegCell;
+			ValidSegCell_Trunc(1,1)=num2cell(1);
 			for s=2:length(OverThreshSegments)
-				prevStart=ValidSegCell(s-1,1);
-				prevLength=ValidSegCell(s-1,2);
+				prevStart=ValidSegCell_Trunc(s-1,1);
+				prevLength=ValidSegCell_Trunc(s-1,2);
 				NewStart=prevStart{:}+prevLength{:};
-				ValidSegCell(s,1)=num2cell(NewStart);
+				ValidSegCell_Trunc(s,1)=num2cell(NewStart);
 			end	
-			% save 2-column df indicating start of valid segments and length
-			segmentfn=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments'],'');
-			writetable(cell2table(ValidSegCell),segmentfn,'WriteVariableNames',0)
-			% overwite diminfo
+			% save 2-column df indicating start of valid segments and length: matches dtseries at derive_wave
+			segmentfnTr=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Trunc'],'');
+			writetable(cell2table(ValidSegCell_Trunc),segmentfnTr,'WriteVariableNames',0)
+			% overwite diminfo of cifti
 			ts_cif.diminfo{2}.length=newTRnum;
 			% overwrite TRs for new file
 			ts_cif.cdata=masked_trs;
@@ -104,6 +109,8 @@ for t=1:4
 			GSTS=zeros(1,1);
 			% segment to extract and concat minimally proc. over equiv. TRs
        			WholeCortTS=zeros(59412,0);
+			% and segment to manually concate FD values over runs
+			FDvec=zeros(1,1);
 			% for each "run", calculate global signal
 			for r=1:6
 				fpParent=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' sname '/ses-baselineYear1Arm1/func/'];
@@ -117,17 +124,31 @@ for t=1:4
 					GSTS=[GSTS mean(tsCL)];
 					% segment to extract and concat minimally proc. over equiv. TRs
                                         WholeCortTS=[WholeCortTS tsCL];
+					% and to get FD vector
+					FDfile=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_run-' string(r) '_desc-filteredincludingFD_motion.tsv'],'');
+					fid = fopen(FDfile);
+					motVals=textscan(fid, '%f %f %f %f %f %f %f %f %f %f %f %f %f', 'HeaderLines', 1);  
+					fclose(fid);
+					FD=motVals{13};
+					FDvec=[FDvec FD'];
 				end
 			end
 			% remove initialization pseudovolume
 			GSTS(1)=[];
+			FDvec(1)=[];
 			% ensure concat volumes are same size
 			sizeGS=size(GSTS);
 			if sizeGS(2)~=numTRs
 				error('3165 and manually concatenated TR length do not match')
 			end
+			% same for FD
+			sizeFD=size(FDvec);
+			if sizeFD(2)~=numTRs
+				error('3165 and manually conatenated FD length do not match')
+			end
 			% use same mask as filtered/concat
 			GSTS=GSTS(TRwise_mask);
+			FDvec=FDvec(TRwise_mask);
 			% segment to extract and concat minimally proc. over equiv. TRs
 			WholeCortTS=WholeCortTS(:,TRwise_mask);
 			% number of segments
@@ -135,6 +156,7 @@ for t=1:4
         		numSegs=segShape(1);
         		% new time series to only include valid segments
 			Oords=zeros(59412,0);
+			FDvecVSegs=zeros(1,1);
 			% for each segment
        			for s = 1:numSegs
         	       		% select all vertices from this segment
@@ -143,7 +165,12 @@ for t=1:4
         		        segment=WholeCortTS(:,ValidSegCell{s,1}:(ValidSegCell{s,1}+ValidSegCell{s,2}-1));
                			% append segment onto grayOrds
                			Oords = [Oords segment];
+				% equivalent for FD vector
+				FDsegment=FDvec(ValidSegCell{s,1}:(ValidSegCell{s,1}+ValidSegCell{s,2}-1));
+				FDvecVSegs=[FDvecVSegs FDsegment];
 			end
+			% remove initialization volume
+			FDvecVSegs(1)=[];
 			% reset cdata to be proper size - non cortical vertices set to 0
 			ts_cif.cdata=zeros(91282,RemainingTRs);
 			ts_cif.cdata(C_ind,:)=Oords;
@@ -155,6 +182,9 @@ for t=1:4
 			%%%%%%%%
 			gsfp=strjoin([fpParent,sname '_p2mm_masked_' tasks(t) '_GS.csv'],'');
 			writetable(array2table(GSTS),gsfp,'WriteVariableNames',0);
+			%%%%%%%
+			fdfp=strjoin([fpParent,sname '_p2mm_masked_' tasks(t) '_FD.csv'],'');
+			writetable(array2table(FDvec),fdfp,'WriteVariableNames',0);
 		else
                 	missingDir=['/cbica/projects/abcdfnets/results/MissingDataReports/' sname]; 
                 	mkdir(missingDir);

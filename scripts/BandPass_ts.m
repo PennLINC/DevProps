@@ -51,7 +51,7 @@ if exist(rsfp,'file')
 	rs=read_cifti(rsfp);
 	rsts=rs.cdata;
 	% load in continuous segments mask
-	rsCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-rest_ValidSegments.txt'];
+	rsCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-rest_ValidSegments_Full.txt'];
 	rsCSm=dlmread(rsCSm_fn);
 	% number of segments
 	segShape=size(rsCSm);
@@ -104,7 +104,7 @@ if exist(sstfp,'file')
 	sst=read_cifti(sstfp);
 	sstts=sst.cdata;
 	% load in continuous segments mask
-	sstCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-SST_ValidSegments.txt'];
+	sstCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-SST_ValidSegments_Full.txt'];
 	sstCSm=dlmread(sstCSm_fn);
         % number of segments
         segShape=size(sstCSm);
@@ -157,7 +157,7 @@ if exist(nbackfp,'file')
 	nback=read_cifti(nbackfp);
 	nbackts=nback.cdata;
 	% load in continuous segments mask
-	nbCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-nback_ValidSegments.txt'];
+	nbCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-nback_ValidSegments_Full.txt'];
 	nbCSm=dlmread(nbCSm_fn);
         % number of segments
         segShape=size(nbCSm);
@@ -203,14 +203,14 @@ if exist(nbackfp,'file')
 end
 %%%%%%%%%%
 
-%%%%%%% EMOTION ID
+%%%%%%% MID
 if exist(midfp,'file')
 	% initialize grayOrd TS
         Oords=zeros(91282,1);
 	mid=read_cifti(midfp);
 	midts=mid.cdata;
 	% load in continuous segments mask
-	midCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-MID_ValidSegments.txt'];
+	midCSm_fn=[parentfp sname '_ses-baselineYear1Arm1_task-MID_ValidSegments_Full.txt'];
 	midCSm=dlmread(midCSm_fn);
         % number of segments
         segShape=size(midCSm);

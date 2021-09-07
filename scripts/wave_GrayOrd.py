@@ -39,8 +39,9 @@ SDL=subjData.dataobj[start:end,hcp.struct.cortex_left]
 PGR=PG.dataobj[0,hcp.struct.cortex_right]
 SDR=subjData.dataobj[start:end,hcp.struct.cortex_right]
 # order time series in accord. w/ pg
-PGindicesL=np.argsort(PGL)
-PGindicesR=np.argsort(PGR)
+# flip so top of hierarchy is top of plot
+PGindicesL=np.flip(np.argsort(PGL))
+PGindicesR=np.flip(np.argsort(PGR))
 # order subj data hierarchically
 SDL=SDL[:,PGindicesL]
 SDR=SDR[:,PGindicesR]

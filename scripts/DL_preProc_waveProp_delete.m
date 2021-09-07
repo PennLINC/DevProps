@@ -58,4 +58,4 @@ wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
 system(wavePropCommand)
 
 % delete input data
-%Delete_input_data_w(subj)
+Delete_input_data_w(subj)
