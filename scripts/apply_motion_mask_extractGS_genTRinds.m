@@ -5,6 +5,8 @@ function apply_motion_mask_extractGS(subj)
 % validsegcell truncated refers to the TR and span of segment in the outlierFD masked AND short segment masked images
 % minproc and FD leave this script matching truncated, proc TS and GS leave this script matching full
 % (full for BandPass, Trunc for deriveWaveProps)
+% also, save out unthresh to match basis time series of networks
+
 % load in subj
 topleveldir='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/sub-*'
 direc=dir(topleveldir);
@@ -80,6 +82,9 @@ for t=1:4
                         ValidTRStarts=dInd(maskValAtChange);
 			% index out segments greater than TR thresh from UnThreshSegmentCellstruct
 			ValidSegCell=UTSegCell(OverThreshSegments,:);
+			% save out version for network basis time series: derived from all low Mot non-outlier volumes
+			segmentfnUt=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Unthr'],'');
+			writetable(cell2table(UTSegCell),segmentfnUt,'WriteVariableNames',0)
 			% save out version for bandpassing - matches TRs of dtseries when it is at that point
 			segmentfnFu=strjoin([fpParent sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Full'],'');
                         writetable(cell2table(ValidSegCell),segmentfnFu,'WriteVariableNames',0)

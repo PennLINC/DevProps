@@ -20,5 +20,11 @@ includes<-subset(tp1,tp1$iqc_t1_1_qc_score==1)
 SubjsToInclude<-includes$subjectkey
 # convert to 3165 subj name style
 SubjsToInclude_3165<-gsub('NDAR_INV','sub-NDARINV',SubjsToInclude)
-write.table(SubjsToInclude_3165,'~/test.txt',col.names = F,row.names = F,quote=F)
+# split into train/test
+set.seed(1)
+train=sample(SubjsToInclude_3165,length(SubjsToInclude_3165)/2)
+test=setdiff(SubjsToInclude_3165,train)
+
+write.table(test,'/cbica/projects/abcdfnets/dropbox/test.txt',col.names = F,row.names = F,quote=F)
+write.table(test,'/cbica/projects/abcdfnets/dropbox/train.txt',col.names = F,row.names = F,quote=F)
 ```
