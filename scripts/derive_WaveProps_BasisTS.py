@@ -1,4 +1,4 @@
-# Normalization, binning of vertexwise time series, wave property saveout 
+# basis time series-based wave property saveout 
 import scipy
 import nibabel as nb
 import numpy as np
@@ -28,15 +28,8 @@ childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 # load in Basis time series
 TSLoc='/cbica/projects/abcdfnets/results/SingleParcel_1by1/' + str(subj) + '/IndividualParcel_Final_sbj1_comp17_alphaS21_1_alphaL300_vxInfo1_ard0_eta0/final_UV.mat'
 UV=mat73.loadmat(TSLoc)
-TS=UV['U']
-# load in unthreshed account of valid segments, reconstruct which timepoints are from which task
-for T in range(len(tasks)):
-	# load in unthreshed segment indices
-	SIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-' + tasks[T] + '_ValidSegments_Unthr.txt'
-	# use this to isolate TRs within current task
-	# isolate continuous windows from TRs in current task
-	# check that Full time series is equal in length to FullValid Segs files, 
-
+# extract TRs by networks matrix
+TS=UV['U'][0]
 # initialize counter to measure when last task left off and where new begins in merged TS
 prevEnd=0
 # load in PG
@@ -46,7 +39,7 @@ PGdataObject=PG.dataobj
 # for each task that exists for this subject
 for T in range(len(tasks)):
 	# initialize "clean" time series with shorter-than-threshold windows removed
-	cTS=np.zeros((0,3))
+	cTS=np.zeros((3,0))
 	# initialize big array for distribution of all PG delay correlations
 	PGD_arr=[]
 	# load in continuous segment indices
@@ -58,12 +51,19 @@ for T in range(len(tasks)):
 		SIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-' + tasks[T] + '_ValidSegments_Unthr.txt'
 		SI=np.genfromtxt(SIfp,delimiter=',')
 		# get span of this task relative to fully concatenated TS
-		startOfThisTask=prevEnd+1
+		startOfThisTask=prevEnd
+		print("start of this task")
+		print(startOfThisTask)
 		# extract length of "passing" TRs from unthr file, -1 at end bc length of window includes startframe
 		passingTRs=SI[-1,0]+SI[-1,1]-1
 		EndOfThisTask=prevEnd+passingTRs
+		print("end of this task")
+		# note: end of task is printed in matlabic terms: this is bc python excludes last element in x:y ranges
+		print(EndOfThisTask)
 		# Extract the task time series
-		TS_task=TS[startOfThisTask:EndOfThisTask,:]
+		TS_task=TS[int(startOfThisTask):int(EndOfThisTask),:]
+		# now that prevEnd is used, set it for the next iteration
+		prevEnd=EndOfThisTask
 		# Isolate cont. windows from FullValidSeg files
 		fSIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-' + tasks[T] + '_ValidSegments_Full.txt'
 		fSI=np.genfromtxt(fSIfp,delimiter=',')
@@ -71,7 +71,15 @@ for T in range(len(tasks)):
 		# matching starts with getting number of segments
 		numSegs=fSI.shape[0]
 		for s in range(numSegs):
-			segment=TS_task[(fSI[s,1]):(fSI[s,1]+fSI[s,2]-1),:]
+			print(int(fSI[s,0]-1))
+			print(int(fSI[s,0]-1+fSI[s,1]-1))
+			### always a battle beteween pythonic and matlabic indexing
+			# START at index -1, because python starts at 0
+			pythonicStart=int(fSI[s,0]-1)
+			# BUT, end at same point because python range (x:y) is exclusive
+			pythonicEnd=int(pythonicStart+fSI[s,1])
+			segment=TS_task[pythonicStart:pythonicEnd,:]
+			print(segment.shape)
 			# COARSE version. Isolating Unimodal, Attention, and Transmodal
 			segU=np.mean(segment[:,(15,12,10,3,5,9)],axis=1)
 			segA=np.mean(segment[:,(4,13,6,8)],axis=1)
@@ -80,21 +88,27 @@ for T in range(len(tasks)):
 			cTS=np.concatenate((cTS,stacked),axis=1)
 		# transpose because rest of this script follows that formatting
 		cTS=np.transpose(cTS)
+		print("cTS shape")
+		print(cTS.shape)
+		print("CSI")
+		print(CSI)
+		print("SI")
+		print(SI)
 		# check that procTS matches truncated valid segments file
 		numTRsPTS=cTS.shape[0]
 		numTRsVS=CSI[-1,0]+CSI[-1,1]-1
-		try:
-			numTRsPTS==numTRsVS
-		except:
+		if numTRsPTS != numTRsVS:
+			print(numTRsPTS)
+			print(numTRsVS)
 			raise Exception('TRs from Valid Segments txt and cifti do not match')
 		# convert TS to numpy array to allow for indexing
 		procTS=np.array(cTS)
 		# load in global signal
 		GSfFP=parentfp + str(subj) + '_p2mm_masked_filtered_' + tasks[T] + '_GS.csv'
 		GS=np.genfromtxt(GSfFP,delimiter=",")
-		try:
-			GS.shape[0]==numTRsVS
-		except:
+		if GS.shape[0] != numTRsVS:
+			print(GS.shape[0])
+			print(numTRsVS)
 			raise Exception('TRs from Valid Segments txt and GS do not match')
 		# normalize GS
 		GAvg=np.mean(GS)
@@ -149,6 +163,9 @@ for T in range(len(tasks)):
 				if TR in Tpeaks:
 					peakVec=np.append(peakVec,3)
 					trTrackVec=np.append(trTrackVec,TR)
+			# append both with end of segment marker
+			peakVec=np.append(peakVec,-1)
+			trTrackVec=np.append(trTrackVec,-1)
 		# save out peak vec and TRvec
 		PsaveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_PeakSeq'
 		np.savetxt(PsaveFN,peakVec)
