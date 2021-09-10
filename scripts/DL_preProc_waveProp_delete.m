@@ -57,5 +57,34 @@ system(wavePropCommand)
 wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
 system(wavePropCommand)
 
+% parameter tuning: rerun with different threshes
+wavePropCommand=['python derive_WaveProps_60_10.py ' subj];
+system(wavePropCommand)
+
+wavePropCommand=['python derive_WaveProps_60_12.py ' subj];
+system(wavePropCommand)
+
+wavePropCommand=['python derive_WaveProps_70.py ' subj];
+system(wavePropCommand)
+
+wavePropCommand=['python derive_WaveProps_70_10.py ' subj];
+system(wavePropCommand)
+
+wavePropCommand=['python derive_WaveProps_70_12.py ' subj];
+system(wavePropCommand)
+
+wavePropCommand=['python derive_WaveProps_80.py ' subj];
+system(wavePropCommand)
+
+wavePropCommand=['python derive_WaveProps_80_10.py ' subj];
+system(wavePropCommand)
+
+wavePropCommand=['python derive_WaveProps_80_12.py ' subj];
+system(wavePropCommand)
+
+% basis time series wave prop
+wavePropCommandBTS=['python derive_WaveProps_BasisTS.py ' subj];
+system(wavePropCommandBTS)
+
 % delete input data
 Delete_input_data_w(subj)

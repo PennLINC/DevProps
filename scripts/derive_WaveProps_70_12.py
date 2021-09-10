@@ -48,7 +48,9 @@ for T in range(len(tasks)):
 		# check that procTS matches truncated valid segments file
 		numTRsPTS=subjDataCort.shape[0]
 		numTRsVS=CSI[-1,0]+CSI[-1,1]-1
-		if numTRsPTS != numTRsVS:
+		try:
+			numTRsPTS==numTRsVS
+		except:
 			raise Exception('TRs from Valid Segments txt and cifti do not match')
 		# normalize to mean and SD
 		Avg=np.mean(procTS,axis=0)
@@ -77,7 +79,9 @@ for T in range(len(tasks)):
 		# load in global signal
 		GSfFP=parentfp + str(subj) + '_p2mm_masked_filtered_' + tasks[T] + '_GS.csv'
 		GS=np.genfromtxt(GSfFP,delimiter=",")
-		if GS.shape[0] != numTRsVS:
+		try:
+			GS.shape[0]==numTRsVS
+		except:
 			raise Exception('TRs from Valid Segments txt and GS do not match')
 		# normalize GS
 		GAvg=np.mean(GS)
@@ -106,7 +110,7 @@ for T in range(len(tasks)):
 			# get time series of grayOrds in this segment
 			procTS_bins_inSeg=procTS_bins[SegStartInd:(SegStartInd+SegSpan-1)]
 			# calculate GS troughs with negative find_peaks
-			GS_troughs, _ = find_peaks(-GSinSeg, distance=8)
+			GS_troughs, _ = find_peaks(-GSinSeg, distance=12)
 			# if there are at least two troughs, we can look at delay in the peak b/w them
 			if len(GS_troughs) > 1:
 				# make an array for each percentile bin and each trough
@@ -168,11 +172,11 @@ for T in range(len(tasks)):
 		# number of bins w/o detected peak per wave
 		noPeakPwave=sum(npMatrix)
 		# if peak detected in most PG bins, keep it
-		mostHavePeaks=delayMatrix[:,noPeakPwave<28]
+		mostHavePeaks=delayMatrix[:,noPeakPwave<21]
 		# replace 999s with NAs	
 		mostHavePeaks[mostHavePeaks==999]=np.nan
 		# and same thresholding for waveTR matrix
-		waveTRs=waveTRs[noPeakPwave<28,:]
+		waveTRs=waveTRs[noPeakPwave<21,:]
 		# for surviving waves
 		for m in range(mostHavePeaks.shape[1]):
 			plotGS=sigMatrix[:,0,m]
@@ -236,11 +240,11 @@ for T in range(len(tasks)):
 		saveoutMat[3,:]=Wslopes
 		# this row will be redudant, will only have one value, number of TRs
 		saveoutMat[4,:]=len(GS)
-		saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps.csv'
+		saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps_70_12.csv'
 		np.savetxt(saveFN,saveoutMat,delimiter=",")
 		# report difference between all instances of PW and those not meeting >80% threshold
 		UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
 		print('OG delayMat wave count: ' + str(totalTroughNum))
-		print('Waves removed w/ > 60% thresh: ' +str(UnThreshThreshDif))
-		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves'
+		print('Waves removed w/ > 70% thresh: ' +str(UnThreshThreshDif))
+		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves_70_12'
 		np.savetxt(saveFN_thr,[UnThreshThreshDif])

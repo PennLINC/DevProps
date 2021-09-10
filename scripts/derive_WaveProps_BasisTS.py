@@ -52,12 +52,9 @@ for T in range(len(tasks)):
 		SI=np.genfromtxt(SIfp,delimiter=',')
 		# get span of this task relative to fully concatenated TS
 		startOfThisTask=prevEnd
-		print("start of this task")
-		print(startOfThisTask)
 		# extract length of "passing" TRs from unthr file, -1 at end bc length of window includes startframe
 		passingTRs=SI[-1,0]+SI[-1,1]-1
 		EndOfThisTask=prevEnd+passingTRs
-		print("end of this task")
 		# note: end of task is printed in matlabic terms: this is bc python excludes last element in x:y ranges
 		print(EndOfThisTask)
 		# Extract the task time series
@@ -71,15 +68,12 @@ for T in range(len(tasks)):
 		# matching starts with getting number of segments
 		numSegs=fSI.shape[0]
 		for s in range(numSegs):
-			print(int(fSI[s,0]-1))
-			print(int(fSI[s,0]-1+fSI[s,1]-1))
 			### always a battle beteween pythonic and matlabic indexing
 			# START at index -1, because python starts at 0
 			pythonicStart=int(fSI[s,0]-1)
 			# BUT, end at same point because python range (x:y) is exclusive
 			pythonicEnd=int(pythonicStart+fSI[s,1])
 			segment=TS_task[pythonicStart:pythonicEnd,:]
-			print(segment.shape)
 			# COARSE version. Isolating Unimodal, Attention, and Transmodal
 			segU=np.mean(segment[:,(15,12,10,3,5,9)],axis=1)
 			segA=np.mean(segment[:,(4,13,6,8)],axis=1)
@@ -88,12 +82,6 @@ for T in range(len(tasks)):
 			cTS=np.concatenate((cTS,stacked),axis=1)
 		# transpose because rest of this script follows that formatting
 		cTS=np.transpose(cTS)
-		print("cTS shape")
-		print(cTS.shape)
-		print("CSI")
-		print(CSI)
-		print("SI")
-		print(SI)
 		# check that procTS matches truncated valid segments file
 		numTRsPTS=cTS.shape[0]
 		numTRsVS=CSI[-1,0]+CSI[-1,1]-1

@@ -13,6 +13,9 @@ import sklearn
 from sklearn import linear_model
 import hcp_utils as hcp
 import os.path
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 # Subject is set to the passed argument
 subj = sys.argv[1]
 # all the scan types
@@ -30,7 +33,7 @@ for T in range(len(tasks)):
 	# initialize big array for distribution of all PG delay correlations
 	PGD_arr=[]
 	# load in continuous segment indices
-	CSIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-' + tasks[T] + '_ValidSegments.txt'
+	CSIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-' + tasks[T] + '_ValidSegments_Trunc.txt'
 	# add "if exists" clause to skip processing attempts on non-existent scans
 	if os.path.isfile(CSIfp): 
 		CSI=np.genfromtxt(CSIfp,delimiter=',')
@@ -42,6 +45,13 @@ for T in range(len(tasks)):
 		PGCort=PGdataObject[:,hcp.struct.cortex]
 		# load in time series
 		procTS=subjDataCort
+		# check that procTS matches truncated valid segments file
+		numTRsPTS=subjDataCort.shape[0]
+		numTRsVS=CSI[-1,0]+CSI[-1,1]-1
+		try:
+			numTRsPTS==numTRsVS
+		except:
+			raise Exception('TRs from Valid Segments txt and cifti do not match')
 		# normalize to mean and SD
 		Avg=np.mean(procTS,axis=0)
 		SD=np.std(procTS,axis=0)
@@ -69,6 +79,10 @@ for T in range(len(tasks)):
 		# load in global signal
 		GSfFP=parentfp + str(subj) + '_p2mm_masked_filtered_' + tasks[T] + '_GS.csv'
 		GS=np.genfromtxt(GSfFP,delimiter=",")
+		try:
+			GS.shape[0]==numTRsVS
+		except:
+			raise Exception('TRs from Valid Segments txt and GS do not match')
 		# normalize GS
 		GAvg=np.mean(GS)
 		GSD=np.std(GS)
@@ -79,7 +93,11 @@ for T in range(len(tasks)):
 		# initialize delay and magnitude matrix (unknown how many wave instances there will be at this point, bin # known
 		delayMatrix=np.zeros((70,1))
 		magMatrix=np.zeros((70,1))
+		# and signal matrix to plot wave unfolding in dif. pg bins - 100 is erring on the side of inclusion
+		sigMatrix=np.zeros((100,6))
 		totalTroughNum=0
+		# and an empty 2-column matrix to record which segment and how far into segment detected GS troughs occur
+		waveTRs=np.zeros((1,3))
 		# for each continuous segment
 		for seg in range(SegNum):
 			SegStart=CSI[seg,0]
@@ -121,12 +139,30 @@ for T in range(len(tasks)):
 						else:
 							delayMatrix_Seg[b,t]=999
 							magMatrix_Seg[b,t]=999
+					# record the GS across this wave instance in plot signal matrix
+					thisWaveSigMatrix=np.zeros((100,6))
+					# record from evenly spaced pgbins as well
+					thisWaveSigMatrix[0:(tend-tstart),0]=GSinSeg[tstart:tend]
+					thisWaveSigMatrix[0:(tend-tstart),0]=GSinSeg[tstart:tend]
+					thisWaveSigMatrix[0:(tend-tstart),1]=procTS_bins_inSeg[tstart:tend,0]
+					thisWaveSigMatrix[0:(tend-tstart),2]=procTS_bins_inSeg[tstart:tend,17]
+					thisWaveSigMatrix[0:(tend-tstart),3]=procTS_bins_inSeg[tstart:tend,35]
+					thisWaveSigMatrix[0:(tend-tstart),4]=procTS_bins_inSeg[tstart:tend,53]
+					thisWaveSigMatrix[0:(tend-tstart),5]=procTS_bins_inSeg[tstart:tend,69]
+					# tag it onto the master sigMatrix (append into 3d, index out later)
+					sigMatrix=np.dstack((sigMatrix,thisWaveSigMatrix))
+					# save segment number and TR within segment for grayOrd plotting later
+					waveTR=np.array([SegStart,tstart,tend],ndmin=2)
+					waveTRs=np.vstack((waveTRs,waveTR))			
 				delayMatrix=np.concatenate((delayMatrix,delayMatrix_Seg),axis=1)
 				magMatrix=np.concatenate((magMatrix,magMatrix_Seg),axis=1)
 				totalTroughNum += troughsNum
 		# remove initialization volume of delay and mag matrices
 		delayMatrix=delayMatrix[:,1:]
 		magMatrix=magMatrix[:,1:]
+		sigMatrix=sigMatrix[:,:,1:]
+		# and waveTRs
+		waveTRs=waveTRs[1:,:]
 		# ID columns with < 20% 999s, sep out non-999 values
 		# matrix to count instances of no peak detection by PG bin
 		npMatrix=np.zeros((70,totalTroughNum))
@@ -136,9 +172,37 @@ for T in range(len(tasks)):
 		# number of bins w/o detected peak per wave
 		noPeakPwave=sum(npMatrix)
 		# if peak detected in most PG bins, keep it
-		mostHavePeaks=delayMatrix[:,noPeakPwave<35]
+		mostHavePeaks=delayMatrix[:,noPeakPwave<28]
 		# replace 999s with NAs	
 		mostHavePeaks[mostHavePeaks==999]=np.nan
+		# and same thresholding for waveTR matrix
+		waveTRs=waveTRs[noPeakPwave<28,:]
+		# for surviving waves
+		for m in range(mostHavePeaks.shape[1]):
+			plotGS=sigMatrix[:,0,m]
+			plt.plot(plotGS[np.nonzero(plotGS)],c='black')
+			plotPGB1=sigMatrix[:,1,m]
+			plt.plot(plotPGB1[np.nonzero(plotGS)],c='#070291')
+			plotPGB2=sigMatrix[:,2,m]
+			plt.plot(plotPGB2[np.nonzero(plotGS)],c='#8202ac')
+			plotPGB3=sigMatrix[:,3,m]
+			plt.plot(plotPGB3[np.nonzero(plotGS)],c='#c8016a')
+			plotPGB4=sigMatrix[:,4,m]
+			plt.plot(plotPGB4[np.nonzero(plotGS)],c='#e32b01')
+			plotPGB5=sigMatrix[:,5,m]
+			plt.plot(plotPGB5[np.nonzero(plotGS)],c='#ffe700')
+			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Wave'+str(m)+'.png'
+			plt.savefig(figName,bbox_inches='tight')
+			plt.close()
+		# print out wave instances as pyplot
+		for m in range(mostHavePeaks.shape[1]):
+			plt.plot(mostHavePeaks[:,m]);
+			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
+			plt.savefig(figName,bbox_inches='tight')
+			plt.close()
+		# saveout table of which segments waves occur within and which TR within segments
+		saveFNwTR=childfp + str(subj) + '_' + str(tasks[T]) + '_waveTRs.csv'
+		np.savetxt(saveFNwTR,waveTRs,delimiter=",")
 		# get nan index for stats
 		nas = np.isnan(mostHavePeaks)
 		# opposite is valid
@@ -181,6 +245,6 @@ for T in range(len(tasks)):
 		# report difference between all instances of PW and those not meeting >80% threshold
 		UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
 		print('OG delayMat wave count: ' + str(totalTroughNum))
-		print('Waves removed w/ > 50% thresh: ' +str(UnThreshThreshDif))
+		print('Waves removed w/ > 60% thresh: ' +str(UnThreshThreshDif))
 		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves_gPG'
 		np.savetxt(saveFN_thr,[UnThreshThreshDif])
