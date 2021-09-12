@@ -12,7 +12,7 @@ for (i in 1:4){
 	colnames(InitDf)<-c('PGCor','TempSpan','EarliestPG_Bin','RelMagSlope')
 	colnames(InitDf2)<-c('PGCor','TempSpan','EarliestPG_Bin','RelMagSlope')
 	# file extension of this task
-	fileExtn=paste0('*',tasks[i],'_waveProps.csv')
+	fileExtn=paste0('*',tasks[i],'_waveProps_60_10.csv')
 	fileExtn2=paste0('*',tasks[i],'_waveProps_gPG.csv')
 	# get filenames of this task for pg1
 	dirs=list.dirs('/cbica/projects/abcdfnets/results/wave_output')
@@ -54,7 +54,7 @@ for (i in 1:4){
 			}
 	}
 	# save out group-level arrays
-	saveRDS(InitDf,paste0('/cbica/projects/abcdfnets/results/',tasks[i],'Group-level_waves'))
+	saveRDS(InitDf,paste0('/cbica/projects/abcdfnets/results/',tasks[i],'Group-level_waves_60_10'))
 	saveRDS(InitDf2,paste0('/cbica/projects/abcdfnets/results/',tasks[i],'Group-level_waves2'))  	
 }
 }
