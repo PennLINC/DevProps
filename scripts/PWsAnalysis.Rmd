@@ -36,6 +36,7 @@ output: html_document
 ```{r}
 library(mclust)
 library(ggplot2)
+library(ggpubr)
 # read in master fc
 mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
 mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
@@ -122,6 +123,9 @@ summary(masterdf$numW_r)
 ######## for dmn
 # obtain PG values for each net
 HierVec<-read.csv('/cbica/projects/abcdfnets/results/hierarchyVec.csv')
+# get ordering for grayOrd plots
+Hordering<-sort(HierVec$HierarchyVec,index.return=TRUE)
+print(Hordering$ix)
 # init vector
 NetBs<-NULL
 NetPs<-NULL
@@ -229,10 +233,48 @@ Seg<-lm(rsfmri_c_ngd_dt_ngd_dla~sex,data=masterdf)
 # low motion group level waves
 restG_LM<-readRDS('~/restGroup-level_waves_LM')
 restG_gPG_LM<-readRDS('~/restGroup-level_waves2_LM')
-hist(restG_LM$PGCor,breaks = seq(-1,1,by=.1))
-hist(restG_gPG_LM$PGCor,breaks = seq(-1,1,by=.1))
-# group level waves
-restG<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves')
+hist(restG_LM$PGCor,breaks = seq(-1,1,by=.05))
+hist(restG_gPG_LM$PGCor,breaks = seq(-1,1,by=.05))
+# group level waves, assess parameter sweep
+restG_6_8<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_60_8')
+restG_6_10<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_60_10')
+restG_6_12<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_60_12')
+
+h68<-hist(restG_6_8$PGCor,breaks = seq(-1,1,by=.05))
+h610<-hist(restG_6_10$PGCor,breaks = seq(-1,1,by=.05))
+h612<-hist(restG_6_12$PGCor,breaks = seq(-1,1,by=.05))
+
+restG_7_8<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_70_8')
+restG_7_10<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_70_10')
+restG_7_12<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_70_12')
+
+h78<-hist(restG_7_8$PGCor,breaks = seq(-1,1,by=.05))
+h710<-hist(restG_7_10$PGCor,breaks = seq(-1,1,by=.05))
+h712<-hist(restG_7_12$PGCor,breaks = seq(-1,1,by=.05))
+
+
+restG_8_8<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_80_8')
+restG_8_10<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_80_10')
+restG_8_12<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_80_12')
+
+h88<-hist(restG_8_8$PGCor,breaks = seq(-1,1,by=.05))
+h810<-hist(restG_8_10$PGCor,breaks = seq(-1,1,by=.05))
+h812<-hist(restG_8_12$PGCor,breaks = seq(-1,1,by=.05))
+
+par(mfrow=c(3,3))
+plot(h68)
+plot(h610)
+plot(h612)
+plot(h78)
+plot(h710)
+plot(h712)
+plot(h88)
+plot(h810)
+plot(h812)
+```
+
+
+```{r}
 restG_gPG<-readRDS('~/restGroup-level_waves2')
 nbG<-readRDS('~/nbackGroup-level_waves')
 nbG_gPG<-readRDS('~/nbackGroup-level_waves2')
@@ -241,7 +283,6 @@ midG_gPG<-readRDS('~/midGroup-level_waves2')
 sstG<-readRDS('~/sstGroup-level_waves')
 sstG_gPG<-readRDS('~/sstGroup-level_waves2')
 
-hist(restG$PGCor,breaks = seq(-1,1,by=.1))
 hist(restG_gPG$PGCor,breaks = seq(-1,1,by=.1))
 hist(midG$PGCor,breaks = seq(-1,1,by=.1))
 

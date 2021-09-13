@@ -50,36 +50,36 @@ usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
 system(usCommand)
 
 % derive wave properties w/ python
-wavePropCommand=['python derive_WaveProps.py ' subj];
+wavePropCommand=['python derive_WaveProps_60.py ' subj];
 system(wavePropCommand)
 
 % group PG rather than individualized
-wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
+%wavePropCommand=['python derive_WaveProps_gPG.py ' subj];
 system(wavePropCommand)
 
 % parameter tuning: rerun with different threshes
-wavePropCommand=['python derive_WaveProps_60_10.py ' subj];
+wavePropCommand=['python derive_WaveProps_60_z1p5.py ' subj];
 system(wavePropCommand)
 
-wavePropCommand=['python derive_WaveProps_60_12.py ' subj];
+wavePropCommand=['python derive_WaveProps_60_z2.py ' subj];
 system(wavePropCommand)
 
 wavePropCommand=['python derive_WaveProps_70.py ' subj];
 system(wavePropCommand)
 
-wavePropCommand=['python derive_WaveProps_70_10.py ' subj];
+wavePropCommand=['python derive_WaveProps_70_z1p5.py ' subj];
 system(wavePropCommand)
 
-wavePropCommand=['python derive_WaveProps_70_12.py ' subj];
+wavePropCommand=['python derive_WaveProps_70_z2.py ' subj];
 system(wavePropCommand)
 
-wavePropCommand=['python derive_WaveProps_80.py ' subj];
+wavePropCommand=['python derive_WaveProps_66.py ' subj];
 system(wavePropCommand)
 
-wavePropCommand=['python derive_WaveProps_80_10.py ' subj];
+wavePropCommand=['python derive_WaveProps_66_z1p5.py ' subj];
 system(wavePropCommand)
 
-wavePropCommand=['python derive_WaveProps_80_12.py ' subj];
+wavePropCommand=['python derive_WaveProps_66_z2.py ' subj];
 system(wavePropCommand)
 
 % basis time series wave prop

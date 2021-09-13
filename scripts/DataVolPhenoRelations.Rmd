@@ -4,6 +4,25 @@ author: "Adam"
 date: "8/25/2021"
 output: html_document
 ---
+```{r}
+# read in file for final included TR count, saveout list of subjs failing 12 minute mark
+subjLevel<-readRDS('/cbica/projects/abcdfnets/results/Subject-level_waves_60_10')
+failing<-na.omit(unlist(subjLevel$ID[subjLevel$TRs_r<900]))
+# just parsing out NAs manually here
+failing<-failing[1:130]
+# and same for passing
+passing<-na.omit(unlist(subjLevel$ID[subjLevel$TRs_r>900]))
+passing<-passing[1:123]
+# convert to subjID
+subjNames<-gsub("/cbica/projects/abcdfnets/results/wave_output/","",failing)
+Subjs<-gsub("/cbica/projects/abcdfnets/results/wave_output/","",passing)
+# delete failing from output files
+for (i in 1:length(subjNames)){
+  Subj=subjNames[i]
+  rmcommand=paste0('rm -r -f  /cbica/projects/abcdfnets/results/wave_output/',Subj)
+  system(rmcommand)
+}
+```
 
 ```{r}
 # resting state
