@@ -39,7 +39,7 @@ PGdataObject=PG.dataobj
 # for each task that exists for this subject
 for T in range(len(tasks)):
 	# initialize "clean" time series with shorter-than-threshold windows removed
-	cTS=np.zeros((3,0))
+	cTS=np.zeros((7,0))
 	# initialize big array for distribution of all PG delay correlations
 	PGD_arr=[]
 	# load in continuous segment indices

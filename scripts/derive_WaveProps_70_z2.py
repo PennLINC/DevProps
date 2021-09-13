@@ -125,7 +125,7 @@ for T in range(len(tasks)):
 					tstart=GS_troughs[t]
 					tend=GS_troughs[t+1]
 					# get GS peak here
-					GS_peak, _ = find_peaks(GSinSeg[tstart:tend],distance=(tend-tstart))
+					GS_peak, _ = find_peaks(GSinSeg[tstart:tend],height=GSThreshSD,distance=(tend-tstart))
 					for b in range(70):
 						# isolate time series sequence
 						iso_ts=procTS_bins_inSeg[tstart:tend,b]

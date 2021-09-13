@@ -56,8 +56,6 @@ for T in range(len(tasks)):
 		Avg=np.mean(procTS,axis=0)
 		SD=np.std(procTS,axis=0)
 		procTS=(procTS-Avg)/SD
-		# param sweep thresh
-		GSThreshSD=1.5
 		# convert TS to numpy array to allow for indexing
 		procTS=np.array(procTS)
 		# initialize empty array for gradient bins
@@ -91,6 +89,9 @@ for T in range(len(tasks)):
 		GS=((GS-GAvg)/GSD)
 		# param sweep thresh
 		GSThreshSD=1.5
+		# test print section
+		print(np.mean(GS))
+		print(np.std(GS))
 		# get number of valid segments
 		SegShape=CSI.shape
 		SegNum=SegShape[0]
@@ -127,7 +128,7 @@ for T in range(len(tasks)):
 					tstart=GS_troughs[t]
 					tend=GS_troughs[t+1]
 					# get GS peak here
-					GS_peak, _ = find_peaks(GSinSeg[tstart:tend],distance=(tend-tstart))
+					GS_peak, _ = find_peaks(GSinSeg[tstart:tend],distance=(tend-tstart),height=GSThreshSD)
 					for b in range(70):
 						# isolate time series sequence
 						iso_ts=procTS_bins_inSeg[tstart:tend,b]

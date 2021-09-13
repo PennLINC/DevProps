@@ -83,7 +83,7 @@ wavePropCommand=['python derive_WaveProps_66_z2.py ' subj];
 system(wavePropCommand)
 
 % basis time series wave prop
-wavePropCommandBTS=['python derive_WaveProps_BasisTS.py ' subj];
+wavePropCommandBTS=['python derive_WaveProps_BasisTS_7.py ' subj];
 system(wavePropCommandBTS)
 
 % delete input data
