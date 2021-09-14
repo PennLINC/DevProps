@@ -172,34 +172,34 @@ for T in range(len(tasks)):
 		# number of bins w/o detected peak per wave
 		noPeakPwave=sum(npMatrix)
 		# if peak detected in most PG bins, keep it
-		mostHavePeaks=delayMatrix[:,noPeakPwave<28]
+		mostHavePeaks=delayMatrix[:,noPeakPwave<24]
 		# replace 999s with NAs	
 		mostHavePeaks[mostHavePeaks==999]=np.nan
 		# and same thresholding for waveTR matrix
-		waveTRs=waveTRs[noPeakPwave<28,:]
+		waveTRs=waveTRs[noPeakPwave<24,:]
 		# for surviving waves
 		for m in range(mostHavePeaks.shape[1]):
-			plotGS=sigMatrix[:,0,m]
-			plt.plot(plotGS[np.nonzero(plotGS)],c='black')
-			plotPGB1=sigMatrix[:,1,m]
-			plt.plot(plotPGB1[np.nonzero(plotGS)],c='#070291')
-			plotPGB2=sigMatrix[:,2,m]
-			plt.plot(plotPGB2[np.nonzero(plotGS)],c='#8202ac')
-			plotPGB3=sigMatrix[:,3,m]
-			plt.plot(plotPGB3[np.nonzero(plotGS)],c='#c8016a')
-			plotPGB4=sigMatrix[:,4,m]
-			plt.plot(plotPGB4[np.nonzero(plotGS)],c='#e32b01')
-			plotPGB5=sigMatrix[:,5,m]
-			plt.plot(plotPGB5[np.nonzero(plotGS)],c='#ffe700')
-			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Wave'+str(m)+'.png'
-			plt.savefig(figName,bbox_inches='tight')
-			plt.close()
+			#plotGS=sigMatrix[:,0,m]
+			#plt.plot(plotGS[np.nonzero(plotGS)],c='black')
+			#plotPGB1=sigMatrix[:,1,m]
+			#plt.plot(plotPGB1[np.nonzero(plotGS)],c='#070291')
+			#plotPGB2=sigMatrix[:,2,m]
+			#plt.plot(plotPGB2[np.nonzero(plotGS)],c='#8202ac')
+			#plotPGB3=sigMatrix[:,3,m]
+			#plt.plot(plotPGB3[np.nonzero(plotGS)],c='#c8016a')
+			#plotPGB4=sigMatrix[:,4,m]
+			#plt.plot(plotPGB4[np.nonzero(plotGS)],c='#e32b01')
+			#plotPGB5=sigMatrix[:,5,m]
+			#plt.plot(plotPGB5[np.nonzero(plotGS)],c='#ffe700')
+			#figName=childfp+str(subj)+'_'+str(tasks[T])+'_Wave'+str(m)+'.png'
+			#plt.savefig(figName,bbox_inches='tight')
+			#plt.close()
 		# print out wave instances as pyplot
 		for m in range(mostHavePeaks.shape[1]):
-			plt.plot(mostHavePeaks[:,m]);
-			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
-			plt.savefig(figName,bbox_inches='tight')
-			plt.close()
+			#plt.plot(mostHavePeaks[:,m]);
+			#figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
+			#plt.savefig(figName,bbox_inches='tight')
+			#plt.close()
 		# saveout table of which segments waves occur within and which TR within segments
 		saveFNwTR=childfp + str(subj) + '_' + str(tasks[T]) + '_waveTRs.csv'
 		np.savetxt(saveFNwTR,waveTRs,delimiter=",")
@@ -245,6 +245,6 @@ for T in range(len(tasks)):
 		# report difference between all instances of PW and those not meeting >80% threshold
 		UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
 		print('OG delayMat wave count: ' + str(totalTroughNum))
-		print('Waves removed w/ > 60% thresh: ' +str(UnThreshThreshDif))
+		print('Waves removed w/ > 66% thresh: ' +str(UnThreshThreshDif))
 		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves_gPG'
 		np.savetxt(saveFN_thr,[UnThreshThreshDif])

@@ -175,7 +175,7 @@ for T in range(len(tasks)):
 			peakVec=np.append(peakVec,-1)
 			trTrackVec=np.append(trTrackVec,-1)
 		# save out peak vec and TRvec
-		PsaveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_PeakSeq_int'
+		PsaveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_PeakSeq_Fi'
 		np.savetxt(PsaveFN,peakVec)
-		TsaveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_TRSeq_int'
+		TsaveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_TRSeq_Fi'
 		np.savetxt(TsaveFN,trTrackVec)

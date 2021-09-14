@@ -14,7 +14,7 @@ library(ggplot2)
 
 ```{r}
 # derive all possible sequences of X length for this granularity
-Seqs=permutations(n=4,r=4,v=1:4,repeats.allowed = F)
+Seqs=permutations(n=8,r=4,repeats.allowed = F)
 # adjust so 0 is included
 Seqs=(Seqs-1)
 # initialize cross-subject sequence count dataframe: one row for each possibility
@@ -29,9 +29,9 @@ tasks = c('rest','SST','nback','MID')
 # but not really for each task, just for rest RN
 for (i in 1){
   # peak sequence
-  pSfn=paste0('/cbica/projects/abcdfnets/results/wave_output/',subj,'/',subj,'_',tasks[i],'_PeakSeq')
+  pSfn=paste0('/cbica/projects/abcdfnets/results/wave_output/',subj,'/',subj,'_',tasks[i],'_PeakSeq_int')
   peakSeq=read.delim(pSfn,header=F)
-  TRfn=paste0('/cbica/projects/abcdfnets/results/wave_output/',subj,'/',subj,'_',tasks[i],'_TRSeq')
+  TRfn=paste0('/cbica/projects/abcdfnets/results/wave_output/',subj,'/',subj,'_',tasks[i],'_TRSeq_int')
   trSeq=read.delim(TRfn,header=F)
   # convert to string for string searching
   strungPeakSeqs<-toString(peakSeq)
@@ -51,6 +51,16 @@ seqCountDF$Sequence=NULL
 # insert actual sequences for plotting
 for (S in 1:dim(Seqs)[1]){
   seqCountDF$Sequence[S]=paste0(toString(Seqs[S,]))
-  }
-ggplot(seqCountDF)+geom_point(aes(Sequence,seqCount),size=3)+theme_minimal(base_size=30)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+}
+# replace with net names
+seqCountDF$Sequence<-gsub('0','GS',seqCountDF$Sequence)
+seqCountDF$Sequence<-gsub('1','Aud',seqCountDF$Sequence)
+seqCountDF$Sequence<-gsub('2','Mot',seqCountDF$Sequence)
+seqCountDF$Sequence<-gsub('3','Vis',seqCountDF$Sequence)
+seqCountDF$Sequence<-gsub('4','DAN',seqCountDF$Sequence)
+seqCountDF$Sequence<-gsub('5','VAN',seqCountDF$Sequence)
+seqCountDF$Sequence<-gsub('6','FP',seqCountDF$Sequence)
+seqCountDF$Sequence<-gsub('7','DM',seqCountDF$Sequence)
+
+ggplot(seqCountDF)+geom_point(aes(Sequence,seqCount),size=5)+theme_minimal(base_size=10)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+geom_hline(x=50.19)
 ```

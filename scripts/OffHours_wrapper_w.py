@@ -9,15 +9,13 @@ content_list = content. split("\n")
 content_list.pop()
 # feed em' in as subjects
 subjects = content_list
-# temp
-subjects=subjects[300:]
 # while there are more than 0 subjects left to run
 while len(subjects)>0:
   # grab qsub info, get number of jobs being run
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 5 job slots (one is occupied by this script)
-  if que < 5:
+  if que < 7:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -28,4 +26,8 @@ while len(subjects)>0:
       # submit job (if above conditions are met)
       subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
       time.sleep(60) #wait a minute
-
+    # added this to run 3 subjs (1 slot for this job) during ON hours
+    elif que < 4:
+      newsub = subjects.pop()
+      subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
+      time.sleep(60) #wait a minute

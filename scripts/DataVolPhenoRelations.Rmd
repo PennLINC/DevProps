@@ -6,13 +6,13 @@ output: html_document
 ---
 ```{r}
 # read in file for final included TR count, saveout list of subjs failing 12 minute mark
-subjLevel<-readRDS('/cbica/projects/abcdfnets/results/Subject-level_waves_60_10')
+subjLevel<-readRDS('/cbica/projects/abcdfnets/results/Subject-level_waves_60')
 failing<-na.omit(unlist(subjLevel$ID[subjLevel$TRs_r<900]))
 # just parsing out NAs manually here
-failing<-failing[1:130]
+failing<-failing[1:80]
 # and same for passing
 passing<-na.omit(unlist(subjLevel$ID[subjLevel$TRs_r>900]))
-passing<-passing[1:123]
+passing<-passing[1:93]
 # convert to subjID
 subjNames<-gsub("/cbica/projects/abcdfnets/results/wave_output/","",failing)
 Subjs<-gsub("/cbica/projects/abcdfnets/results/wave_output/","",passing)

@@ -44,8 +44,8 @@ for t=1:4
 			% reconfig cifti metadata to reflect new number of TRs
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
-			% setting continuous frame threshold to 15 TRs in a row
-			Threshold=15;
+			% setting continuous frame threshold to 25 TRs in a row
+			Threshold=25;
 			% find changepoints in binary bask
 			d = [true, diff(TRwise_mask') ~= 0];
 			% index of changepoints

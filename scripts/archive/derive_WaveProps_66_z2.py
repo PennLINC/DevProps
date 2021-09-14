@@ -87,6 +87,8 @@ for T in range(len(tasks)):
 		GAvg=np.mean(GS)
 		GSD=np.std(GS)
 		GS=((GS-GAvg)/GSD)
+		# param sweep thresh
+		GSThreshSD=2
 		# get number of valid segments
 		SegShape=CSI.shape
 		SegNum=SegShape[0]
@@ -123,7 +125,7 @@ for T in range(len(tasks)):
 					tstart=GS_troughs[t]
 					tend=GS_troughs[t+1]
 					# get GS peak here
-					GS_peak, _ = find_peaks(GSinSeg[tstart:tend],distance=(tend-tstart))
+					GS_peak, _ = find_peaks(GSinSeg[tstart:tend],distance=(tend-tstart),height=GSThreshSD)
 					for b in range(70):
 						# isolate time series sequence
 						iso_ts=procTS_bins_inSeg[tstart:tend,b]
@@ -179,27 +181,27 @@ for T in range(len(tasks)):
 		waveTRs=waveTRs[noPeakPwave<24,:]
 		# for surviving waves
 		for m in range(mostHavePeaks.shape[1]):
-			#plotGS=sigMatrix[:,0,m]
-			#plt.plot(plotGS[np.nonzero(plotGS)],c='black')
-			#plotPGB1=sigMatrix[:,1,m]
-			#plt.plot(plotPGB1[np.nonzero(plotGS)],c='#070291')
-			#plotPGB2=sigMatrix[:,2,m]
-			#plt.plot(plotPGB2[np.nonzero(plotGS)],c='#8202ac')
-			#plotPGB3=sigMatrix[:,3,m]
-			#plt.plot(plotPGB3[np.nonzero(plotGS)],c='#c8016a')
-			#plotPGB4=sigMatrix[:,4,m]
-			#plt.plot(plotPGB4[np.nonzero(plotGS)],c='#e32b01')
-			#plotPGB5=sigMatrix[:,5,m]
-			#plt.plot(plotPGB5[np.nonzero(plotGS)],c='#ffe700')
-			#figName=childfp+str(subj)+'_'+str(tasks[T])+'_Wave'+str(m)+'.png'
-			#plt.savefig(figName,bbox_inches='tight')
-			#plt.close()
+			plotGS=sigMatrix[:,0,m]
+			plt.plot(plotGS[np.nonzero(plotGS)],c='black')
+			plotPGB1=sigMatrix[:,1,m]
+			plt.plot(plotPGB1[np.nonzero(plotGS)],c='#070291')
+			plotPGB2=sigMatrix[:,2,m]
+			plt.plot(plotPGB2[np.nonzero(plotGS)],c='#8202ac')
+			plotPGB3=sigMatrix[:,3,m]
+			plt.plot(plotPGB3[np.nonzero(plotGS)],c='#c8016a')
+			plotPGB4=sigMatrix[:,4,m]
+			plt.plot(plotPGB4[np.nonzero(plotGS)],c='#e32b01')
+			plotPGB5=sigMatrix[:,5,m]
+			plt.plot(plotPGB5[np.nonzero(plotGS)],c='#ffe700')
+			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Wave'+str(m)+'.png'
+			plt.savefig(figName,bbox_inches='tight')
+			plt.close()
 		# print out wave instances as pyplot
 		for m in range(mostHavePeaks.shape[1]):
-			#plt.plot(mostHavePeaks[:,m]);
-			#figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
-			#plt.savefig(figName,bbox_inches='tight')
-			#plt.close()
+			plt.plot(mostHavePeaks[:,m]);
+			figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
+			plt.savefig(figName,bbox_inches='tight')
+			plt.close()
 		# saveout table of which segments waves occur within and which TR within segments
 		saveFNwTR=childfp + str(subj) + '_' + str(tasks[T]) + '_waveTRs.csv'
 		np.savetxt(saveFNwTR,waveTRs,delimiter=",")
@@ -240,11 +242,11 @@ for T in range(len(tasks)):
 		saveoutMat[3,:]=Wslopes
 		# this row will be redudant, will only have one value, number of TRs
 		saveoutMat[4,:]=len(GS)
-		saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps.csv'
+		saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps_66_z2.csv'
 		np.savetxt(saveFN,saveoutMat,delimiter=",")
 		# report difference between all instances of PW and those not meeting >80% threshold
 		UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
 		print('OG delayMat wave count: ' + str(totalTroughNum))
 		print('Waves removed w/ > 66% thresh: ' +str(UnThreshThreshDif))
-		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves'
+		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves_66'
 		np.savetxt(saveFN_thr,[UnThreshThreshDif])
