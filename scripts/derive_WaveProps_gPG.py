@@ -178,7 +178,7 @@ for T in range(len(tasks)):
 		# and same thresholding for waveTR matrix
 		waveTRs=waveTRs[noPeakPwave<24,:]
 		# for surviving waves
-		for m in range(mostHavePeaks.shape[1]):
+		#for m in range(mostHavePeaks.shape[1]):
 			#plotGS=sigMatrix[:,0,m]
 			#plt.plot(plotGS[np.nonzero(plotGS)],c='black')
 			#plotPGB1=sigMatrix[:,1,m]
@@ -195,7 +195,7 @@ for T in range(len(tasks)):
 			#plt.savefig(figName,bbox_inches='tight')
 			#plt.close()
 		# print out wave instances as pyplot
-		for m in range(mostHavePeaks.shape[1]):
+		#for m in range(mostHavePeaks.shape[1]):
 			#plt.plot(mostHavePeaks[:,m]);
 			#figName=childfp+str(subj)+'_'+str(tasks[T])+'_Delay'+str(m)+'.png'
 			#plt.savefig(figName,bbox_inches='tight')

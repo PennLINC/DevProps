@@ -55,8 +55,7 @@ for T in range(len(tasks)):
 		# extract length of "passing" TRs from unthr file, -1 at end bc length of window includes startframe
 		passingTRs=SI[-1,0]+SI[-1,1]-1
 		EndOfThisTask=prevEnd+passingTRs
-		# note: end of task is printed in matlabic terms: this is bc python excludes last element in x:y ranges
-		print(EndOfThisTask)
+		# note: end of task is in matlabic terms: this is bc python excludes last element in x:y ranges
 		# Extract the task time series
 		TS_task=TS[int(startOfThisTask):int(EndOfThisTask),:]
 		# now that prevEnd is used, set it for the next iteration

@@ -30,7 +30,7 @@ df$ID=dirs
 for (s in 1:length(dirs)){
 	# For each task
 	for (i in 1:4){
-		fileExtn=paste0('*',tasks[i],'_waveProps_60.csv')
+		fileExtn=paste0('*',tasks[i],'_waveProps.csv')
 		# if file exists
 		if (length(list.files(dirs[s],pattern=fileExtn)) != 0) {
 			file=paste0(dirs[s],'/',list.files(dirs[s],pattern=fileExtn))
@@ -112,4 +112,4 @@ for (s in 1:length(dirs)){
 }
 
 # save out group-level arrays
-saveRDS(df,paste0('/cbica/projects/abcdfnets/results/Subject-level_waves_60'))
+saveRDS(df,paste0('/cbica/projects/abcdfnets/results/Subject-level_waves'))
