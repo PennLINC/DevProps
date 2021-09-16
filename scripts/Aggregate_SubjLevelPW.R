@@ -15,7 +15,7 @@ colnames(df)<-c('ID','TRs_r','numW_r','numTD_r','numBU_r','avgS_r','sdS_r','TRs_
 cnamesWcs=c('numW_r','numW_n','numW_m','numW_s')
 
 # scan types
-tasks = c('rest','nback','mid','SST')
+tasks = c('rest','nback','MID','SST')
 
 # starting colnames
 starting_colnames<-c('PGCor','TempSpan','EarliestPG_Bin','RelMagSlope')

@@ -85,9 +85,9 @@ subjW$subjectkey<-unlist(lapply(subjW$ID, function(x){
 } ))
 subjW$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjW$subjectkey)
 
-groupW<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves')
+#groupW<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves')
 
-groupW2<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves2')
+#groupW2<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves2')
 
 # merge in
 masterdf<-merge(masterdf,subjW,by='subjectkey')
@@ -114,8 +114,26 @@ masterdf<-masterdf[masterdf$TRs_r<8000,]
 ```
 
 ```{r}
+#another misread variable
+masterdf$rsfmri_c_ngd_meanmotion<-as.numeric(masterdf$rsfmri_c_ngd_meanmotion)
 # data missingness
 summary(masterdf$numW_r)
+masterdf<-masterdf[!is.na(masterdf$numW_r),]
+```
+
+```{r}
+# self-reported arousal
+Arous<-read.delim('~/Downloads/Package_1192530/abcd_ypsq101.txt')
+Arous<-subset(Arous,eventname=='baseline_year_1_arm_1')
+masterdf<-merge(masterdf,Arous,by='subjectkey')
+masterdf$RestRat<-masterdf$numTD_r/masterdf$numBU_r
+#task perf
+nBtp<-read.delim('~/Downloads/Package_1192187/abcd_mrinback02.txt')
+nBtp<-subset(nBtp,eventname=='baseline_year_1_arm_1')
+midtp<-read.delim('~/Downloads/Package_1192187/abcd_mid02.txt')
+midtp<-subset(midtp,eventname=='baseline_year_1_arm_1')
+masterdf<-merge(masterdf,midtp)
+masterdf$tfmri_mid_all_beh_lrwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_srwpfb_nt)
 ```
 
 ```{r}
@@ -224,64 +242,37 @@ Externalizing <-lm(cbcl_scr_syn_external_r~interview_age+sex+TRs_r+mri_info_devi
 
 Attention<-lm(cbcl_scr_syn_attention_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
 
-Age<-lm(numTD_r~interview_age+sex+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+Age<-lm(rsfmri_c_ngd_dt_ngd_dla~interview_age+sex+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion,data=masterdf)
 
 Seg<-lm(rsfmri_c_ngd_dt_ngd_dla~sex,data=masterdf)
 ```
 
 ```{r}
 # low motion group level waves
-restG_LM<-readRDS('~/restGroup-level_waves_LM')
-restG_gPG_LM<-readRDS('~/restGroup-level_waves2_LM')
-hist(restG_LM$PGCor,breaks = seq(-1,1,by=.05))
-hist(restG_gPG_LM$PGCor,breaks = seq(-1,1,by=.05))
-# group level waves, assess parameter sweep
-restG_6<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_60')
-restG_6_15<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_60_z1p5')
-restG_6_2<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_60_z2')
+rest<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves')
+rest_gPG<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_gPG')
 
-h6<-hist(restG_6$PGCor,breaks = seq(-1,1,by=.05))
-h615<-hist(restG_6_15$PGCor,breaks = seq(-1,1,by=.05))
-h62<-hist(restG_6_2$PGCor,breaks = seq(-1,1,by=.05))
+hist(rest$PGCor,breaks = seq(-1,1,by=.1))
+hist(rest_gPG$PGCor,breaks = seq(-1,1,by=.1))
 
-restG_7<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_70')
-restG_7_15<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_70_z1p5')
-restG_7_2<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_70_12')
-
-h7<-hist(restG_7$PGCor,breaks = seq(-1,1,by=.05))
-h715<-hist(restG_7_15$PGCor,breaks = seq(-1,1,by=.05))
-h72<-hist(restG_7_2$PGCor,breaks = seq(-1,1,by=.05))
-
-
-restG_66<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_66')
-restG_66_15<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_66_z15')
-restG_66_2<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_66_z2')
-
-h66<-hist(restG_66$PGCor,breaks = seq(-1,1,by=.05))
-h6615<-hist(restG_66_15$PGCor,breaks = seq(-1,1,by=.05))
-h662<-hist(restG_66_2$PGCor,breaks = seq(-1,1,by=.05))
-
-par(mfrow=c(3,3))
-plot(h6)
-plot(h615)
-plot(h62)
-plot(h66)
-plot(h6615)
-plot(h662)
-plot(h7)
-plot(h715)
-plot(h72)
+# create random correlation null for comparison
+corvec<-seq(1:length(rest$PGCor))
+for (i in 1:length(rest$PGCor)){
+  vector1<-sample(seq(1:70), size = 70, replace = FALSE)
+  vector2<-sample(seq(1:70), size = 70, replace = FALSE)
+  corvec[i]=cor.test(vector1,vector2,method='spearman')$estimate
+}
+hist(corvec,breaks = seq(-1,1,by=.1))
 ```
 
 
 ```{r}
-restG_gPG<-readRDS('~/restGroup-level_waves2')
-nbG<-readRDS('~/nbackGroup-level_waves')
-nbG_gPG<-readRDS('~/nbackGroup-level_waves2')
+nbG<-readRDS('/cbica/projects/abcdfnets/results/nbackGroup-level_waves')
+nbG_gPG<-readRDS('/cbica/projects/abcdfnets/results/nbackGroup-level_waves_gPG')
 midG<-readRDS('/cbica/projects/abcdfnets/results/MIDGroup-level_waves')
-midG_gPG<-readRDS('~/midGroup-level_waves2')
-sstG<-readRDS('~/sstGroup-level_waves')
-sstG_gPG<-readRDS('~/sstGroup-level_waves2')
+midG_gPG<-readRDS('/cbica/projects/abcdfnets/results/MIDGroup-level_waves_gPG')
+sstG<-readRDS('/cbica/projects/abcdfnets/results/SSTGroup-level_waves')
+sstG_gPG<-readRDS('/cbica/projects/abcdfnets/results/SSTGroup-level_waves_gPG')
 
 hist(restG_gPG$PGCor,breaks = seq(-1,1,by=.1))
 hist(midG$PGCor,breaks = seq(-1,1,by=.1))

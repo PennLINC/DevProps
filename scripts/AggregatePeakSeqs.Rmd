@@ -14,7 +14,7 @@ library(ggplot2)
 
 ```{r}
 # derive all possible sequences of X length for this granularity
-Seqs=permutations(n=8,r=3,repeats.allowed = F)
+Seqs=permutations(n=8,r=6,repeats.allowed = F)
 # adjust so 0 is included
 Seqs=(Seqs-1)
 # initialize cross-subject sequence count dataframe: one row for each possibility
@@ -116,15 +116,6 @@ seqCountDF$Sequence=NULL
 for (S in 1:dim(Seqs)[1]){
   seqCountDF$Sequence[S]=paste0(toString(Seqs[S,]))
 }
-# replace with net names
-seqCountDF$Sequence<-gsub('0','GS',seqCountDF$Sequence)
-seqCountDF$Sequence<-gsub('1','Aud',seqCountDF$Sequence)
-seqCountDF$Sequence<-gsub('2','Mot',seqCountDF$Sequence)
-seqCountDF$Sequence<-gsub('3','Vis',seqCountDF$Sequence)
-seqCountDF$Sequence<-gsub('4','DAN',seqCountDF$Sequence)
-seqCountDF$Sequence<-gsub('5','VAN',seqCountDF$Sequence)
-seqCountDF$Sequence<-gsub('6','FP',seqCountDF$Sequence)
-seqCountDF$Sequence<-gsub('7','DM',seqCountDF$Sequence)
 
 # convert to z's
 seqCountDF$seqCount<-scale(seqCountDF$seqCount)
