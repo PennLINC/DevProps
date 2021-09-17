@@ -9,13 +9,15 @@ content_list = content. split("\n")
 content_list.pop()
 # feed em' in as subjects
 subjects = content_list
+# only first(last) 1048 ran?
+subjects = subjects[0:4701]
 # while there are more than 0 subjects left to run
 while len(subjects)>0:
   # grab qsub info, get number of jobs being run
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 5 job slots (one is occupied by this script)
-  if que < 7:
+  if que < 8:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 

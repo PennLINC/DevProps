@@ -21,8 +21,8 @@ tasks = c('rest','nback','MID','SST')
 starting_colnames<-c('PGCor','TempSpan','EarliestPG_Bin','RelMagSlope')
 
 # working threshold for bottom up and top down
-TDthresh=-.4
-BUthresh=.4
+TDthresh=-.3
+BUthresh=.3
 
 df$ID=dirs
 

@@ -38,22 +38,22 @@ library(mclust)
 library(ggplot2)
 library(ggpubr)
 # read in master fc
-mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
-mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
+#mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
+#mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
 gordon=read.delim('~/Downloads/Package_1191523/abcd_betnet02.txt')
 gordon$rsfmri_c_ngd_dt_ngd_dla<-as.numeric(gordon$rsfmri_c_ngd_dt_ngd_dla)
-df<-merge(gordon,mfc,by='subjectkey')
+#df<-merge(gordon,mfc,by='subjectkey')
 # just baseline
-df<-subset(df,df$eventname=='baseline_year_1_arm_1')
+df<-subset(gordon,gordon$eventname=='baseline_year_1_arm_1')
 ```
 
 ```{r}
 # very low motion subjects
-df$rsfmri_c_ngd_meanmotion<-as.numeric(df$rsfmri_c_ngd_meanmotion)
-lowMotSubjs<-df$subjectkey[df$rsfmri_c_ngd_meanmotion < 0.06]
-# save out for aggregate group level lowmot script
-lowMotSubjs<-gsub('NDAR_INV','sub-NDARINV',lowMotSubjs)
-#saveRDS(lowMotSubjs,'/cbica/projects/abcdfnets/dropbox/vLowMotSubjs.rds')
+#df$rsfmri_c_ngd_meanmotion<-as.numeric(df$rsfmri_c_ngd_meanmotion)
+#lowMotSubjs<-df$subjectkey[df$rsfmri_c_ngd_meanmotion < 0.06]
+## save out for aggregate group level lowmot script
+#lowMotSubjs<-gsub('NDAR_INV','sub-NDARINV',lowMotSubjs)
+##saveRDS(lowMotSubjs,'/cbica/projects/abcdfnets/dropbox/vLowMotSubjs.rds')
 ```
 
 ```{r}
@@ -126,14 +126,34 @@ masterdf<-masterdf[!is.na(masterdf$numW_r),]
 Arous<-read.delim('~/Downloads/Package_1192530/abcd_ypsq101.txt')
 Arous<-subset(Arous,eventname=='baseline_year_1_arm_1')
 masterdf<-merge(masterdf,Arous,by='subjectkey')
-masterdf$RestRat<-masterdf$numTD_r/masterdf$numBU_r
+masterdf$RestRat<-masterdf$numTD_r/masterdf$numW_r
 #task perf
 nBtp<-read.delim('~/Downloads/Package_1192187/abcd_mrinback02.txt')
 nBtp<-subset(nBtp,eventname=='baseline_year_1_arm_1')
 midtp<-read.delim('~/Downloads/Package_1192187/abcd_mid02.txt')
 midtp<-subset(midtp,eventname=='baseline_year_1_arm_1')
 masterdf<-merge(masterdf,midtp)
-masterdf$tfmri_mid_all_beh_lrwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_srwpfb_nt)
+masterdf$tfmri_mid_all_beh_lrwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_lrwpfb_nt)
+masterdf$tfmri_mid_all_beh_srwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_srwpfb_nt)
+masterdf$interview_age<-as.numeric(masterdf$interview_age)
+masterdf$cbcl_scr_syn_internal_r<-as.numeric(masterdf$cbcl_scr_syn_internal_r)
+masterdf$cbcl_scr_syn_external_r<-as.numeric(masterdf$cbcl_scr_syn_external_r)
+masterdf$postscan_sleepy_1<-as.numeric(masterdf$postscan_sleepy_1)
+```
+
+```{r}
+# big linear models
+Internalizing<-lm(cbcl_scr_syn_internal_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+RestRat,data=masterdf)
+
+Externalizing <-lm(cbcl_scr_syn_external_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+
+Attention<-lm(cbcl_scr_syn_attention_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+
+Age<-lm(interview_age~rsfmri_c_ngd_dt_ngd_dla+sex+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+TRs_r+numW_r,data=masterdf)
+
+MIdPref<-lm(numTD_m~interview_age+sex+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+tfmri_mid_all_beh_lrwpfb_nt+tfmri_mid_all_beh_srwpfb_nt,data=masterdf)
+
+Seg<-lm(rsfmri_c_ngd_dt_ngd_dla~sex,data=masterdf)
 ```
 
 ```{r}
@@ -235,19 +255,6 @@ ggplot(VisconDF,aes(x=HierarchyVec,y=NetBs))+geom_point(color=sigBin+1,size=3)+t
 ```
 
 ```{r}
-# big linear models
-Internalizing<-lm(cbcl_scr_syn_internal_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
-
-Externalizing <-lm(cbcl_scr_syn_external_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
-
-Attention<-lm(cbcl_scr_syn_attention_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
-
-Age<-lm(rsfmri_c_ngd_dt_ngd_dla~interview_age+sex+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion,data=masterdf)
-
-Seg<-lm(rsfmri_c_ngd_dt_ngd_dla~sex,data=masterdf)
-```
-
-```{r}
 # low motion group level waves
 rest<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves')
 rest_gPG<-readRDS('/cbica/projects/abcdfnets/results/restGroup-level_waves_gPG')
@@ -277,7 +284,7 @@ sstG_gPG<-readRDS('/cbica/projects/abcdfnets/results/SSTGroup-level_waves_gPG')
 hist(restG_gPG$PGCor,breaks = seq(-1,1,by=.1))
 hist(midG$PGCor,breaks = seq(-1,1,by=.1))
 
-restG_GM<-Mclust(na.omit(restG$PGCor),G=3)
+rest_GM<-Mclust(na.omit(rest$PGCor),G=3)
 restG_gPG_GM<-Mclust(na.omit(restG_gPG$PGCor),G=3)
 midG_GM<-Mclust(na.omit(midG$PGCor),G=3)
 
