@@ -29,10 +29,10 @@ for TR in range(len(LdArr)):
 	# odd error where it makes me broadcast into first 10243 spots (0 inclusive), overwrite with second command
 	timeSeries[0:10242,TR]=LdArr[TR].data
 	timeSeries[10242:20484,TR]=RdArr[TR].data
-### remove medial wall
 # find where average and SD over all TRs is 0
 Averages=np.average(timeSeries,axis=1)
 StDs=np.std(timeSeries,axis=1)
+### remove medial wall
 MWindices = np.where((Averages == 0) | (StDs == 0))
 MWindices=MWindices[0]
 NoMWts=np.delete(timeSeries,MWindices,axis=0)
@@ -48,28 +48,30 @@ RSlength=lastStart+lestLength-1
 # extract resting segment
 restSeg=NoMWts[:,0:int(RSlength)]
 # run QPP
-QPPout=detect_qpp(NoMWts,1,25,1,.1,1,convergence_iterations=1)
+QPPout=detect_qpp(restSeg,1,25,10,.1,10,convergence_iterations=10)
 # save 1st qpp, metrics, and instances
-subjPWfn_verts=childfp+str(subj)+'_PW1_verts'
 subjPWfn_peaks=childfp+str(subj)+'_PW1_peaks'
+np.save(subjPWfn_peaks,QPPout[1])
 subjPWfn_metrics=childfp+str(subj)+'_PW1_metrics'
+np.save(subjPWfn_metrics,QPPout[2])
 ### convert to cifti format for upsampling
 # MW included array for saveout
 subjPWMW=np.zeros((20484,25))
 subjPWMW[nonMWindices,:]=QPPout[0]
 # new cifti axis, 25 to match QPP
-newAxis=nb.cifti2.SeriesAxis(start=0,size=25,step=1)
-# loading in downsampled PG as template
+#newAxis=nb.cifti2.SeriesAxis(start=0,size=25,step=1)
+# extract spatial axis from downsampled template
 GradsL=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_L_10k.func.gii')
 GradsR=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_R_10k.func.gii')
-# extract spatial axis from downsampled template
-LgOrdAx=GradsL.header.get_axis(1)
-RgOrdAx=GradsR.header.get_axis(1)
-# extract left and right hemi from medial wall-filled object, implant header info from templates
-new_imgL=nb.Cifti2Image(subjPWMW[0:10242,:],(newAxis,LgOrdAx))
-new_imgR=nb.Cifti2Image(subjPWMW[10242:20484,:],(newAxis,RgOrdAx))
-nb.save(new_imgL,subjPWfn_verts+'_L.func.gii')
-nb.save(new_imgR,subjPWfn_verts+'_R.func.gii')
-np.save(subjPWfn_verts,QPPout[0])
-np.save(subjPWfn_peaks,QPPout[1])
-np.save(subjPWfn_metrics,QPPout[2])
+# saveout each frame individually
+for f in range(25):
+	PWL=GradsL.darrays[0]
+	PWR=GradsR.darrays[0]
+	PWL.data=subjPWMW[0:10242,f]
+	PWR.data=subjPWMW[10242:20484,f]
+	GradsL.darrays[0]=PWL
+	GradsR.darrays[0]=PWR
+	Lfp=parentfp+str(subj)+'_QPP1_f'+str(f)+'_L_10k.func.gii'
+	Rfp=parentfp+str(subj)+'_QPP1_f'+str(f)+'_R_10k.func.gii'
+	nb.save(GradsL,Lfp)
+	nb.save(GradsR,Rfp)
