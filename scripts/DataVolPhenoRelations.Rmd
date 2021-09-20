@@ -9,10 +9,10 @@ output: html_document
 subjLevel<-readRDS('/cbica/projects/abcdfnets/results/Subject-level_waves')
 failing<-na.omit(unlist(subjLevel$ID[subjLevel$TRs_r<900]))
 # just parsing out NAs manually here
-failing<-failing[1:4]
+failing<-failing[1:2]
 # and same for passing
 passing<-na.omit(unlist(subjLevel$ID[subjLevel$TRs_r>900]))
-passing<-passing[1:236]
+passing<-passing[1:643]
 # convert to subjID
 subjNames<-gsub("/cbica/projects/abcdfnets/results/wave_output/","",failing)
 Subjs<-gsub("/cbica/projects/abcdfnets/results/wave_output/","",passing)

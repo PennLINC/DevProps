@@ -1,6 +1,7 @@
 import numpy as np
 import nibabel as nb
 import sys
+import nilearn
 subj = sys.argv[1]
 # temp file dir
 parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' + str(subj) + '/ses-baselineYear1Arm1/func/'

@@ -126,16 +126,18 @@ masterdf<-masterdf[!is.na(masterdf$numW_r),]
 Arous<-read.delim('~/Downloads/Package_1192530/abcd_ypsq101.txt')
 Arous<-subset(Arous,eventname=='baseline_year_1_arm_1')
 masterdf<-merge(masterdf,Arous,by='subjectkey')
-masterdf$RestRat<-masterdf$numTD_r/masterdf$numW_r
+masterdf$RestRat<-masterdf$numTD_r/masterdf$numBU_r
+#InfInd<-grep('Inf',masterdf$RestRat)
+#masterdf<-masterdf[-c(InfInd),]
 #task perf
-nBtp<-read.delim('~/Downloads/Package_1192187/abcd_mrinback02.txt')
-nBtp<-subset(nBtp,eventname=='baseline_year_1_arm_1')
-midtp<-read.delim('~/Downloads/Package_1192187/abcd_mid02.txt')
-midtp<-subset(midtp,eventname=='baseline_year_1_arm_1')
-masterdf<-merge(masterdf,midtp)
-masterdf$tfmri_mid_all_beh_lrwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_lrwpfb_nt)
-masterdf$tfmri_mid_all_beh_srwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_srwpfb_nt)
-masterdf$interview_age<-as.numeric(masterdf$interview_age)
+#nBtp<-read.delim('~/Downloads/Package_1192187/abcd_mrinback02.txt')
+#nBtp<-subset(nBtp,eventname=='baseline_year_1_arm_1')
+#midtp<-read.delim('~/Downloads/Package_1192187/abcd_mid02.txt')
+#midtp<-subset(midtp,eventname=='baseline_year_1_arm_1')
+#masterdf<-merge(masterdf,midtp)
+#masterdf$tfmri_mid_all_beh_lrwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_lrwpfb_nt)
+#masterdf$tfmri_mid_all_beh_srwpfb_nt<-as.numeric(masterdf$tfmri_mid_all_beh_srwpfb_nt)
+masterdf$interview_age<-as.numeric(masterdf$interview_age.x)
 masterdf$cbcl_scr_syn_internal_r<-as.numeric(masterdf$cbcl_scr_syn_internal_r)
 masterdf$cbcl_scr_syn_external_r<-as.numeric(masterdf$cbcl_scr_syn_external_r)
 masterdf$postscan_sleepy_1<-as.numeric(masterdf$postscan_sleepy_1)
@@ -143,7 +145,7 @@ masterdf$postscan_sleepy_1<-as.numeric(masterdf$postscan_sleepy_1)
 
 ```{r}
 # big linear models
-Internalizing<-lm(cbcl_scr_syn_internal_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+RestRat,data=masterdf)
+Internalizing<-lm(RestRat~interview_age+sex.x+TRs_r+mri_info_deviceserialnumber+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+cbcl_scr_syn_internal_r+mri_info_manufacturer,data=masterdf)
 
 Externalizing <-lm(cbcl_scr_syn_external_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
 
