@@ -20,6 +20,12 @@ GS=np.genfromtxt(parentfp + str(subj) '_p2mm_masked_filtered_rest_GS.csv',delimi
 ###### import PG
 PGfp=wavedir + str(subj) + '_PG_LR_32k.dscalar.nii'
 PG=nb.load(PGfp)
+PGL=pg.dataobj[0,hcp.struct.cortex_left]
+# and right 1st pg
+PGR=pg.dataobj[0,hcp.struct.cortex_right]
+# to organize vertices in terms of their position on the PG
+PGindicesL=np.argsort(PGL)
+PGindicesR=np.argsort(PGR)
 ###### import TS
 TSfp=parentfp + str(subj) + '_p2mm_masked_filtered_rest.dtseries.nii'
 TS=nb.load(TSfp)
@@ -30,15 +36,37 @@ CR=TS.dataobj[:,hcp.struct.cortex_right]
 # L
 Lstds=np.std(CL)
 CL=CL/Lstds;
-CLt=np.transpose(CL)
 # R
 Rstds=np.std(CR)
 CR=CR/Rstds;
+# sort cortical data /w/r/t pg
+CL=CL[:,PGindicesL]
+CR=CR[:,PGindicesR]
+# transpose for grayplots
+CLt=np.transpose(CL)
 CRt=np.transpose(CR)
 ###### import PW instances
 PWinstfp=wavedir + str(subj) + '_PW1_peaks.npy'
 PWinst=np.load(PWinstfp)
-###### import PW 
-PWfp
 ###### plot
+# calculate data volume:100 aspect ratio correction number
+ARCN=(CL.shape[0])/100
+# Left Hemi
+plt.subplot(3,1,2)
+for x in range(len(PWinst)):
+	plt.axvline(x=PWinst[x]/ARCN,linewidth=.2,dashes=[1,3,1,3])
+plt.matshow(CLt,cmap='gray',vmin=-2, vmax=2,extent=[0,100,0,1], aspect=15.5,fignum=False)
+
+# Right Hemi
+plt.subplot(3,1,3)
+for x in range(len(PWinst)):
+        plt.axvline(x=PWinst[x]/ARCN,linewidth=.2,dashes=[1,3,1,3])
+plt.matshow(CRt,cmap='gray',vmin=-2, vmax=2,extent=[0,100,0,1], aspect=15.5,fignum=False)
+
+# plot GS
+plt.subplot(3,1,1)
+for x in range(len(PWinst)):
+        plt.axvline(x=PWinst[x],linewidth=.2,dashes=[1,3,1,3])
+plt.plot(GS,c='black')
 ###### save plot to subj folder
+plt.savfig(pofp + '_PWs_GP.png',bbox_inches='tight')

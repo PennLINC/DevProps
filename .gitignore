@@ -5,3 +5,12 @@ SignalTests/*
 QPP_cpac.py
 scripts/__pycache__/QPP_cpac.cpython-36.pyc
 xxx*.npy
+PBP_vertWiseEffect.m
+fread3.m
+freesurfer_fread3.m
+freesurfer_read_surf.m 
+subaxis.m
+read_medial_wall_label.m
+parseArgs.m
+b2r.m
+freesurfer_read_surf.m

@@ -7,6 +7,7 @@ from matplotlib.pyplot import figure
 import copy
 import sys
 import os
+import subprocess
 # specify subject
 subj = sys.argv[1]
 # set parent fp
@@ -16,24 +17,31 @@ wavedir='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 pofp='/cbica/projects/abcdfnets/results/PWplots/' + str(subj)
 os.mkdir(pofp)
 ###### import TS
-TSfp=parentfp + str(subj) + '_p2mm_masked_filtered_rest.dtseries.nii'
-TS=nb.load(TSfp)
-# extract hemis
-CL=TS.dataobj[:,hcp.struct.cortex_left]
-# each vertex normalized w/r/t global SD
-# L
-Lstds=np.std(CL)
-CL=CL/Lstds;
+TSfp=parentfp + str(subj) + '_downsamp_rest.npy'
+TS=np.load(TSfp)
+# normalize
+TS=TS-np.mean(TS,0)
+STDS=np.std(TS)
+TS=TS/STDS
 ###### import PW instances
 PWinstfp=wavedir + str(subj) + '_PW1_peaks.npy'
 PWinstances=np.load(PWinstfp)
 # for each instance, plot its frames
-for PWinst in range(len(PWinst)):
+for i in range(len(PWinstances)):
 	# get startframe
-	startFrame=PWinstances[PWinst]
+	startFrame=PWinstances[i]
 	EndFrame=startFrame+25
 	# extract from TS
-	PW_L=CL[int(startFrame):int(EndFrame),:]
+	PW=TS[:,int(startFrame):int(EndFrame)]
 	### for each frame, print out
 	for frame in range(25):
-		display=plotting.view_surf(hcp.mesh.inflated_left, hcp.left_cortex_data(CL[frame,:]), threshold=0, bg_map=hcp.mesh.sulc_left)
+		# save wave time series frame as csv for matlab to read
+		wffn=parentfp+str(subj)+'waveTS.csv'
+		wf=TS[:,int(startFrame+frame)]
+		np.savetxt(wffn,wf,delimiter=',')
+		outputName=pofp+'/'+str(subj)+'_PWinst_'+str(i)+'_frame_'+str(frame)
+		# call matlab script
+		matlabCommand = 'PBP_vertWiseEffect(' + "'" + wffn + "','" + outputName + "')"		
+		#bashCommand = "matlab -nodisplay -r " + matlabCommand
+		#print(bashCommand)
+		subprocess.run(["matlab", "-nodisplay","-r",matlabCommand])	

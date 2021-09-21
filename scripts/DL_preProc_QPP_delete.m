@@ -57,6 +57,10 @@ system(usQPPcommand)
 cQPPcommand=['python concat_pw.py' subj];
 system(cQPPcommand)
 
+% print out downsampled instances
+vQPPcommand=['python ~/scripts/PWs/PWs/scripts/Viz_PWs_surf.py' subj];
+system(vQPPcommand)
+
 % upsample derived principal gradient
 usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
 system(usCommand)
