@@ -75,33 +75,35 @@ numInstances=sizeInst(2)
 
 % Make each instances into a gif
 for i=1:numInstances
-GifInstCom=['~/scripts/PWs/PWs/scripts/Gif_Instances.sh ' subj ' ' num2str(i)];
+% relies on python output, so instances are shifted by 1 (python starts at 0)
+ip=i-1;
+GifInstCom=['~/scripts/PWs/PWs/scripts/Gif_Instances.sh ' subj ' ' num2str(ip)];
 system(GifInstCom)
 end
 
 % combine into a mega gif
-MegaGifCommand=['~/scripts/PWs/PWs/scripts/Concat_Gifs.py ' subj ' ' num2str(numInstances)];
+MegaGifCommand=['python ~/scripts/PWs/PWs/scripts/Concat_Gifs.py ' subj ' ' num2str(numInstances)];
 system(MegaGifCommand)
 
 % printout GP with instances marked
-vGPcommand=['python ~/scripts/PWs/PWs/scripts/Viz_PWs_GP.py ' subj]
+vGPcommand=['python ~/scripts/PWs/PWs/scripts/Viz_PWs_GP.py ' subj];
 system(vGPcommand)
 
 % derive wave properties w/ python
-wavePropCommand=['python derive_WaveProps.py ' subj];
-system(wavePropCommand)
+% wavePropCommand=['python derive_WaveProps.py ' subj];
+% system(wavePropCommand)
 
 % group PG rather than individualized
-wavePropCommandG=['python derive_WaveProps_gPG.py ' subj];
-system(wavePropCommandG)
+% wavePropCommandG=['python derive_WaveProps_gPG.py ' subj];
+% system(wavePropCommandG)
 
 % basis time series wave prop - coarse
-wavePropCommandBTSC=['python derive_WaveProps_BasisTS.py ' subj];
-system(wavePropCommandBTSC)
+% wavePropCommandBTSC=['python derive_WaveProps_BasisTS.py ' subj];
+% system(wavePropCommandBTSC)
 
 % basis time series wave prop - fine
-wavePropCommandBTSF=['python derive_WaveProps_BasisTS_7.py ' subj];
-system(wavePropCommandBTSF)
+% wavePropCommandBTSF=['python derive_WaveProps_BasisTS_7.py ' subj];
+% system(wavePropCommandBTSF)
 
 % delete input data
-Delete_input_data_w(subj)
+ Delete_input_data_w(subj)
