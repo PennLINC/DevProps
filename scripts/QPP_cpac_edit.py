@@ -110,7 +110,7 @@ def detect_qpp(ValidSegs, data, num_scans, window_length,
         # Segment span accounts for first frame, so adding them for indexing is too inclusive by 1
         usableTRs=np.arange(SegStartInd,(SegSpanAdj+SegStartInd))
         inpectable_trs=np.append(inpectable_trs,usableTRs)
-    print(inpectable_trs)
+    #print(inpectable_trs)
     
     df = voxels * window_length
 

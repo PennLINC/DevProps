@@ -10,7 +10,8 @@ content_list.pop()
 # feed em' in as subjects
 subjects = content_list
 # only first(last) 1048 ran?
-subjects = subjects[0:4701]
+# anddd it died after another 2630 subjs. 2071 left to run.
+subjects = subjects[0:2071]
 # while there are more than 0 subjects left to run
 while len(subjects)>0:
   # grab qsub info, get number of jobs being run

@@ -15,7 +15,10 @@ parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/a
 wavedir='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 # set plot output fp
 pofp='/cbica/projects/abcdfnets/results/PWplots/' + str(subj)
-os.mkdir(pofp)
+# if it does not exist, make it
+existence = os.path.isdir(pofp)
+if not existence:
+	os.mkdir(pofp)
 ###### import TS
 TSfp=parentfp + str(subj) + '_downsamp_rest.npy'
 TS=np.load(TSfp)

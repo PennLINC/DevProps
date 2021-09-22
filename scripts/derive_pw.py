@@ -9,6 +9,7 @@ from scipy.io import loadmat
 import nibabel as nb
 import numpy as np
 from QPP_cpac_edit import detect_qpp
+from scipy.io import savemat
 subj = sys.argv[1]
 # parent filepath for time series
 parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' + str(subj) + '/ses-baselineYear1Arm1/func/'
@@ -53,6 +54,9 @@ QPPout=detect_qpp(segmentTr,restSeg,1,25,10,.1,10,convergence_iterations=10)
 # save 1st qpp, metrics, and instances
 subjPWfn_peaks=childfp+str(subj)+'_PW1_peaks'
 np.save(subjPWfn_peaks,QPPout[1])
+# save matlab version of instances
+subjPWfn_peaks=childfp+str(subj)+'_PW1_peaks.mat'
+savemat(subjPWfn_peaks,{"instances":QPPout[1]})
 subjPWfn_metrics=childfp+str(subj)+'_PW1_metrics'
 np.save(subjPWfn_metrics,QPPout[2])
 ### convert to cifti format for upsampling
@@ -63,20 +67,18 @@ subjPWMW[nonMWindices,:]=QPPout[0]
 restSegOut=np.zeros((20484,restSeg.shape[1]))
 restSegOut[nonMWindices,:]=restSeg
 np.save(parentfp+str(subj)+'_downsamp_rest',restSegOut)
-# new cifti axis, 25 to match QPP
-#newAxis=nb.cifti2.SeriesAxis(start=0,size=25,step=1)
-# extract spatial axis from downsampled template
-#GradsL=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_L_10k.func.gii')
-#GradsR=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_R_10k.func.gii')
+# reference for saving out each frame individually
+GradsL=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_L_10k.func.gii')
+GradsR=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_R_10k.func.gii')
 # saveout each frame individually
-#for f in range(25):
-#	PWL=GradsL.darrays[0]
-#	PWR=GradsR.darrays[0]
-#	PWL.data=subjPWMW[0:10242,f]
-#	PWR.data=subjPWMW[10242:20484,f]
-#	GradsL.darrays[0]=PWL
-#	GradsR.darrays[0]=PWR
-#	Lfp=parentfp+str(subj)+'_QPP1_f'+str(f)+'_L_10k.func.gii'
-#	Rfp=parentfp+str(subj)+'_QPP1_f'+str(f)+'_R_10k.func.gii'
-#	nb.save(GradsL,Lfp)
-#	nb.save(GradsR,Rfp)
+for f in range(25):
+	PWL=GradsL.darrays[0]
+	PWR=GradsR.darrays[0]
+	PWL.data=subjPWMW[0:10242,f]
+	PWR.data=subjPWMW[10242:20484,f]
+	GradsL.darrays[0]=PWL
+	GradsR.darrays[0]=PWR
+	Lfp=parentfp+str(subj)+'_QPP1_f'+str(f)+'_L_10k.func.gii'
+	Rfp=parentfp+str(subj)+'_QPP1_f'+str(f)+'_R_10k.func.gii'
+	nb.save(GradsL,Lfp)
+	nb.save(GradsR,Rfp)

@@ -46,24 +46,46 @@ derivePGcommand=['python derive_pg.py ' subj];
 system(derivePGcommand)
 
 % derive qpp
-deriveQPPcommand=['python derive_pw.py' subj];
+deriveQPPcommand=['python derive_pw.py ' subj];
 system(deriveQPPcommand)
 
 % upsample QPP frames
-usQPPcommand=['~/scripts/PWs/PWs/scripts/upsample_PW.sh' subj];
+usQPPcommand=['~/scripts/PWs/PWs/scripts/upsample_PW.sh ' subj];
 system(usQPPcommand)
 
-% concat frames
-cQPPcommand=['python concat_pw.py' subj];
+% concat frames of the template PW
+cQPPcommand=['python concat_pw.py ' subj];
 system(cQPPcommand)
-
-% print out downsampled instances
-vQPPcommand=['python ~/scripts/PWs/PWs/scripts/Viz_PWs_surf.py' subj];
-system(vQPPcommand)
 
 % upsample derived principal gradient
 usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
 system(usCommand)
+
+% print out downsampled instances
+vQPPcommand=['python ~/scripts/PWs/PWs/scripts/Viz_PWs_surf.py ' subj];
+system(vQPPcommand)
+
+% determine number of derived waves
+childfp=['/cbica/projects/abcdfnets/results/wave_output/' subj '/'];
+subjPWfn=[childfp subj '_PW1_peaks.mat'];
+PWPeaks=load(subjPWfn);
+Instances=PWPeaks.instances;
+sizeInst=size(Instances);
+numInstances=sizeInst(2)
+
+% Make each instances into a gif
+for i=1:numInstances
+GifInstCom=['~/scripts/PWs/PWs/scripts/Gif_Instances.sh ' subj ' ' num2str(i)];
+system(GifInstCom)
+end
+
+% combine into a mega gif
+MegaGifCommand=['~/scripts/PWs/PWs/scripts/Concat_Gifs.py ' subj ' ' num2str(numInstances)];
+system(MegaGifCommand)
+
+% printout GP with instances marked
+vGPcommand=['python ~/scripts/PWs/PWs/scripts/Viz_PWs_GP.py ' subj]
+system(vGPcommand)
 
 % derive wave properties w/ python
 wavePropCommand=['python derive_WaveProps.py ' subj];
