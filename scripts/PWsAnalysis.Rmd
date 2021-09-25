@@ -4,47 +4,19 @@ author: "Adam"
 date: "8/30/2021"
 output: html_document
 ---
-```{r}
-# delta r^2 functions
-# difference in R2
-#DeltaR2EstVecTDr<-function(x){
-#  # relevant df
-#  DR2df<-data.frame(cbind(masterdf$numTD_r,masterdf$TRs_r,masterdf$mri_info_dev#iceserialnumber,masterdf$mri_info_manufacturer,masterdf$rsfmri_c_ngd_meanmotion#,x))
-#  colnames(scaledf)<-c('numTD','TRs','Serial','Manufact','Motion','varofint')
-#  
-#  # no-TD model
-#  noAgeGam<-gam(varofint~Sex+Motion,data=scaledf)
-#  noAgeSum<-summary(noAgeGam)
-#  # age-included model for measuring difference
-#  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=3),data=scaledf)
-#  AgeSum<-summary(AgeGam)
-#  
-#  dif<-AgeSum$r.sq-noAgeSum$r.sq
-#  
-#  # partial spearmans to extract age relation (for direction)
-#  pspear=pcor(scaledf,method='spearman')$estimate
-#  corest<-pspear[4]
-#  if(corest<0){
-#    dif=dif*-1
-#  }
-#  
-#  return(dif)
-#  
-#}
-```
 
 ```{r}
 library(mclust)
 library(ggplot2)
 library(ggpubr)
 # read in master fc
-#mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
-#mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
+mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
+mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
 gordon=read.delim('~/Downloads/Package_1191523/abcd_betnet02.txt')
 gordon$rsfmri_c_ngd_dt_ngd_dla<-as.numeric(gordon$rsfmri_c_ngd_dt_ngd_dla)
-#df<-merge(gordon,mfc,by='subjectkey')
+df<-merge(gordon,mfc,by='subjectkey')
 # just baseline
-df<-subset(gordon,gordon$eventname=='baseline_year_1_arm_1')
+df<-subset(df,df$eventname=='baseline_year_1_arm_1')
 ```
 
 ```{r}
@@ -60,6 +32,9 @@ df<-subset(gordon,gordon$eventname=='baseline_year_1_arm_1')
 # read in demographics
 demo<-read.delim('~/Downloads/Package_1192012/abcd_lpds01.txt')
 demo<-subset(demo,eventname=='baseline_year_1_arm_1')
+demo2<-read.delim('~/Downloads/Package_1192704/pdem02.txt')
+demo2<-subset(demo2,eventname=='baseline_year_1_arm_1')
+demo<-merge(demo,demo2,by='subjectkey')
 # read in cbcl
 cbcl<-read.delim('~/Downloads/Package_1191879/abcd_cbcls01.txt')
 cbcl<-subset(cbcl,eventname=='baseline_year_1_arm_1')
@@ -69,13 +44,17 @@ nihTB<-subset(nihTB,eventname=='baseline_year_1_arm_1')
 # read in scanner info
 scnerInf<-read.delim('~/Downloads/Package_1192010/abcd_mri01.txt')
 scnerInf<-subset(scnerInf,eventname=='baseline_year_1_arm_1')
+# read in fam info
+famInf<-read.delim('~/Downloads/Package_1192820/acspsw03.txt')
+famInf<-subset(famInf,eventname=='baseline_year_1_arm_1')
 
 # merge
 masterdf<-merge(demo,cbcl,by='subjectkey')
 masterdf<-merge(masterdf,nihTB,by='subjectkey')
 masterdf<-merge(masterdf,scnerInf,by='subjectkey')
+masterdf<-merge(masterdf,famInf,by='subjectkey')
 # merge w/ gordo and fc
-masterdf<-merge(masterdf,df)
+masterdf<-merge(masterdf,df,by='subjectkey')
 
 # load in subject-level waves
 subjW<-readRDS('/cbica/projects/abcdfnets/results/Subject-level_waves')
@@ -93,7 +72,7 @@ subjW$subjectkey<-gsub('sub-NDARINV','NDAR_INV',subjW$subjectkey)
 masterdf<-merge(masterdf,subjW,by='subjectkey')
 
 # few variables remaining as char
-masterdf$interview_age<-as.numeric(masterdf$interview_age)
+masterdf$interview_age<-as.numeric(masterdf$interview_age.x)
 masterdf$rsfmri_c_ngd_dt_ngd_dt<-as.numeric(masterdf$rsfmri_c_ngd_dt_ngd_dt)
 masterdf$nihtbx_totalcomp_uncorrected<-as.numeric(masterdf$nihtbx_totalcomp_uncorrected)
 
@@ -144,18 +123,21 @@ masterdf$postscan_sleepy_1<-as.numeric(masterdf$postscan_sleepy_1)
 ```
 
 ```{r}
+# drop un specified family incomes
+masterdf<-masterdf[masterdf$demo_comb_income_v2!='999',]
+masterdf<-masterdf[masterdf$demo_comb_income_v2!='777',]
+masterdf$demo_comb_income_v2<-as.numeric(masterdf$demo_comb_income_v2)
+# and TR excl
+masterdf<-masterdf[masterdf$TRs_r>900,]
+
 # big linear models
-Internalizing<-lm(RestRat~interview_age+sex.x+TRs_r+mri_info_deviceserialnumber+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+cbcl_scr_syn_internal_r+mri_info_manufacturer,data=masterdf)
+InternalizingFull<-lmer(numBU_r~numW_r+interview_age+sex.x+TRs_r+(1|mri_info_deviceserialnumber:rel_family_id)+demo_comb_income_v2+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+cbcl_scr_syn_internal_r+demo_prnt_ed_v2+demo_prtnr_ed_v2+mri_info_manufacturer,data=masterdf)
 
-Externalizing <-lm(cbcl_scr_syn_external_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+InternalizingReduced<-lmer(numBU_r~numW_r+interview_age+sex.x+TRs_r+(1|mri_info_deviceserialnumber:rel_family_id)+demo_comb_income_v2+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+demo_prnt_ed_v2+demo_prtnr_ed_v2+mri_info_manufacturer,data=masterdf)
 
-Attention<-lm(cbcl_scr_syn_attention_r~interview_age+sex+TRs_r+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla,data=masterdf)
+InternalizingLM<-lm(numBU_r~numW_r+interview_age+sex.x+TRs_r+demo_comb_income_v2+rsfmri_c_ngd_meanmotion+cbcl_scr_syn_internal_r+rsfmri_c_ngd_dt_ngd_dla+demo_prnt_ed_v2+demo_prtnr_ed_v2+mri_info_manufacturer,data=masterdf)
 
-Age<-lm(interview_age~rsfmri_c_ngd_dt_ngd_dla+sex+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+TRs_r+numW_r,data=masterdf)
 
-MIdPref<-lm(numTD_m~interview_age+sex+mri_info_deviceserialnumber+mri_info_manufacturer+rsfmri_c_ngd_meanmotion+tfmri_mid_all_beh_lrwpfb_nt+tfmri_mid_all_beh_srwpfb_nt,data=masterdf)
-
-Seg<-lm(rsfmri_c_ngd_dt_ngd_dla~sex,data=masterdf)
 ```
 
 ```{r}
