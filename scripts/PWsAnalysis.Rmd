@@ -135,7 +135,7 @@ InternalizingFull<-lmer(numBU_r~numW_r+interview_age+sex.x+TRs_r+(1|mri_info_dev
 
 InternalizingReduced<-lmer(numBU_r~numW_r+interview_age+sex.x+TRs_r+(1|mri_info_deviceserialnumber:rel_family_id)+demo_comb_income_v2+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+demo_prnt_ed_v2+demo_prtnr_ed_v2+mri_info_manufacturer,data=masterdf)
 
-InternalizingLM<-lm(numBU_r~numW_r+interview_age+sex.x+TRs_r+demo_comb_income_v2+rsfmri_c_ngd_meanmotion+cbcl_scr_syn_internal_r+rsfmri_c_ngd_dt_ngd_dla+demo_prnt_ed_v2+demo_prtnr_ed_v2+mri_info_manufacturer,data=masterdf)
+InternalizingLM<-lm(numBU_r~interview_age+sex.x+mri_info_deviceserialnumber+TRs_r+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+cbcl_scr_syn_internal_r+mri_info_manufacturer,data=masterdf)
 
 
 ```
