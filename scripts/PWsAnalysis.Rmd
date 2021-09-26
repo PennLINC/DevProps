@@ -105,7 +105,7 @@ masterdf<-masterdf[!is.na(masterdf$numW_r),]
 Arous<-read.delim('~/Downloads/Package_1192530/abcd_ypsq101.txt')
 Arous<-subset(Arous,eventname=='baseline_year_1_arm_1')
 masterdf<-merge(masterdf,Arous,by='subjectkey')
-masterdf$RestRat<-masterdf$numTD_r/masterdf$numBU_r
+masterdf$RestRat<-masterdf$numTD_r/masterdf$numW_r
 #InfInd<-grep('Inf',masterdf$RestRat)
 #masterdf<-masterdf[-c(InfInd),]
 #task perf
@@ -119,6 +119,7 @@ masterdf$RestRat<-masterdf$numTD_r/masterdf$numBU_r
 masterdf$interview_age<-as.numeric(masterdf$interview_age.x)
 masterdf$cbcl_scr_syn_internal_r<-as.numeric(masterdf$cbcl_scr_syn_internal_r)
 masterdf$cbcl_scr_syn_external_r<-as.numeric(masterdf$cbcl_scr_syn_external_r)
+masterdf$cbcl_scr_syn_attention_r<-as.numeric(masterdf$cbcl_scr_syn_attention_r)
 masterdf$postscan_sleepy_1<-as.numeric(masterdf$postscan_sleepy_1)
 ```
 
@@ -127,6 +128,23 @@ masterdf$postscan_sleepy_1<-as.numeric(masterdf$postscan_sleepy_1)
 masterdf<-masterdf[masterdf$demo_comb_income_v2!='999',]
 masterdf<-masterdf[masterdf$demo_comb_income_v2!='777',]
 masterdf$demo_comb_income_v2<-as.numeric(masterdf$demo_comb_income_v2)
+
+# normative data example
+masterdf2<-masterdf[masterdf$TRs_r<1000,]
+colnames(masterdf2) <- make.unique(names(masterdf2))
+
+ggplot(masterdf2,aes(rsfmri_c_ngd_dt_ngd_dt,numTD_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('Within-DMN FC')+ylab('Number of Top-down Waves')+theme_classic(base_size=33)
+ggplot(masterdf2,aes(rsfmri_c_ngd_dt_ngd_dla,numTD_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('DMN-DAN FC')+ylab('Number of Top-down Waves')+theme_classic(base_size=33)
+ggplot(masterdf2,aes(rsfmri_c_ngd_dt_ngd_dt,numBU_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('Within-DMN FC')+ylab('Number of Bottom-up Waves')+theme_classic(base_size=33)
+ggplot(masterdf2,aes(rsfmri_c_ngd_dt_ngd_dla,numBU_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('DMN-DAN FC')+ylab('Number of Bottom-up Waves')+theme_classic(base_size=33)
+
+
+ggplot(masterdf2,aes(X12_12rest,numTD_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('Within-DMN FC Ind')+ylab('Number of Top-down Waves')+theme_classic(base_size=33)
+ggplot(masterdf2,aes(X5_12rest,numTD_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('DMN-DAN FC')+ylab('Number of Top-down Waves')+theme_classic(base_size=33)
+ggplot(masterdf2,aes(X12_12rest,numBU_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('Within-DMN FC')+ylab('Number of Bottom-up Waves')+theme_classic(base_size=33)
+ggplot(masterdf2,aes(X5_12rest,numBU_r))+geom_point(alpha=.6)+geom_smooth(method='lm')+xlab('DMN-DAN FC')+ylab('Number of Bottom-up Waves')+theme_classic(base_size=33)
+
+
 # and TR excl
 masterdf<-masterdf[masterdf$TRs_r>900,]
 
@@ -135,9 +153,9 @@ InternalizingFull<-lmer(numBU_r~numW_r+interview_age+sex.x+TRs_r+(1|mri_info_dev
 
 InternalizingReduced<-lmer(numBU_r~numW_r+interview_age+sex.x+TRs_r+(1|mri_info_deviceserialnumber:rel_family_id)+demo_comb_income_v2+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+demo_prnt_ed_v2+demo_prtnr_ed_v2+mri_info_manufacturer,data=masterdf)
 
-InternalizingLM<-lm(numBU_r~interview_age+sex.x+mri_info_deviceserialnumber+TRs_r+rsfmri_c_ngd_meanmotion+rsfmri_c_ngd_dt_ngd_dla+cbcl_scr_syn_internal_r+mri_info_manufacturer,data=masterdf)
+InternalizingLM<-lm(numBU_r~interview_age+sex.x+mri_info_deviceserialnumber+TRs_r+rsfmri_c_ngd_meanmotion+nihtbx_totalcomp_uncorrected+mri_info_manufacturer,data=masterdf)
 
-
+CompLM<-lm(numTD_m~interview_age+numW_m+sex.x+mri_info_deviceserialnumber+TRs_m+rsfmri_c_ngd_meanmotion+nihtbx_totalcomp_uncorrected+mri_info_manufacturer,data=masterdf)
 ```
 
 ```{r}
