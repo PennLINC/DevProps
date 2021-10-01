@@ -22,24 +22,24 @@ parcelLoc='/cbica/projects/abcdfnets/results/SingleParcel_1by1/' + str(subj) + '
 parcel=nb.load(parcelLoc)
 ParcelC=parcel.dataobj[:,hcp.struct.cortex]
 # get indices of parcels
-DM_inds12=np.where(ParcelC==12)
-DM_inds1=np.where(ParcelC==1)
-DM_inds8=np.where(ParcelC==8)
+DM_inds12=np.where(ParcelC==12)[1]
+DM_inds1=np.where(ParcelC==1)[1]
+DM_inds8=np.where(ParcelC==8)[1]
 DM_inds=np.hstack((DM_inds12,DM_inds1,DM_inds8))
-Mot_inds2=np.where(ParcelC==2)
-Mot_inds4=np.where(ParcelC==4)
-Mot_inds11=np.where(ParcelC==11)
-Mot_inds13=np.where(ParcelC==13)
-Vis_inds6=np.where(ParcelC==6)
-Vis_inds10=np.where(ParcelC==10)
-DAN_inds14=np.where(ParcelC==14)
-DAN_inds5=np.where(ParcelC==5)
-VAN_inds9=np.where(ParcelC==9)
-VAN_inds7=np.where(ParcelC==7)
-FPN_inds3=np.where(ParcelC==3)
-FPN_inds15=np.where(ParcelC==15)
-FPN_inds17=np.where(ParcelC==17)
-Aud_inds=np.where(ParcelC==16)
+Mot_inds2=np.where(ParcelC==2)[1]
+Mot_inds4=np.where(ParcelC==4)[1]
+Mot_inds11=np.where(ParcelC==11)[1]
+Mot_inds13=np.where(ParcelC==13)[1]
+Vis_inds6=np.where(ParcelC==6)[1]
+Vis_inds10=np.where(ParcelC==10)[1]
+DAN_inds14=np.where(ParcelC==14)[1]
+DAN_inds5=np.where(ParcelC==5)[1]
+VAN_inds9=np.where(ParcelC==9)[1]
+VAN_inds7=np.where(ParcelC==7)[1]
+FPN_inds3=np.where(ParcelC==3)[1]
+FPN_inds15=np.where(ParcelC==15)[1]
+FPN_inds17=np.where(ParcelC==17)[1]
+Aud_inds=np.where(ParcelC==16)[1]
 
 ######## load in valid segments file
 CSIfp=parentfp + str(subj) + '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'
@@ -95,52 +95,52 @@ for seg in range(SegNum):
 	SegSpan=int(CSI[seg,1])
 	# Segment span accounts for first frame, so adding them for indexing is too inclusive by 1
 	# -1 to duration for start + duration indexing
-	subjDataCor_inSeg=subjDataCor[SegStartInd:(SegStartInd+SegSpan-1),:]
+	subjDataCor_inSeg=subjDataCort[SegStartInd:(SegStartInd+SegSpan-1),:]
 	# get time series assoc. with each parcel
 	# MEAN DM
-	meanDM=np.mean(subjDataCor_inSeg[:,DM_inds],axis=2)
-	DM=meanDM[:,0]
+	meanDM=np.mean(subjDataCor_inSeg[:,DM_inds],axis=1)
+	DM=meanDM
 	# DM
-	meanDM1=np.mean(subjDataCor_inSeg[:,DM_inds1],axis=2)
-	DM1=meanDM1[:,0]
-	meanDM8=np.mean(subjDataCor_inSeg[:,DM_inds8],axis=2)
-	DM8=meanDM8[:,0]
-	meanDM12=np.mean(subjDataCor_inSeg[:,DM_inds12],axis=2)
-	DM12=meanDM12[:,0]
+	meanDM1=np.mean(subjDataCor_inSeg[:,DM_inds1],axis=1)
+	DM1=meanDM1
+	meanDM8=np.mean(subjDataCor_inSeg[:,DM_inds8],axis=1)
+	DM8=meanDM8
+	meanDM12=np.mean(subjDataCor_inSeg[:,DM_inds12],axis=1)
+	DM12=meanDM12
 	# FP
-	meanFPN3=np.mean(subjDataCor_inSeg[:,FPN_inds3],axis=2)
-	FP3=meanFPN3[:,0]
-	meanFPN15=np.mean(subjDataCor_inSeg[:,FPN_inds15],axis=2)
-	FP15=meanFPN15[:,0]
-	meanFPN17=np.mean(subjDataCor_inSeg[:,FPN_inds17],axis=2)
-	FP17=meanFPN17[:,0]
+	meanFPN3=np.mean(subjDataCor_inSeg[:,FPN_inds3],axis=1)
+	FP3=meanFPN3
+	meanFPN15=np.mean(subjDataCor_inSeg[:,FPN_inds15],axis=1)
+	FP15=meanFPN15
+	meanFPN17=np.mean(subjDataCor_inSeg[:,FPN_inds17],axis=1)
+	FP17=meanFPN17
 	# VAN
-	meanVAN7=np.mean(subjDataCor_inSeg[:,VAN_inds7],axis=2)
-	VAN7=meanVAN7[:,0]
-	meanVAN9=np.mean(subjDataCor_inSeg[:,VAN_inds9],axis=2)
-	VAN9=meanVAN9[:,0]
+	meanVAN7=np.mean(subjDataCor_inSeg[:,VAN_inds7],axis=1)
+	VAN7=meanVAN7
+	meanVAN9=np.mean(subjDataCor_inSeg[:,VAN_inds9],axis=1)
+	VAN9=meanVAN9
 	# DAN
-	meanDAN5=np.mean(subjDataCor_inSeg[:,DAN_inds5],axis=2)
-	DAN5=meanDAN5[:,0]
-	meanDAN14=np.mean(subjDataCor_inSeg[:,DAN_inds14],axis=2)
-	DAN14=meanDAN14[:,0]
+	meanDAN5=np.mean(subjDataCor_inSeg[:,DAN_inds5],axis=1)
+	DAN5=meanDAN5
+	meanDAN14=np.mean(subjDataCor_inSeg[:,DAN_inds14],axis=1)
+	DAN14=meanDAN14
 	# MOT
-	meanMot2=np.mean(subjDataCor_inSeg[:,Mot_inds2],axis=2)
-	Mot2=meanMot2[:,0]
-	meanMot4=np.mean(subjDataCor_inSeg[:,Mot_inds4],axis=2)
-	Mot4=meanMot4[:,0]
-	meanMot11=np.mean(subjDataCor_inSeg[:,Mot_inds11],axis=2)
-	Mot11=meanMot11[:,0]
-	meanMot13=np.mean(subjDataCor_inSeg[:,Mot_inds13],axis=2)
-	Mot13=meanMot13[:,0]
+	meanMot2=np.mean(subjDataCor_inSeg[:,Mot_inds2],axis=1)
+	Mot2=meanMot2
+	meanMot4=np.mean(subjDataCor_inSeg[:,Mot_inds4],axis=1)
+	Mot4=meanMot4
+	meanMot11=np.mean(subjDataCor_inSeg[:,Mot_inds11],axis=1)
+	Mot11=meanMot11
+	meanMot13=np.mean(subjDataCor_inSeg[:,Mot_inds13],axis=1)
+	Mot13=meanMot13
 	# VIS
-	meanVis6=np.mean(subjDataCor_inSeg[:,Vis_inds6],axis=2)
-	Vis6=meanVis6[:,0]
-	meanVis10=np.mean(subjDataCor_inSeg[:,Vis_inds10],axis=2)
-	Vis10=meanVis10[:,0]
+	meanVis6=np.mean(subjDataCor_inSeg[:,Vis_inds6],axis=1)
+	Vis6=meanVis6
+	meanVis10=np.mean(subjDataCor_inSeg[:,Vis_inds10],axis=1)
+	Vis10=meanVis10
 	# AUD
-	meanAud=np.mean(subjDataCor_inSeg[:,Aud_inds],axis=2)
-	AUD16=meanAud[:,0]
+	meanAud=np.mean(subjDataCor_inSeg[:,Aud_inds],axis=1)
+	AUD16=meanAud
 	# get peaks in mean DM
 	negpeaks,_=scipy.signal.find_peaks(-DM,distance=10)
 	peaks,_=scipy.signal.find_peaks(DM,distance=10)
@@ -171,7 +171,7 @@ for seg in range(SegNum):
 	Vis6phases=np.zeros(len(PeaksandDurs))
 	Vis10phases=np.zeros(len(PeaksandDurs))
 	Aud16phases=np.zeros(len(PeaksandDurs))
-
+	# init amp
 	DM1Amp=np.zeros(len(PeaksandDurs))
 	DM8Amp=np.zeros(len(PeaksandDurs))
 	DM12Amp=np.zeros(len(PeaksandDurs))
@@ -189,7 +189,6 @@ for seg in range(SegNum):
 	Vis6Amp=np.zeros(len(PeaksandDurs))
 	Vis10Amp=np.zeros(len(PeaksandDurs))
 	Aud16Amp=np.zeros(len(PeaksandDurs))
-
 	##### extract network-specific peaks w/r/t average DMN peaks
 	for p in range(len(PeaksandDurs)):
 		IntervalSpan=PeaksandDurs[p,1]
@@ -349,122 +348,120 @@ for seg in range(SegNum):
 		    Aud16Amp[p]=Aud16InInterval[aud16Peak]
 		elif len(aud16Peak)==0:
 		    Aud16phases[p]=99
-
 	# add this segment's phases, amps, and spans to the aggregate vectors
-	DM1phases_Agg=np.concatenate((DM1phases_Agg, DM1phases), axis=1)
-	DM8phases_Agg=np.concatenate((DM8phases_Agg, DM8phases), axis=1)
-	DM12phases_Agg=np.concatenate((DM12phases_Agg, DM12phases), axis=1)
-	FP3phases_Agg=np.concatenate((FP3phases_Agg, FP3phases), axis=1)
-	FP15phases_Agg=np.concatenate((FP15phases_Agg, FP15phases), axis=1)
-	FP17phases_Agg=np.concatenate((FP17phases_Agg, FP17phases), axis=1)
-	VAN7phases_Agg=np.concatenate((VAN7phases_Agg, VAN7phases), axis=1)
-	VAN9phases_Agg=np.concatenate((VAN9phases_Agg, VAN9phases), axis=1)
-	DAN5phases_Agg=np.concatenate((DAN5phases_Agg, DAN5phases), axis=1)
-	DAN14phases_Agg=np.concatenate((DAN14phases_Agg, DAN14phases), axis=1)
-	Mot2phases_Agg=np.concatenate((Mot2phases_Agg, Mot2phases), axis=1)
-	Mot4phases_Agg=np.concatenate((Mot4phases_Agg, Mot4phases), axis=1)
-	Mot11phases_Agg=np.concatenate((Mot11phases_Agg, Mot11phases), axis=1)
-	Mot13phases_Agg=np.concatenate((Mot13phases_Agg, Mot13phases), axis=1)
-	Vis6phases_Agg=np.concatenate((Vis6phases_Agg, Vis6phases), axis=1)
-	Vis10phases_Agg=np.concatenate((Vis10phases_Agg, Vis10phases), axis=1)
-	Aud16phases_Agg=np.concatenate((Aud16phases_Agg, Aud16phases), axis=1)
+	DM1phases_Agg=np.concatenate((DM1phases_Agg, DM1phases))
+	DM8phases_Agg=np.concatenate((DM8phases_Agg, DM8phases))
+	DM12phases_Agg=np.concatenate((DM12phases_Agg, DM12phases))
+	FP3phases_Agg=np.concatenate((FP3phases_Agg, FP3phases))
+	FP15phases_Agg=np.concatenate((FP15phases_Agg, FP15phases))
+	FP17phases_Agg=np.concatenate((FP17phases_Agg, FP17phases))
+	VAN7phases_Agg=np.concatenate((VAN7phases_Agg, VAN7phases))
+	VAN9phases_Agg=np.concatenate((VAN9phases_Agg, VAN9phases))
+	DAN5phases_Agg=np.concatenate((DAN5phases_Agg, DAN5phases))
+	DAN14phases_Agg=np.concatenate((DAN14phases_Agg, DAN14phases))
+	Mot2phases_Agg=np.concatenate((Mot2phases_Agg, Mot2phases))
+	Mot4phases_Agg=np.concatenate((Mot4phases_Agg, Mot4phases))
+	Mot11phases_Agg=np.concatenate((Mot11phases_Agg, Mot11phases))
+	Mot13phases_Agg=np.concatenate((Mot13phases_Agg, Mot13phases))
+	Vis6phases_Agg=np.concatenate((Vis6phases_Agg, Vis6phases))
+	Vis10phases_Agg=np.concatenate((Vis10phases_Agg, Vis10phases))
+	Aud16phases_Agg=np.concatenate((Aud16phases_Agg, Aud16phases))
 	# amplitude
-	DM1Amp_Agg=np.concatenate((DM1Amp_Agg, DM1Amp), axis=1)
-	DM8Amp_Agg=np.concatenate((DM8Amp_Agg, DM8Amp), axis=1)
-	DM12Amp_Agg=np.concatenate((DM12Amp_Agg, DM12Amp), axis=1)
-	FP3Amp_Agg=np.concatenate((FP3Amp_Agg, FP3Amp), axis=1)
-	FP15Amp_Agg=np.concatenate((FP15Amp_Agg, FP15Amp), axis=1)
-	FP17Amp_Agg=np.concatenate((FP17Amp_Agg, FP17Amp), axis=1)
-	VAN7Amp_Agg=np.concatenate((VAN7Amp_Agg, VAN7Amp), axis=1)
-	VAN9Amp_Agg=np.concatenate((VAN9Amp_Agg, VAN9Amp), axis=1)
-	DAN5Amp_Agg=np.concatenate((DAN5Amp_Agg, DAN5Amp), axis=1)
-	DAN14Amp_Agg=np.concatenate((DAN14Amp_Agg, DAN14Amp), axis=1)
-	Mot2Amp_Agg=np.concatenate((Mot2Amp_Agg, Mot2Amp), axis=1)
-	Mot4Amp_Agg=np.concatenate((Mot4Amp_Agg, Mot4Amp), axis=1)
-	Mot11Amp_Agg=np.concatenate((Mot11Amp_Agg, Mot11Amp), axis=1)
-	Mot13Amp_Agg=np.concatenate((Mot13Amp_Agg, Mot13Amp), axis=1)
-	Vis6Amp_Agg=np.concatenate((Vis6Amp_Agg, Vis6Amp), axis=1)
-	Vis10Amp_Agg=np.concatenate((Vis10Amp_Agg, Vis10Amp), axis=1)
-	Aud16Amp_Agg=np.concatenate((Aud16Amp_Agg, Aud16Amp), axis=1)
+	DM1Amp_Agg=np.concatenate((DM1Amp_Agg, DM1Amp))
+	DM8Amp_Agg=np.concatenate((DM8Amp_Agg, DM8Amp))
+	DM12Amp_Agg=np.concatenate((DM12Amp_Agg, DM12Amp))
+	FP3Amp_Agg=np.concatenate((FP3Amp_Agg, FP3Amp))
+	FP15Amp_Agg=np.concatenate((FP15Amp_Agg, FP15Amp))
+	FP17Amp_Agg=np.concatenate((FP17Amp_Agg, FP17Amp))
+	VAN7Amp_Agg=np.concatenate((VAN7Amp_Agg, VAN7Amp))
+	VAN9Amp_Agg=np.concatenate((VAN9Amp_Agg, VAN9Amp))
+	DAN5Amp_Agg=np.concatenate((DAN5Amp_Agg, DAN5Amp))
+	DAN14Amp_Agg=np.concatenate((DAN14Amp_Agg, DAN14Amp))
+	Mot2Amp_Agg=np.concatenate((Mot2Amp_Agg, Mot2Amp))
+	Mot4Amp_Agg=np.concatenate((Mot4Amp_Agg, Mot4Amp))
+	Mot11Amp_Agg=np.concatenate((Mot11Amp_Agg, Mot11Amp))
+	Mot13Amp_Agg=np.concatenate((Mot13Amp_Agg, Mot13Amp))
+	Vis6Amp_Agg=np.concatenate((Vis6Amp_Agg, Vis6Amp))
+	Vis10Amp_Agg=np.concatenate((Vis10Amp_Agg, Vis10Amp))
+	Aud16Amp_Agg=np.concatenate((Aud16Amp_Agg, Aud16Amp))
 	# same for DM peak span
-	PeakIntervalSpans=np.concatenate((PeakIntervalSpans,PeaksandDurs[:,1]), axis=1)
-	
+	PeakIntervalSpans=np.concatenate((PeakIntervalSpans,PeaksandDurs[:,1]))
 ######## end for each segment
 # child (output) filepath
 childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 ##### save out phase and magnitude info
 DM1pfp=childfp + str(subj) + '_rest_DM1P.csv'
-DM1phases_Agg=np.savetxt(DM1phases_Agg, DM1pfp,delimiter=“,”)
+np.savetxt(DM1pfp, DM1phases_Agg, delimiter=",")
 DM8pfp=childfp + str(subj) + '_rest_DM8P.csv'
-DM8phases_Agg=np.savetxt(DM8phases_Agg, DM8pfp,delimiter=“,”)
+np.savetxt(DM8pfp, DM8phases_Agg, delimiter=",")
 DM12pfp=childfp + str(subj) + '_rest_DM12P.csv'
-DM12phases_Agg=np.savetxt(DM12phases_Agg, DM12pfp,delimiter=“,”)
+np.savetxt(DM12pfp, DM12phases_Agg, delimiter=",")
 FP3pfp=childfp + str(subj) + '_rest_FP3P.csv'
-FP3phases_Agg=np.savetxt(FP3phases_Agg, FP3pfp,delimiter=“,”)
+np.savetxt(FP3pfp, FP3phases_Agg, delimiter=",")
 FP15pfp=childfp + str(subj) + '_rest_FP15P.csv'
-FP15phases_Agg=np.savetxt(FP15phases_Agg, FP15pfp,delimiter=“,”)
+np.savetxt(FP15pfp, FP15phases_Agg, delimiter=",")
 FP17pfp=childfp + str(subj) + '_rest_FP17P.csv'
-FP17phases_Agg=np.savetxt(FP17phases_Agg, FP17pfp,delimiter=“,”)
+np.savetxt(FP17pfp, FP17phases_Agg, delimiter=",")
 VAN7pfp=childfp + str(subj) + '_rest_VAN7P.csv'
-VAN7phases_Agg=np.savetxt(VAN7phases_Agg, VAN7pfp,delimiter=“,”)
+np.savetxt(VAN7pfp, VAN7phases_Agg, delimiter=",")
 VAN9pfp=childfp + str(subj) + '_rest_VAN9P.csv'
-VAN9phases_Agg=np.savetxt(VAN9phases_Agg, VAN9pfp,delimiter=“,”)
+np.savetxt(VAN9pfp, VAN9phases_Agg, delimiter=",")
 DAN5pfp=childfp + str(subj) + '_rest_DAN5P.csv'
-DAN5phases_Agg=np.savetxt(DAN5phases_Agg, DAN5pfp,delimiter=“,”)
+np.savetxt(DAN5pfp, DAN5phases_Agg, delimiter=",")
 DAN14pfp=childfp + str(subj) + '_rest_DAN14P.csv'
-DAN14phases_Agg=np.savetxt(DAN14phases_Agg, DAN14pfp,delimiter=“,”)
+np.savetxt(DAN14pfp, DAN14phases_Agg, delimiter=",")
 Mot2pfp=childfp + str(subj) + '_rest_MOT2P.csv'
-Mot2phases_Agg=np.savetxt(Mot2phases_Agg, Mot2pfp,delimiter=“,”)
+np.savetxt(Mot2pfp, Mot2phases_Agg, delimiter=",")
 Mot4pfp=childfp + str(subj) + '_rest_MOT4P.csv'
-Mot4phases_Agg=np.savetxt(Mot4phases_Agg, Mot4pfp,delimiter=“,”)
+np.savetxt(Mot4pfp, Mot4phases_Agg, delimiter=",")
 Mot11pfp=childfp + str(subj) + '_rest_MOT11P.csv'
-Mot11phases_Agg=np.savetxt(Mot11phases_Agg, Mot11pfp,delimiter=“,”)
+np.savetxt(Mot11pfp, Mot11phases_Agg, delimiter=",")
 Mot13pfp=childfp + str(subj) + '_rest_MOT13P.csv'
-Mot13phases_Agg=np.savetxt(Mot13phases_Agg, Mot13pfp,delimiter=“,”)
+np.savetxt(Mot13pfp, Mot13phases_Agg, delimiter=",")
 Vis6pfp=childfp + str(subj) + '_rest_VIS6P.csv'
-Vis6phases_Agg=np.savetxt(Vis6phases_Agg, Vis6pfp,delimiter=“,”)
+np.savetxt(Vis6pfp, Vis6phases_Agg, delimiter=",")
 Vis10pfp=childfp + str(subj) + '_rest_VIS10P.csv'
-Vis10phases_Agg=np.savetxt(Vis10phases_Agg, Vis10pfp,delimiter=“,”)
+np.savetxt(Vis10pfp, Vis10phases_Agg, delimiter=",")
 Aud16pfp=childfp + str(subj) + '_rest_AUD16P.csv'
-Aud16phases_Agg=np.savetxt(Aud16phases_Agg, Aud16pfp,delimiter=“,”)
+np.savetxt(Aud16pfp, Aud16phases_Agg, delimiter=",")
 
 # amplitudes
 DM1afp=childfp + str(subj) + '_rest_DM1A.csv'
-DM1Amp_Agg=np.savetxt(DM1Amp_Agg, DM1afp,delimiter=“,”)
+np.savetxt(DM1afp, DM1Amp_Agg, delimiter=",")
 DM8afp=childfp + str(subj) + '_rest_DM8A.csv'
-DM8Amp_Agg=np.savetxt(DM8Amp_Agg, DM8afp,delimiter=“,”)
+np.savetxt(DM8afp, DM8Amp_Agg, delimiter=",")
 DM12afp=childfp + str(subj) + '_rest_DM12A.csv'
-DM12Amp_Agg=np.savetxt(DM12Amp_Agg, DM12afp,delimiter=“,”)
+np.savetxt(DM12afp, DM12Amp_Agg, delimiter=",")
 FP3afp=childfp + str(subj) + '_rest_FP3A.csv'
-FP3Amp_Agg=np.savetxt(FP3Amp_Agg, FP3afp,delimiter=“,”)
+np.savetxt(FP3afp, FP3Amp_Agg, delimiter=",")
 FP15afp=childfp + str(subj) + '_rest_FP15A.csv'
-FP15Amp_Agg=np.savetxt(FP15Amp_Agg, FP15afp,delimiter=“,”)
+np.savetxt(FP15afp, FP15Amp_Agg, delimiter=",")
 FP17afp=childfp + str(subj) + '_rest_FP17A.csv'
-FP17Amp_Agg=np.savetxt(FP17Amp_Agg, FP17afp,delimiter=“,”)
+np.savetxt(FP17afp, FP17Amp_Agg, delimiter=",")
 VAN7afp=childfp + str(subj) + '_rest_VAN7A.csv'
-VAN7Amp_Agg=np.savetxt(VAN7Amp_Agg, VAN7afp,delimiter=“,”)
+np.savetxt(VAN7afp, VAN7Amp_Agg, delimiter=",")
 VAN9afp=childfp + str(subj) + '_rest_VAN9A.csv'
-VAN9Amp_Agg=np.savetxt(VAN9Amp_Agg, VAN9afp,delimiter=“,”)
+np.savetxt(VAN9afp, VAN9Amp_Agg, delimiter=",")
 DAN5afp=childfp + str(subj) + '_rest_DAN5A.csv'
-DAN5Amp_Agg=np.savetxt(DAN5Amp_Agg, DAN5afp,delimiter=“,”)
+np.savetxt(DAN5afp, DAN5Amp_Agg, delimiter=",")
 DAN14afp=childfp + str(subj) + '_rest_DAN14A.csv'
-DAN14Amp_Agg=np.savetxt(DAN14Amp_Agg, DAN14afp,delimiter=“,”)
+np.savetxt(DAN14afp, DAN14Amp_Agg, delimiter=",")
 Mot2afp=childfp + str(subj) + '_rest_MOT2A.csv'
-Mot2Amp_Agg=np.savetxt(Mot2Amp_Agg, Mot2afp,delimiter=“,”)
+np.savetxt(Mot2afp, Mot2Amp_Agg, delimiter=",")
 Mot4afp=childfp + str(subj) + '_rest_MOT4A.csv'
-Mot4Amp_Agg=np.savetxt(Mot4Amp_Agg, Mot4afp,delimiter=“,”)
+np.savetxt(Mot4afp, Mot4Amp_Agg, delimiter=",")
 Mot11afp=childfp + str(subj) + '_rest_MOT11A.csv'
-Mot11Amp_Agg=np.savetxt(Mot11Amp_Agg, Mot11afp,delimiter=“,”)
+np.savetxt(Mot11afp, Mot11Amp_Agg, delimiter=",")
 Mot13afp=childfp + str(subj) + '_rest_MOT13A.csv'
-Mot13Amp_Agg=np.savetxt(Mot13Amp_Agg, Mot13afp,delimiter=“,”)
+np.savetxt(Mot13afp, Mot13Amp_Agg, delimiter=",")
 Vis6afp=childfp + str(subj) + '_rest_VIS6A.csv'
-Vis6Amp_Agg=np.savetxt(Vis6Amp_Agg, Vis6afp,delimiter=“,”)
+np.savetxt(Vis6afp, Vis6Amp_Agg, delimiter=",")
 Vis10afp=childfp + str(subj) + '_rest_VIS10A.csv'
-Vis10Amp_Agg=np.savetxt(Vis10Amp_Agg, Vis10afp,delimiter=“,”)
+np.savetxt(Vis10afp, Vis10Amp_Agg, delimiter=",")
 Aud16afp=childfp + str(subj) + '_rest_AUD16A.csv'
-Aud16Amp_Agg=np.savetxt(Aud16Amp_Agg, Aud16afp,delimiter=“,”)
+np.savetxt(Aud16afp, Aud16Amp_Agg, delimiter=",")
 
 ##### save out distribution of DMNpeak-DMNpeak spans
 PeakIntervalSpansfp=childfp + str(subj) + '_rest_PeakIntervalSpan.csv'
-PeakIntervalSpans=np.savetxt(PeakIntervalSpans, PeakIntervalSpansfp,delimiter=“,”)
+np.savetxt(PeakIntervalSpansfp, PeakIntervalSpans, delimiter=",")
 
