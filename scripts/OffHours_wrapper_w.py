@@ -12,7 +12,7 @@ subjects = content_list
 # only first(last) 1048 ran?
 # anddd it died after another 2630 subjs. 2071 left to run.
 # and it died again (9/24/21). 1833 left to run
-subjects = subjects[0:1833]
+#subjects = subjects[0:1833]
 # while there are more than 0 subjects left to run
 while len(subjects)>0:
   # grab qsub info, get number of jobs being run

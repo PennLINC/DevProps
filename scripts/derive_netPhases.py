@@ -211,23 +211,23 @@ for seg in range(SegNum):
 		Vis10InInterval=Vis10[(PeaksandDurs[p,0]-1):(PeaksandDurs[p,0]+PeaksandDurs[p,1]+1)]
 		Aud16InInterval=AUD16[(PeaksandDurs[p,0]-1):(PeaksandDurs[p,0]+PeaksandDurs[p,1]+1)]
 		# mark peaks in DM phase, assuming startpoint is 0 and endpoint is 360
-		DM1Peak=signal.find_peaks(DM1InInterval,distance=IntervalSpan)[0]
-		DM8Peak=signal.find_peaks(DM8InInterval,distance=IntervalSpan)[0]
-		DM12Peak=signal.find_peaks(DM12InInterval,distance=IntervalSpan)[0]
-		FP3Peak=signal.find_peaks(FP3InInterval,distance=IntervalSpan)[0]
-		FP15Peak=signal.find_peaks(FP15InInterval,distance=IntervalSpan)[0]
-		FP17Peak=signal.find_peaks(FP17InInterval,distance=IntervalSpan)[0]
-		VAN7Peak=signal.find_peaks(VAN7InInterval,distance=IntervalSpan)[0]
-		VAN9Peak=signal.find_peaks(VAN9InInterval,distance=IntervalSpan)[0]
-		DAN5Peak=signal.find_peaks(DAN5InInterval,distance=IntervalSpan)[0]
-		DAN14Peak=signal.find_peaks(DAN14InInterval,distance=IntervalSpan)[0]
-		mot2Peak=signal.find_peaks(Mot2InInterval,distance=IntervalSpan)[0]
-		mot4Peak=signal.find_peaks(Mot4InInterval,distance=IntervalSpan)[0]
-		mot11Peak=signal.find_peaks(Mot11InInterval,distance=IntervalSpan)[0]
-		mot13Peak=signal.find_peaks(Mot13InInterval,distance=IntervalSpan)[0]
-		vis6Peak=signal.find_peaks(Vis6InInterval,distance=IntervalSpan)[0]
-		vis10Peak=signal.find_peaks(Vis10InInterval,distance=IntervalSpan)[0]
-		aud16Peak=signal.find_peaks(Aud16InInterval,distance=IntervalSpan)[0]
+		DM1Peak=signal.find_peaks(DM1InInterval,distance=IntervalSpan)[0]-1
+		DM8Peak=signal.find_peaks(DM8InInterval,distance=IntervalSpan)[0]-1
+		DM12Peak=signal.find_peaks(DM12InInterval,distance=IntervalSpan)[0]-1
+		FP3Peak=signal.find_peaks(FP3InInterval,distance=IntervalSpan)[0]-1
+		FP15Peak=signal.find_peaks(FP15InInterval,distance=IntervalSpan)[0]-1
+		FP17Peak=signal.find_peaks(FP17InInterval,distance=IntervalSpan)[0]-1
+		VAN7Peak=signal.find_peaks(VAN7InInterval,distance=IntervalSpan)[0]-1
+		VAN9Peak=signal.find_peaks(VAN9InInterval,distance=IntervalSpan)[0]-1
+		DAN5Peak=signal.find_peaks(DAN5InInterval,distance=IntervalSpan)[0]-1
+		DAN14Peak=signal.find_peaks(DAN14InInterval,distance=IntervalSpan)[0]-1
+		mot2Peak=signal.find_peaks(Mot2InInterval,distance=IntervalSpan)[0]-1
+		mot4Peak=signal.find_peaks(Mot4InInterval,distance=IntervalSpan)[0]-1
+		mot11Peak=signal.find_peaks(Mot11InInterval,distance=IntervalSpan)[0]-1
+		mot13Peak=signal.find_peaks(Mot13InInterval,distance=IntervalSpan)[0]-1
+		vis6Peak=signal.find_peaks(Vis6InInterval,distance=IntervalSpan)[0]-1
+		vis10Peak=signal.find_peaks(Vis10InInterval,distance=IntervalSpan)[0]-1
+		aud16Peak=signal.find_peaks(Aud16InInterval,distance=IntervalSpan)[0]-1
 		# convert to percent through the span (if peaks exist)
 		if len(DM1Peak)>0:
 		    DM1PeakPerc=DM1Peak/IntervalSpan
