@@ -58,6 +58,8 @@ for T in range(len(tasks)):
 		procTS=(procTS-Avg)/SD
 		# convert TS to numpy array to allow for indexing
 		procTS=np.array(procTS)
+		# shadow
+		procTS=-procTS
 		# initialize empty array for gradient bins
 		procTS_bins=np.zeros((len(procTS),25))
 		# bin vertices at same position on gradient
@@ -205,19 +207,19 @@ for T in range(len(tasks)):
 			#plt.savefig(figName,bbox_inches='tight')
 			#plt.close()
 		# saveout table of which segments waves occur within and which TR within segments
-		saveFNwTR=childfp + str(subj) + '_' + str(tasks[T]) + '_waveTRs.csv'
+		saveFNwTR=childfp + str(subj) + '_' + str(tasks[T]) + '_waveTRs_Sh.csv'
 		np.savetxt(saveFNwTR,waveTRs,delimiter=",")
-		saveFNDM=childfp + str(subj) + '_' + str(tasks[T]) + '_delayMat.csv'
+		saveFNDM=childfp + str(subj) + '_' + str(tasks[T]) + '_delayMat_Sh.csv'
 		np.savetxt(saveFNDM,delayMatrix,delimiter=",")
 		# and save thresholded delay matrix to match waveTRs
-		saveFNDMt=childfp + str(subj) + '_' + str(tasks[T]) + '_delayMat_Thr.csv'
+		saveFNDMt=childfp + str(subj) + '_' + str(tasks[T]) + '_delayMat_Thr_Sh.csv'
 		np.savetxt(saveFNDMt,mostHavePeaks,delimiter=",")
 		# save magnitude matrix in same fashion
-		saveFNMM=childfp + str(subj) + '_' + str(tasks[T]) + '_MagMat.csv'
+		saveFNMM=childfp + str(subj) + '_' + str(tasks[T]) + '_MagMat_Sh.csv'
 		np.savetxt(saveFNMM,magMatrix,delimiter=",")
 		mostHavePeaksMag=magMatrix[:,noPeakPwave<9]
 		mostHavePeaksMag[mostHavePeaksMag==999]=np.nan
-		saveFNMMt=childfp + str(subj) + '_' + str(tasks[T]) + '_MagMat_Thr.csv'
+		saveFNMMt=childfp + str(subj) + '_' + str(tasks[T]) + '_MagMat_Thr_Sh.csv'
 		np.savetxt(saveFNMMt,mostHavePeaksMag,delimiter=",")
 		# get nan index for stats
 		nas = np.isnan(mostHavePeaks)
@@ -256,11 +258,11 @@ for T in range(len(tasks)):
 		saveoutMat[3,:]=Wslopes
 		# this row will be redudant, will only have one value, number of TRs
 		saveoutMat[4,:]=len(GS)
-		saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps.csv'
+		saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps_Sh.csv'
 		np.savetxt(saveFN,saveoutMat,delimiter=",")
 		# report difference between all instances of PW and those not meeting >80% threshold
 		UnThreshThreshDif=delayMatrix.shape[1]-mostHavePeaks.shape[1]
 		print('OG delayMat wave count: ' + str(totalTroughNum))
 		print('Waves removed w/ > 66% thresh: ' +str(UnThreshThreshDif))
-		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves'
+		saveFN_thr=childfp + str(subj) + '_' + str(tasks[T]) + '_ThreshedWaves_Sh'
 		np.savetxt(saveFN_thr,[UnThreshThreshDif])
