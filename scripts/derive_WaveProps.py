@@ -99,7 +99,8 @@ for T in range(len(tasks)):
 		sigMatrix=np.zeros((100,6))
 		totalTroughNum=0
 		# and an empty 2-column matrix to record which segment and how far into segment detected GS troughs occur
-		waveTRs=np.zeros((1,3))
+		# now a 4 column matrix - 4th added to record normative peak for relative phase measurement
+		waveTRs=np.zeros((1,4))
 		# for each continuous segment
 		for seg in range(SegNum):
 			SegStart=CSI[seg,0]
@@ -130,14 +131,16 @@ for T in range(len(tasks)):
 					Top_peak, _ = find_peaks(TopinSeg[tstart:tend],distance=(tend-tstart))
 					for b in range(25):
 						# isolate time series sequence
-						iso_ts=procTS_bins_inSeg[tstart:tend,b]
+						# need -1 and +1 to include posib. that peak occurs right at start/end
+						iso_ts=procTS_bins_inSeg[(tstart-1):(tend+1),b]
 						# find peak in this bin (set min distance to be temporal width of bin)
-						peak, _ =find_peaks(iso_ts,distance=(tend-tstart))
+						peak, _ =find_peaks(iso_ts,distance=((tend+1)-(tstart-1)))
 						# determine distance from top of pg peak
 						distanceFTP=peak-Top_peak
 						# if peak exists, add to matrix
 						if ((len(peak) !=0) and (len(Top_peak) !=0)):
-							delayMatrix_Seg[b,t]=distanceFTP
+							# -1 adjusts for starting at 1 rathre than 0 with expanded -1 +1 range 
+							delayMatrix_Seg[b,t]=distanceFTP-1
 							# record magnitude of normalized signal as point of peak
 							magMatrix_Seg[b,t]=iso_ts[peak]
 						else:
@@ -156,7 +159,7 @@ for T in range(len(tasks)):
 					# tag it onto the master sigMatrix (append into 3d, index out later)
 					sigMatrix=np.dstack((sigMatrix,thisWaveSigMatrix))
 					# save segment number and TR within segment for grayOrd plotting later
-					waveTR=np.array([SegStart,tstart,tend],ndmin=2)
+					waveTR=np.array([SegStart,tstart,tend,Top_peak],ndmin=2)
 					waveTRs=np.vstack((waveTRs,waveTR))			
 				delayMatrix=np.concatenate((delayMatrix,delayMatrix_Seg),axis=1)
 				magMatrix=np.concatenate((magMatrix,magMatrix_Seg),axis=1)

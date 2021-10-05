@@ -1,1 +1,1 @@
-matlab -nodisplay -r "DL_preProc_netPhase_delete('${1}')"
+matlab -nodisplay -r "DL_preProc_waveProp_delete('${1}')"

@@ -33,37 +33,54 @@ apply_motion_mask_extractGS_genTRinds(subj)
 % bandpass the global signal and time series to isolate freqs of interest
 BandPass_ts(subj)
 
-% derive FC - grayOrd level and network level
-deriveFCcommand=['python derive_fc.py ' subj];
-system(deriveFCcommand)
+% don't mess about with this stuff if it's already been ran
+fp=['/cbica/projects/abcdfnets/results/wave_output/' subj];
+PGfp=[fp '/' subj '_PG_LR_32k.func.gii'];
+if ~exist(PGfp)
+	% derive FC - grayOrd level and network level
+	deriveFCcommand=['python derive_fc.py ' subj];
+	system(deriveFCcommand)
 
-% downsample aggregated TS 
-dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
-system(dsCommand)
+	% downsample aggregated TS 
+	dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
+	system(dsCommand)
 
-% derive personalized PG
-derivePGcommand=['python derive_pg.py ' subj];
-system(derivePGcommand)
+	% derive personalized PG
+	derivePGcommand=['python derive_pg.py ' subj];
+	system(derivePGcommand)
 
-% upsample derived principal gradient
-usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
-system(usCommand)
+	% upsample derived principal gradient
+	usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
+	system(usCommand)
+end
 
 % derive wave properties w/ python
 wavePropCommand=['python derive_WaveProps.py ' subj];
 system(wavePropCommand)
 
-% group PG rather than individualized
-wavePropCommandG=['python derive_WaveProps_gPG.py ' subj];
-system(wavePropCommandG)
+% deactivation propagation 
+wavePropCommandS=['python derive_WaveProps_shadow.py ' subj];
+system(wavePropCommandS)
+
+% aggregate subject-level measures
+MagSpeedPhaseTimeCommand=['Rscript derive_MagSpeedPhaseTimeinPW.R ' subj];
+system(MagSpeedPhaseTimeCommand)
+
+% shadow
+MagSpeedPhaseTimeCommandS=['Rscript derive_MagSpeedPhaseTimeinPW_shadow.R ' subj];
+system(MagSpeedPhaseTimeCommandS)
+
+% group PG rather than individualized - not updated
+% wavePropCommandG=['python derive_WaveProps_gPG.py ' subj];
+% system(wavePropCommandG)
 
 % basis time series wave prop - coarse
-wavePropCommandBTSC=['python derive_WaveProps_BasisTS.py ' subj];
-system(wavePropCommandBTSC)
+% wavePropCommandBTSC=['python derive_WaveProps_BasisTS.py ' subj];
+% system(wavePropCommandBTSC)
 
 % basis time series wave prop - fine
-wavePropCommandBTSF=['python derive_WaveProps_BasisTS_7.py ' subj];
-system(wavePropCommandBTSF)
+% wavePropCommandBTSF=['python derive_WaveProps_BasisTS_7.py ' subj];
+% system(wavePropCommandBTSF)
 
 % delete input data
 Delete_input_data_w(subj)
