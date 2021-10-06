@@ -1,0 +1,98 @@
+---
+title: "Untitled"
+author: "Adam"
+date: "10/6/2021"
+output: html_document
+---
+
+```{r}
+### subject-level PW measures
+# examples subj
+testSubj=read.delim('/cbica/projects/abcdfnets/results/test_rest_BinWisePhase.csv',header=F,sep=' ')
+
+# normative phase offset
+colMeans(abs(testSubj),na.rm=T)
+
+# tranpose
+testSubj=t(testSubj)
+
+instance1=na.omit(cbind(abs(testSubj[,1]),seq(1,24)))
+
+instance2=na.omit(cbind(abs(testSubj[,2]),seq(1,24)))
+
+instance3=na.omit(cbind(abs(testSubj[,3]),seq(1,24)))
+
+# corVec
+corVec=NULL
+for (i in 1:15){
+  plot(abs(testSubj[,i]))
+  instance=na.omit(cbind(abs(testSubj[,i]),seq(1,24)))
+  cor=cor.test(instance[,1],instance[,2])
+  corVec[i]=cor$estimate
+}
+```
+
+```{r}
+library(reshape2)
+library(ggplot2)
+df<-read.csv('/cbica/projects/abcdfnets/results/rest_BinWiseMeanPhase.csv')
+df=df[-c(1)]
+PhaseOffsets=melt(df,id='X1')
+ggplot(data=PhaseOffsets,aes(x=variable,y=value,group=X1,color=X1))+geom_line(alpha=.5)+scale_color_gradientn(colours = rainbow(5))
+
+ggplot(data=PhaseOffsets,aes(x=variable,y=value,group=X1,color=X1))+geom_smooth(method='gam',alpha=.2,se=F)+scale_color_gradientn(colours = rainbow(5))+theme_classic()+xlab('PG Bin')+ylab('Phase Offset from top PG bin')
+
+### convert into single, subject-level measure
+corVec=NULL
+cbound=NULL
+# useful variable names only
+sequence=seq(1,24)
+for (i in 1:dim(df)[1]){
+  cbound=cbind(t(df[i,2:25]),sequence)
+  corVec[i]=cor.test(cbound[,1],cbound[,2])$estimate
+}
+```
+
+```{r}
+dfM<-read.csv('/cbica/projects/abcdfnets/results/rest_BinWiseMeanMag.csv')
+dfM=dfM[-c(1)]
+Magnitudes=melt(dfM,id='X1')
+ggplot(data=Magnitudes,aes(x=variable,y=value,group=X1,color=X1))+geom_line(alpha=.5)+scale_color_gradientn(colours = rainbow(5))+theme_classic()+xlab('PG Bin')+ylab('Mean Magnitude of Wave Peak')
+
+ggplot(data=Magnitudes,aes(x=variable,y=value,group=X1,color=X1,alpha=.3))+geom_smooth(method='gam',alpha=.2,se=F)+scale_color_gradientn(colours = rainbow(5))+theme_classic()+xlab('PG Bin')+ylab('Mean Magnitude of Wave Peak')
+
+### convert into single, subject-level measure
+MagVec=NULL
+for (i in 1:dim(df)[1]){
+  MagVec[i]=mean(t(Magnitudes[i,2:26]))
+}
+
+```
+
+```{r}
+library(shapes)
+# starting with 48 units for y-axis
+dummyData=rep(NaN,100*2*24)
+# intialize shape 3d matrix
+shapeArray<-array(dummyData,c(24,2,100))
+# populate shape array
+for (s in 1:100){
+  # fill in x (pg bin)
+  pgbins=seq(1,24)
+  pgbins=pgbins
+  shapeArray[1:24,1,s]=pgbins
+  # fill in y (phase offset)
+  phaseOffset=unlist(df[s,2:25])
+  # scale it to the same size as phase offsets
+  phaseOffset=(phaseOffset*25)
+  # convert to smooth
+  iterdf=data.frame(phaseOffset,pgbins)
+  phaseOffsetSmooth=gam(phaseOffset~s(pgbins,k=4),data=iterdf)$fitted.values
+  shapeArray[1:24,2,s]=phaseOffsetSmooth
+  #plot
+  plot(phaseOffsetSmooth)
+}
+
+procrust<-procGPA(shapeArray)
+scores<-procrust$scores
+```
