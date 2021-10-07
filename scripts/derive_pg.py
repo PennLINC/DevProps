@@ -9,6 +9,7 @@ from scipy.io import loadmat
 from sklearn.metrics import pairwise_distances
 from mapalign import embed
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.io import savemat
 
 subj = sys.argv[1]
 
@@ -38,10 +39,10 @@ for TR in range(len(LdArr)):
 # find where average and SD over all TRs is 0
 Averages=np.average(timeSeries,axis=1)
 StDs=np.std(timeSeries,axis=1)
-MWindices = np.where((Averages == 0) | (StDs == 0))
+MWindices = np.where((Averages == 0) & (StDs == 0))
 MWindices=MWindices[0]
 NoMWts=np.delete(timeSeries,MWindices,axis=0)
-nonMWindices = np.where((Averages != 0) | (StDs != 0))
+nonMWindices = np.where((Averages != 0) & (StDs != 0))
 nonMWindices = nonMWindices[0]
 # create FC matrix
 fcmatrix=np.corrcoef(NoMWts)
@@ -103,6 +104,14 @@ LPGfp=parentfp+subj+'_PG_L_10k.func.gii'
 RPGfp=parentfp+subj+'_PG_R_10k.func.gii'
 nb.save(GradsL,LPGfp)
 nb.save(GradsR,RPGfp)
+# save out subject-specific PG for spinning, medial wall to 100 for NaN'ing
+subjPGMW[MWindices,0]=100
+toSpinL=subjPGMW[0:10242,0]
+toSpinR=subjPGMW[10242:20484,0]
+tSLfp=parentfp+subj+'_PG_L_10k.mat'
+tSRfp=parentfp+subj+'_PG_R_10k.mat'
+savemat(tSLfp,{'pg_l':toSpinL})
+savemat(tSRfp,{'pg_r':toSpinR})
 # extract variance explained by this grad
 lambdas=res['lambdas']/sum(res['lambdas'])
 PGlambd=lambdas[subjPG_ind]

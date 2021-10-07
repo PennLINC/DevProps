@@ -54,6 +54,36 @@ if ~exist(PGfp)
 	system(usCommand)
 end
 
+% spin the pg
+spin_pg(subj);
+
+% load in bigRot for spin delin
+parentfp=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' subj '/ses-baselineYear1Arm1/func/'];
+spunFn=[parentfp subj '_spunions.mat']; 
+bigRot=load(spunFn);
+
+% read template PG for iteratively replacing with spun, subj-specific PG
+PGL10k=gifti(['/cbica/projects/abcdfnets/data/hcp.gradients_L_10k.func.gii']);
+PGR10k=gifti(['/cbica/projects/abcdfnets/data/hcp.gradients_R_10k.func.gii']);
+
+% convert spins to dscalar and derive waveProps iteratively
+for s=1:100
+	% extract spin s
+	rotL=bigRot.bigrotl(s,:);
+	rotR=bigRot.bigrotr(s,:);
+	PGL10k.cdata(:,1)=rotL';
+	PGR10k.cdata(:,1)=rotR';
+	write_cifti(PGL10k,[parentfp subj '_spunPGL.func.gii');
+	write_cifti(PGR10k,[parentfp subj '_spunPGR.func.gii');
+	% combinedRot=[rotL rotR];
+	% upsample
+	usSpunCommand=['~/scripts/PWs/PWs/scripts/upsample_PG_spun.sh ' subj];	
+	% derive waveprops on spin
+	SpinwavePropCommand=['python derive_WaveProps_Spun.py ' subj];
+	system(SpinwavePropCommand)
+	% record results of interest from this spin
+end
+
 % derive wave properties w/ python
 wavePropCommand=['python derive_WaveProps.py ' subj];
 system(wavePropCommand)

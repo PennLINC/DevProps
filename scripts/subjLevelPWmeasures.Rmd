@@ -71,7 +71,7 @@ for (i in 1:dim(df)[1]){
 
 ```{r}
 library(shapes)
-# starting with 48 units for y-axis
+# 24 units for y-axis
 dummyData=rep(NaN,100*2*24)
 # intialize shape 3d matrix
 shapeArray<-array(dummyData,c(24,2,100))
@@ -87,7 +87,34 @@ for (s in 1:100){
   phaseOffset=(phaseOffset*25)
   # convert to smooth
   iterdf=data.frame(phaseOffset,pgbins)
-  phaseOffsetSmooth=gam(phaseOffset~s(pgbins,k=4),data=iterdf)$fitted.values
+  phaseOffsetSmooth=gam(phaseOffset~s(pgbins,k=5),data=iterdf)$fitted.values
+  shapeArray[1:24,2,s]=phaseOffsetSmooth
+  #plot
+  plot(phaseOffsetSmooth)
+}
+
+procrust<-procGPA(shapeArray)
+scores<-procrust$scores
+```
+
+```{r}
+# now for magnitude
+dummyData=rep(NaN,100*2*24)
+# intialize shape 3d matrix
+shapeArray<-array(dummyData,c(24,2,100))
+# populate shape array
+for (s in 1:100){
+  # fill in x (pg bin)
+  pgbins=seq(1,24)
+  pgbins=pgbins
+  shapeArray[1:24,1,s]=pgbins
+  # fill in y (phase offset)
+  Mags=unlist(dfM[s,2:25])
+  # scale it to the same size as phase offsets
+  Mags=(Mags*25)
+  # convert to smooth
+  iterdf=data.frame(Mags,pgbins)
+  phaseOffsetSmooth=gam(Mags~s(pgbins,k=3),data=iterdf)$fitted.values
   shapeArray[1:24,2,s]=phaseOffsetSmooth
   #plot
   plot(phaseOffsetSmooth)
