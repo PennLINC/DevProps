@@ -36,52 +36,61 @@ BandPass_ts(subj)
 % don't mess about with this stuff if it's already been ran
 fp=['/cbica/projects/abcdfnets/results/wave_output/' subj];
 PGfp=[fp '/' subj '_PG_LR_32k.func.gii'];
-if ~exist(PGfp)
-	% derive FC - grayOrd level and network level
-	deriveFCcommand=['python derive_fc.py ' subj];
-	system(deriveFCcommand)
 
-	% downsample aggregated TS 
-	dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
-	system(dsCommand)
+% spin tests require 10k surfaces in parent fp, so need to re-run this block on all subjs
+% if ~exist(PGfp)
 
-	% derive personalized PG
-	derivePGcommand=['python derive_pg.py ' subj];
-	system(derivePGcommand)
+% derive FC - grayOrd level and network level
+deriveFCcommand=['python derive_fc.py ' subj];
+system(deriveFCcommand)
 
-	% upsample derived principal gradient
-	usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
-	system(usCommand)
-end
+% downsample aggregated TS 
+dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
+system(dsCommand)
+
+% derive personalized PG
+derivePGcommand=['python derive_pg.py ' subj];
+system(derivePGcommand)
 
 % spin the pg
 spin_pg(subj);
 
-% load in bigRot for spin delin
-parentfp=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' subj '/ses-baselineYear1Arm1/func/'];
-spunFn=[parentfp subj '_spunions.mat']; 
-bigRot=load(spunFn);
+% upsample derived principal gradient
+usCommand=['~/scripts/PWs/PWs/scripts/upsample_PG.sh ' subj];
+system(usCommand)
 
-% read template PG for iteratively replacing with spun, subj-specific PG
-PGL10k=gifti(['/cbica/projects/abcdfnets/data/hcp.gradients_L_10k.func.gii']);
-PGR10k=gifti(['/cbica/projects/abcdfnets/data/hcp.gradients_R_10k.func.gii']);
+%%% intialize empty csvs to populate null with
+tasks=["rest","SST","nback","MID"];
+for t=1:4
+	task=tasks(t);
+	% empty mag by pgbin 100*25
+	MagPGBinSpin=zeros(100,25);
+	MPGBSfn=strjoin([direcString '/' task 'MagPGBinSpin.csv'],'');
+	csvwrite(MPGBSfn,MagPGBinSpin);
+	% empty phase by pgbin 100*24
+	PhPGBinSpin=zeros(100,24);
+	PPGBSfn=strjoin([direcString '/' task 'PhasePGBinSpin.csv'],'');
+	csvwrite(PPGBSfn,PhPGBinSpin);
+	% empty average duration csv 100x1
+	AvgDur=zeros(100,1);
+	ADSfn=strjoin([direcString '/' task 'AvgDurSpin.csv'],'');
+	csvwrite(ADSfn,AvgDur);
+end
 
-% convert spins to dscalar and derive waveProps iteratively
+% iteratively upsample a spin and derive waveproprs
 for s=1:100
-	% extract spin s
-	rotL=bigRot.bigrotl(s,:);
-	rotR=bigRot.bigrotr(s,:);
-	PGL10k.cdata(:,1)=rotL';
-	PGR10k.cdata(:,1)=rotR';
-	write_cifti(PGL10k,[parentfp subj '_spunPGL.func.gii');
-	write_cifti(PGR10k,[parentfp subj '_spunPGR.func.gii');
-	% combinedRot=[rotL rotR];
-	% upsample
-	usSpunCommand=['~/scripts/PWs/PWs/scripts/upsample_PG_spun.sh ' subj];	
+	% apply spin in python
+	appSpinCmd=['python apply_spin.py' subj string(s)];
+	system(strjoin(appSpinCmd))
+	% upsampling
+	usSpunCommand=['~/scripts/PWs/PWs/scripts/upsample_PG_spun.sh ' subj];
+	system(usSpunCommand)
 	% derive waveprops on spin
 	SpinwavePropCommand=['python derive_WaveProps_Spun.py ' subj];
 	system(SpinwavePropCommand)
-	% record results of interest from this spin
+	% aggregate stats of one spin into initialized files
+	AggSpinsCommand=['Rscript AggSpins.R ' subj ' ' string(s)];
+	system(strjoin(AggSpinsCommand,''))
 end
 
 % derive wave properties w/ python

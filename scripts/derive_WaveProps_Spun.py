@@ -212,7 +212,7 @@ for T in range(len(tasks)):
 		saveoutMat[2,:]=Worigin
 		saveoutMat[3,:]=Wslopes
 		# this row will be redudant, will only have one value, number of TRs
-		saveoutMat[4,:]=len(GS)
+		# saveoutMat[4,:]=len(GS)
 		saveFN=childfp + str(subj) + '_' + str(tasks[T]) + '_waveProps_spun.csv'
 		np.savetxt(saveFN,saveoutMat,delimiter=",")
 		# report difference between all instances of PW and those not meeting >80% threshold
