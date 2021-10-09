@@ -7,6 +7,9 @@ pgr = gifti([ProjectFolder '/Gradients.rh.fsaverage5.func.gii']);
 % extract unimodal-transmodal gradient
 grad_lh = pgl.cdata(:,1);
 grad_rh = pgr.cdata(:,1);
+% and vismotor
+grad2_lh = pgl.cdata(:,2);
+grad2_rh = pgr.cdata(:,2);
 % SNR Labels
 lh_SNR_mask=read_label([],'~/data/lh.Mask_SNR.label');
 rh_SNR_mask=read_label([],'~/data/rh.Mask_SNR.label');
@@ -36,19 +39,26 @@ sbj_AtlasLabel_NoMedialWall_l(lh_SNR_mask(:,1)+1)=[];
 sbj_AtlasLabel_NoMedialWall_r(rh_SNR_mask(:,1)+1)=[];
 grad_lh(lh_SNR_mask(:,1)+1)=[];
 grad_rh(rh_SNR_mask(:,1)+1)=[];
+grad2_lh(lh_SNR_mask(:,1)+1)=[];
+grad2_rh(rh_SNR_mask(:,1)+1)=[];
 
-% initialize hierarchy vector
-HierarchyVec=zeros(17,1);
+% initialize hierarchy vectors, can calc. grad distance in R
+PG1vec=zeros(17,1);
+PG2vec=zeros(17,1);
 
 % for each network
 for N=1:17
 	leftN=find(sbj_AtlasLabel_NoMedialWall_l==N);
 	PGValsL=grad_lh(leftN);	
+	PG2ValsL=grad2_lh(leftN);
 	rightN=find(sbj_AtlasLabel_NoMedialWall_r==N);
 	PGValsR=grad_rh(rightN);
+	PG2ValsR=grad2_rh(rightN);
 	PGVals=[PGValsL' PGValsR'];
-	HierarchyVec(N)=mean(PGVals);
+	PG1vec(N)=mean(PGVals);
+	PG2Vals=[PG2ValsL' PG2ValsR'];
+	PG2vec(N)=mean(PG2Vals);
 end
 
 % save out hierarchy vec
-writetable(table(HierarchyVec),'~/results/hierarchyVec.csv')
+writetable(table([PG1vec,PG2vec]),'~/results/hierarchyVec.csv')

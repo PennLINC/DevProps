@@ -62,10 +62,10 @@ ggplot(data=Magnitudes,aes(x=variable,y=value,group=X1,color=X1))+geom_line(alph
 ggplot(data=Magnitudes,aes(x=variable,y=value,group=X1,color=X1,alpha=.3))+geom_smooth(method='gam',alpha=.2,se=F)+scale_color_gradientn(colours = rainbow(5))+theme_classic()+xlab('PG Bin')+ylab('Mean Magnitude of Wave Peak')
 
 ### convert into single, subject-level measure
-MagVec=NULL
-for (i in 1:dim(df)[1]){
-  MagVec[i]=mean(t(Magnitudes[i,2:26]))
-}
+#MagVec=NULL
+#for (i in 1:dim(df)[1]){
+#  MagVec[i]=mean(t(Magnitudes[i,2:26]))
+#}
 
 ```
 
@@ -114,7 +114,7 @@ for (s in 1:100){
   Mags=(Mags*25)
   # convert to smooth
   iterdf=data.frame(Mags,pgbins)
-  phaseOffsetSmooth=gam(Mags~s(pgbins,k=3),data=iterdf)$fitted.values
+  phaseOffsetSmooth=gam(Mags~s(pgbins,k=5),data=iterdf)$fitted.values
   shapeArray[1:24,2,s]=phaseOffsetSmooth
   #plot
   plot(phaseOffsetSmooth)
@@ -122,4 +122,41 @@ for (s in 1:100){
 
 procrust<-procGPA(shapeArray)
 scores<-procrust$scores
+```
+
+```{r}
+# test subj
+spunMag<-read.csv('/cbica/projects/abcdfnets/dropbox/test_restMagPGBbinSpin.csv',header=F)
+spunPh<-read.csv('/cbica/projects/abcdfnets/dropbox/test_restPhasePGBbinSpin.csv',header=F)
+spunDur<-read.csv('/cbica/projects/abcdfnets/dropbox/test_AvgDurSpin.csv',header=F)
+
+# observed
+ggplot(data=PhaseOffsets[PhaseOffsets$X1==31,],aes(x=variable,y=value,group=X1))+geom_line(alpha=.5)+theme_classic()
+ggplot(data=Magnitudes[Magnitudes$X1==31,],aes(x=variable,y=value,group=X1))+geom_line(alpha=.5)+ylim(0,.7)+theme_classic()
+
+# nulls
+spunPh$group<-seq(1:100)
+spunMag$group<-seq(1:100)
+
+# tag on observed for comparison
+spunPh[101,1:24]<-df[1,2:25]
+spunPh[101,25]<-101
+spunMag[101,1:25]<-dfM[1,2:26]
+spunMag[101,26]<-101
+
+# only plotting 10 nulls at a time to make sense of it
+spunPhM=melt(spunPh[100:101,],id='group')
+spunMagM=melt(spunMag[1:101,],id='group')
+
+#phase nulls
+ggplot(data=spunPhM,aes(x=variable,y=value,group=group,color=group))+geom_line(alpha=.7)+scale_color_gradientn(colours = rainbow(5))+theme_classic()+ylab('Phase Offset')+xlab('PG Bin')
+
+# mag nulls
+ggplot(data=spunMagM,aes(x=variable,y=value,group=group,color=group))+geom_line(alpha=.7)+scale_color_gradientn(colours = rainbow(5))+ylim(0,.7)+theme_classic()+ylab('Magnitude')+xlab('PG Bin')
+
+# test phase * pg cor vs. nulls
+PhPGcorvec<-NULL
+for (i in 1:101){
+  PhPGcorvec[i]<-cor.test(seq(1:24),unlist(spunPh[i,1:24]))$estimate
+}
 ```

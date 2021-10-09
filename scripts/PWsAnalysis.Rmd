@@ -169,6 +169,14 @@ CompLM<-lm(numTD_m~interview_age+numW_m+sex.x+mri_info_deviceserialnumber+TRs_m+
 ######## for dmn
 # obtain PG values for each net
 HierVec<-read.csv('/cbica/projects/abcdfnets/results/hierarchyVec.csv')
+HierVec$Var1_3=as.factor(seq(1:17))
+
+# dispersion of nets in gradient space
+ggplot(data=HierVec,aes(x=Var1_1,y=Var1_2,color=Var1_3))+geom_point(size=5)+scale_colour_manual(values = rainbow(17))+theme_classic()
+
+# translate to 1-d distance from top, euclidean distance
+HierVec$GradDist=sqrt(((HierVec$Var1_1[1]-HierVec$Var1_1)^2)+((HierVec$Var1_2[1]-HierVec$Var1_2)^2))
+
 # get ordering for grayOrd plots
 Hordering<-sort(HierVec$HierarchyVec,index.return=TRUE)
 print(Hordering$ix)

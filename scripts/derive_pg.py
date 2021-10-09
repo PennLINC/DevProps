@@ -70,14 +70,24 @@ GradsR=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_R_10k.func.gii')
 # extract 1st grad
 PGL=GradsL.darrays[0]
 PGR=GradsR.darrays[0]
+# extract 2nd grad
+PG2L=GradsL.darrays[1]
+PG2R=GradsR.darrays[1]
 # array for pg1
 PG1=np.zeros((20484,1))
 PG1[0:10242,0]=PGL.data
 PG1[10242:20484,0]=PGR.data
+# array for pg2
+PG2=np.zeros((20484,1))
+PG2[0:10242,0]=PG2L.data
+PG2[10242:20484,0]=PG2R.data
 # same MW mask 
 NoMWPG=np.delete(PG1,MWindices,axis=0)
+NoMWPG2=np.delete(PG2,MWindices,axis=0)
 # initialize correlation list for each of this subject's first five gradients
 gradCors=np.zeros(5)
+grad2Cors=np.zeros(5)
+### Match PG1
 # checking first five gradients is probably overkill but there are a lot of abcd subjs to be potential edge cases
 for g in range(5):
 	spear_man=scipy.stats.spearmanr(NoMWPG,emb[:,g])
@@ -99,6 +109,29 @@ PGL.data=subjPGMW[0:10242,0]
 PGR.data=subjPGMW[10242:20484,0]
 GradsL.darrays[0]=PGL
 GradsR.darrays[0]=PGR
+### Match PG2
+# checking first five gradients is probably overkill but there are a lot of abcd subjs to be potential edge cases
+for g in range(5):
+        spear_man=scipy.stats.spearmanr(NoMWPG2,emb[:,g])
+        gradCors2[g]=np.absolute(spear_man.correlation)
+
+print(max(gradCors2))
+# argmax to find location of best PG2-equivalent estimate
+subjPG2_ind=np.argmax(gradCors2)
+subjPG2=emb[:,subjPG2_ind]
+# match gradient directionality (i.e., is transmodal pos and unimodal neg?)
+if scipy.stats.spearmanr(subjPG2,NoMWPG2).correlation < 0:
+        subjPG2=subjPG2 * -1
+
+# replace group PG values with this subj's for printout
+# MW included array for saveout
+subjPG2MW=np.zeros((20484,1))
+subjPG2MW[nonMWindices,0]=subjPG2
+PG2L.data=subjPG2MW[0:10242,0]
+PG2R.data=subjPG2MW[10242:20484,0]
+GradsL.darrays[1]=PG2L
+GradsR.darrays[1]=PG2R
+### end pg2 match
 # save out subject-specific PG for upsampling
 LPGfp=parentfp+subj+'_PG_L_10k.func.gii'
 RPGfp=parentfp+subj+'_PG_R_10k.func.gii'
@@ -115,7 +148,8 @@ savemat(tSRfp,{'pg_r':toSpinR})
 # extract variance explained by this grad
 lambdas=res['lambdas']/sum(res['lambdas'])
 PGlambd=lambdas[subjPG_ind]
+PG2lambd=lambdas[subjPG2_ind]
 # save index of "PG" for later - which gradient matched THE principal gradient for this subject
 # also save variance explained by this gradient
 subjPGfn_index=childfp+str(subj)+'_PG1_index'
-np.save(subjPGfn_index,[subjPG_ind,PGlambd])
+np.save(subjPGfn_index,[subjPG_ind,PGlambd,subjPG2_ind,PG2lambd])
