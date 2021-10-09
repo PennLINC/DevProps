@@ -34,9 +34,8 @@ apply_motion_mask_extractGS_genTRinds(subj)
 BandPass_ts(subj)
 
 % don't mess about with this stuff if it's already been ran
-fp=['/cbica/projects/abcdfnets/results/wave_output/' subj];
-PGfp=[fp '/' subj '_PG_LR_32k.func.gii'];
-
+% fp=['/cbica/projects/abcdfnets/results/wave_output/' subj];
+% PGfp=[fp '/' subj '_PG_LR_32k.func.gii'];
 % spin tests require 10k surfaces in parent fp, so need to re-run this block on all subjs
 % if ~exist(PGfp)
 

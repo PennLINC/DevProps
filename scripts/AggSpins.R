@@ -29,7 +29,7 @@ for (t in 1:4){
 	BinWiseMag=rowMeans(WMag)
 	MagPGbin[SpinNum,]=t(BinWiseMag)
 	# save updated magnitude back out
-	write.table(MagPGbin,MagPGbinFn,row.names=F,col.names=F)
+	write.table(MagPGbin,MagPGbinFn,sep=',',row.names=F,col.names=F)
 	### Done with magnitude
 	# make a column representing when the top-o-pg peak is b/w its troughs
 	waveTRs$TPGpeak=waveTRs$V2+waveTRs$V4
@@ -42,8 +42,8 @@ for (t in 1:4){
 	# get median speed of wave
 	MedSped=median(startEnddif)
 	# write out median speed
-	Duration[SpinNum]=MedSped
-	write.table(Duration,DurationFn,row.names=F,col.names=F)
+	Duration[SpinNum,1]=MedSped
+	write.table(Duration,DurationFn,sep=',',row.names=F,col.names=F)
 	# CAN ADD TIME SPENT IN WAVE FOR NULL COMPARISONS IF NEEDED
 	# initialize phase-PGBin matrix - number of waves + number of non-top bins
 	PhPGB=matrix(999,length(startEnddif),24)
@@ -70,6 +70,5 @@ for (t in 1:4){
 	# put back in
 	PhasePGbin[SpinNum,]=t(phOff)
 	# save back out
-	write.table(PhasePGbin,PhasePGbinFn,row.names=F,col.names=F)
-	# and just average duration
+	write.table(PhasePGbin,PhasePGbinFn,sep=',',row.names=F,col.names=F)
 }
