@@ -113,11 +113,11 @@ GradsR.darrays[0]=PGR
 # checking first five gradients is probably overkill but there are a lot of abcd subjs to be potential edge cases
 for g in range(5):
         spear_man=scipy.stats.spearmanr(NoMWPG2,emb[:,g])
-        gradCors2[g]=np.absolute(spear_man.correlation)
+        grad2Cors[g]=np.absolute(spear_man.correlation)
 
-print(max(gradCors2))
+print(max(grad2Cors))
 # argmax to find location of best PG2-equivalent estimate
-subjPG2_ind=np.argmax(gradCors2)
+subjPG2_ind=np.argmax(grad2Cors)
 subjPG2=emb[:,subjPG2_ind]
 # match gradient directionality (i.e., is transmodal pos and unimodal neg?)
 if scipy.stats.spearmanr(subjPG2,NoMWPG2).correlation < 0:

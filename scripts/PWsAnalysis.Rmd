@@ -9,6 +9,8 @@ output: html_document
 library(mclust)
 library(ggplot2)
 library(ggpubr)
+library(visreg)
+library(lme4)
 # read in master fc
 mfc=read.csv('/cbica/projects/abcdfnets/results/masterfc.csv')
 mfc$subjectkey<-gsub('sub-NDARINV','NDAR_INV',mfc$subjectkey)
@@ -144,6 +146,35 @@ WavesMotContDMDAN<-lm(rsfmri_c_ngd_dt_ngd_dla~numW_r+rsfmri_c_ngd_meanmotion+TRs
 # and TR excl
 masterdf<-masterdf[masterdf$TRs_r>900,]
 
+############
+# poor man's standardize variance by site
+for (s in 1:length(unique(masterdf$mri_info_deviceserialnumber))){
+  # for this serial number
+  SN<-unique(masterdf$mri_info_deviceserialnumber)[s]
+  # site df
+  siteDf<-masterdf[masterdf$mri_info_deviceserialnumber==SN,]
+  ### convert to units of SDs around mean
+  # print starting SD
+  print(sd(siteDf$numTD_r))
+  # mean
+  meanTD<-mean(siteDf$numTD_r)
+  # subbed
+  siteDfTDminMean<-siteDf$numTD_r-meanTD
+  # sd
+  sdTD<-sd(siteDf$numTD_r)
+  # divide by
+  ZscoredTd<-siteDfTDminMean/sdTD
+  # add mean back
+  ZscoredTdPlusMean<-ZscoredTd+meanTD
+  # print ending SD
+  print(sd(ZscoredTdPlusMean))
+  # drop it back in df
+  masterdf$numTD_r[masterdf$mri_info_deviceserialnumber==SN]<-ZscoredTdPlusMean
+}
+############
+```
+
+```{r}
 WavesMotContDMDM<-lm(rsfmri_c_ngd_dt_ngd_dt~numW_r+rsfmri_c_ngd_meanmotion+TRs_r,data=masterdf)
 
 WavesMotContDMDAN<-lm(rsfmri_c_ngd_dt_ngd_dla~numW_r+rsfmri_c_ngd_meanmotion+TRs_r,data=masterdf)
