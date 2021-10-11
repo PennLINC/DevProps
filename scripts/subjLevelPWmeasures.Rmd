@@ -6,7 +6,35 @@ output: html_document
 ---
 
 ```{r}
+library(ggplot2)
+library(reshape2)
+
 ### subject-level PW measures
+
+# read in grad positioning of nets
+NetPosish=read.delim('/cbica/projects/abcdfnets/results/NetsInGrads.csv',header=T,sep=',')
+
+# sep out grad1 and grad2 vals
+grad1vals=NetPosish[,1:17]
+grad2vals=NetPosish[,18:34]
+
+# melt em
+grad1M=melt(grad1vals)
+grad2M=melt(grad2vals)
+
+# relabel
+colnames(grad1M)<-c('Network','PG1')
+colnames(grad2M)<-c('NetworkPlus17','PG2')
+# combine
+plotdf<-cbind(grad1M,grad2M)
+
+# color vector
+colors=c('red','blue','orange','blue','green','purple','pink','red','pink','purple','blue','red','blue','green','orange','darkslateblue','orange')
+
+ggplot(data=plotdf,aes(x=PG1,y=PG2,color=Network))+geom_point(size=3)+scale_color_manual(values=colors)+theme_classic()
+```
+
+```{r}
 # examples subj
 testSubj=read.delim('/cbica/projects/abcdfnets/results/test_rest_BinWisePhase.csv',header=F,sep=' ')
 
