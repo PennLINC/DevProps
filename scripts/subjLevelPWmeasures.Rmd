@@ -31,7 +31,7 @@ plotdf<-cbind(grad1M,grad2M)
 # color vector
 colors=c('red','blue','orange','blue','green','purple','pink','red','pink','purple','blue','red','blue','green','orange','darkslateblue','orange')
 
-ggplot(data=plotdf,aes(x=PG1,y=PG2,color=Network))+geom_point(size=3)+scale_color_manual(values=colors)+theme_classic()
+ggplot(data=plotdf,aes(x=PG1,y=PG2,color=Network))+geom_point(size=2)+scale_color_manual(values=colors)+theme_classic()
 ```
 
 ```{r}

@@ -1,0 +1,133 @@
+function OpFlow(subj)
+
+% addpath needed for reading cifti
+addpath(genpath('/cbica/projects/abcdfnets/scripts/code_nmf_cifti/tool_folder'));
+% and path needed for opflow
+addpath(genpath('/cbica/projects/abcdfnets/scripts/NeuroPattToolbox'));
+
+%%% load in normative x y coordinates for left
+FM_l=gifti('~/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
+FM_r=gifti('~/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
+% extract coordinates
+xL=double(FM_l.vertices(:,1));
+xR=double(FM_r.vertices(:,1));
+yL=double(FM_l.vertices(:,2));
+yR=double(FM_r.vertices(:,2));
+% going to need to expand these to make seperable bins IN ACCORDANCE WITH PROC. POWER AVAILABLE
+xL=xL; % example: xL*10 for 10x resolution
+xR=xR;
+yL=yL;
+yR=yR;
+
+%%% read in subject's clean TS, starting with rest
+sname=char(subj);
+parentfp=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' sname '/ses-baselineYear1Arm1/func/'];
+ts=read_cifti([parentfp sname '_p2mm_masked_filtered_rest.dtseries.nii']);
+
+% following - https://github.com/coalsont/cifti-matlab/blob/master/cifti_dense_get_surf_map.m
+% prepare indices of left hemi
+[vertlist1L, ciftilistL, numvertsL] = cifti_dense_get_surf_map(ts.diminfo{1}, 'CORTEX_LEFT');
+
+% prepare indices of right hemi
+[vertlist1R, ciftilistR, numvertsR] = cifti_dense_get_surf_map(ts.diminfo{1}, 'CORTEX_RIGHT');
+
+%%% get flatmap and masks in order
+% need to use combined index where xL yL xR yR are not 0 and cifti index is not 0, first step is filtering by vertlist from ciftiinfo
+% this extracts the shape of the flatmap in the form of x and y coordinates - vertices of all coordinates comprising the flatmaps
+xLPartialFilt=xL(vertlist1L);
+yLPartialFilt=yL(vertlist1L);
+xRPartialFilt=xR(vertlist1R);
+yRPartialFilt=yR(vertlist1R);
+% no negative coordinates
+xLPartialFilt=xLPartialFilt+abs(min(xLPartialFilt));
+yLPartialFilt=yLPartialFilt+abs(min(yLPartialFilt));
+xRPartialFilt=xRPartialFilt+abs(min(xRPartialFilt));
+yRPartialFilt=yRPartialFilt+abs(min(yRPartialFilt));
+% size of "grid"
+s_gridX_L=max(xL)-min(xL);
+s_gridX_R=max(xR)-min(xR);
+s_gridY_L=max(yL)-min(yL);
+s_gridY_R=max(yR)-min(yR);
+% get border of flatmap in a sized rectangle
+vqBound_L = boundary(double(xLPartialFilt),double(yLPartialFilt)); 
+vqBound_R = boundary(double(xRPartialFilt),double(yRPartialFilt));	
+% Xq and Yq will be equally spaced integer grid values
+XqL=1:s_gridX_L;
+YqL=1:s_gridY_L;
+XqR=1:s_gridX_R;
+YqR=1:s_gridY_R;
+% convert to grid
+[xL,yL]=meshgrid(XqL,YqL);
+[xR,yR]=meshgrid(XqR,YqR);
+% create mask for vertices within boundaries of shape (within rectangle)
+bwL = poly2mask(double(xLPartialFilt(vqBound_L)),double(yLPartialFilt(vqBound_L)),double(max(max(yL))),double(max(max(xL))));
+bwR = poly2mask(double(xLPartialFilt(vqBound_R)),double(yLPartialFilt(vqBound_R)),double(max(max(yR))),double(max(max(xR))));	
+% convert to NaN's instead of 0
+bwNL=double(bwL);
+bwNL(bwNL==0)=NaN;
+bwNR=double(bwR);
+bwNR(bwNR==0)=NaN;
+
+%%% get time series in order
+% extract left hemi
+ts_LH=zeros(numvertsL,1,'single');
+ts_LH=ts.cdata(ciftilistL,:);
+% extract right
+ts_RH=zeros(numvertsR,1,'single');
+ts_RH=ts.cdata(ciftilistR,:);
+% read in continuous segment denotation
+segmentFN=[parentfp sname '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
+segments=dlmread(segmentFN);
+num_segs=length(segments);
+
+%%% set opflow params
+params = setNeuroPattParams(1.25); 
+params = setNeuroPattParams(params,'subtractBaseline', 0, 1.25); 
+params = setNeuroPattParams(params,'filterData', 0, 1.25);
+params = setNeuroPattParams(params,'planeWaveThreshold', 0.7, 1.25);
+params = setNeuroPattParams(params,'synchronyThreshold', 0.7, 1.25);
+params = setNeuroPattParams(params,'minDurationSecs', 10, 1.25);
+params = setNeuroPattParams(params,'maxTimeGapSecs', 5, 1.25);
+params = setNeuroPattParams(params,'maxDisplacement', 10, 1.25);
+params = setNeuroPattParams(params,'minCritRadius', 4, 1.25);
+
+
+% initialize megastruct for results from each segment
+
+%%% for each contin. segment, run opflow
+for S=1:length(num_segs)
+	% get length of segment in TR
+	ts_seg_length=segments(S,2);
+	% index into master time series to grab this segment
+	ts_segL=ts_LH(:,(segments(S,1):((segments(S,1)+segments(S,2))-1)));
+	ts_segR=ts_RH(:,(segments(S,1):((segments(S,1)+segments(S,2))-1)));
+	% initialize 3d (x,y,time) flatmaps for both hemis
+	fMap_ts_L_grid=zeros(length(XqL),length(YqL),ts_seg_length);
+	fMap_ts_R_grid=zeros(length(XqR),length(YqR),ts_seg_length);
+	% insert "gridded" TRs into matrix
+	for T=1:ts_seg_length
+		% extract this TR
+		TRVals_L=ts_segL(:,T);
+		TRVals_R=ts_segR(:,T);
+		% Interp. onto grid CHECK MESHGRID TO LOOK FOR SOURCE OF TRANSPOSE HERE
+		vqL = griddata(double(xLPartialFilt),double(yLPartialFilt),double(TRVals_L),double(xL),double(yL));
+		vqR = griddata(double(xRPartialFilt),double(yRPartialFilt),double(TRVals_R),double(xR),double(yR));
+		% use mask to select flatmap patch
+		masked_vqL=(vqL).*(bwNL);
+		masked_vqR=(vqR).*(bwNR);
+		% insert into broader DF
+		fMap_ts_L_grid(:,:,T)=masked_vqL';
+		fMap_ts_R_grid(:,:,T)=masked_vqR';
+	end	
+	% run opflow
+	resultsL = mainProcessingWithOutput(fMap_ts_L_grid, 1.25, params);
+	resultsR = mainProcessingWithOutput(fMap_ts_R_grid, 1.25, params);
+	% extract opflow results of interest
+
+	% insert into broader struct for this subj
+
+	% (save number of TRs in this segment for potential weighting later)
+
+% end
+
+% save aggregated output into waveoutput
