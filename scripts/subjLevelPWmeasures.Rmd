@@ -173,7 +173,7 @@ spunMag[101,1:25]<-dfM[1,2:26]
 spunMag[101,26]<-101
 
 # only plotting 10 nulls at a time to make sense of it
-spunPhM=melt(spunPh[100:101,],id='group')
+spunPhM=melt(spunPh[90:101,],id='group')
 spunMagM=melt(spunMag[1:101,],id='group')
 
 #phase nulls

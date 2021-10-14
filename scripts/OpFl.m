@@ -6,18 +6,18 @@ addpath(genpath('/cbica/projects/abcdfnets/scripts/code_nmf_cifti/tool_folder'))
 addpath(genpath('/cbica/projects/abcdfnets/scripts/NeuroPattToolbox'));
 
 %%% load in normative x y coordinates for left
-FM_l=gifti('~/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
-FM_r=gifti('~/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
+FM_l=gifti('/cbica/projects/abcdfnets/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
+FM_r=gifti('/cbica/projects/abcdfnets/scripts/normative_surfs/S900.R.flat.32k_fs_LR.surf.gii');
 % extract coordinates
 xL=double(FM_l.vertices(:,1));
 xR=double(FM_r.vertices(:,1));
 yL=double(FM_l.vertices(:,2));
 yR=double(FM_r.vertices(:,2));
 % going to need to expand these to make seperable bins IN ACCORDANCE WITH PROC. POWER AVAILABLE
-xL=xL; % example: xL*10 for 10x resolution
-xR=xR;
-yL=yL;
-yR=yR;
+xL=xL*.5; % example: xL*10 for 10x resolution
+xR=xR*.5;
+yL=yL*.5;
+yR=yR*.5;
 
 %%% read in subject's clean TS, starting with rest
 sname=char(subj);
@@ -82,15 +82,21 @@ num_segs=length(segments);
 
 %%% set opflow params
 params = setNeuroPattParams(1.25); 
-params = setNeuroPattParams(params,'subtractBaseline', 0, 1.25); 
-params = setNeuroPattParams(params,'filterData', 0, 1.25);
+params = setNeuroPattParams(params,'zscoreChannels', 1, 1.25);
+% params = setNeuroPattParams(params,'subtractBaseline', 0, 1.25); 
+% filter does not seem to be stopping 
+% params = setNeuroPattParams(params,'filterData',logical(0), 1.25);
+% if you can't beat 'em, join em
+params = setNeuroPattParams(params,'morletCfreq', .05, 1.25);
+params = setNeuroPattParams(params,'opBeta', 10, 1.25);
 params = setNeuroPattParams(params,'planeWaveThreshold', 0.7, 1.25);
 params = setNeuroPattParams(params,'synchronyThreshold', 0.7, 1.25);
 params = setNeuroPattParams(params,'minDurationSecs', 10, 1.25);
 params = setNeuroPattParams(params,'maxTimeGapSecs', 5, 1.25);
-params = setNeuroPattParams(params,'maxDisplacement', 10, 1.25);
-params = setNeuroPattParams(params,'minCritRadius', 4, 1.25);
-
+params = setNeuroPattParams(params,'maxDisplacement', 1, 1.25);
+params = setNeuroPattParams(params,'minCritRadius', 1, 1.25);
+% downsampling the temporal domain by 5x hurts though, they say default is 1
+params = setNeuroPattParams(params,'downsampleScale', 1, 1.25);
 
 % initialize megastruct for results from each segment
 
@@ -102,8 +108,8 @@ for S=1:length(num_segs)
 	ts_segL=ts_LH(:,(segments(S,1):((segments(S,1)+segments(S,2))-1)));
 	ts_segR=ts_RH(:,(segments(S,1):((segments(S,1)+segments(S,2))-1)));
 	% initialize 3d (x,y,time) flatmaps for both hemis
-	fMap_ts_L_grid=zeros(length(XqL),length(YqL),ts_seg_length);
-	fMap_ts_R_grid=zeros(length(XqR),length(YqR),ts_seg_length);
+	fMap_ts_L_grid=zeros(length(YqL),length(XqL),ts_seg_length);
+	fMap_ts_R_grid=zeros(length(YqR),length(XqR),ts_seg_length);
 	% insert "gridded" TRs into matrix
 	for T=1:ts_seg_length
 		% extract this TR
@@ -116,9 +122,11 @@ for S=1:length(num_segs)
 		masked_vqL=(vqL).*(bwNL);
 		masked_vqR=(vqR).*(bwNR);
 		% insert into broader DF
-		fMap_ts_L_grid(:,:,T)=masked_vqL';
-		fMap_ts_R_grid(:,:,T)=masked_vqR';
+		fMap_ts_L_grid(:,:,T)=masked_vqL;
+		fMap_ts_R_grid(:,:,T)=masked_vqR;
 	end	
+	% small patch test
+	resultsL = mainProcessingWithOutput(fMap_ts_L_grid(100:140,100:140,:), 1.25, params);
 	% run opflow
 	resultsL = mainProcessingWithOutput(fMap_ts_L_grid, 1.25, params);
 	resultsR = mainProcessingWithOutput(fMap_ts_R_grid, 1.25, params);
