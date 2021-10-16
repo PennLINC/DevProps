@@ -1,4 +1,11 @@
-function OpFlow(subj)
+function OpFl(subj)
+% run optical flow analyses on this subject, on each segment of continuous TRs sep. Only on resting state for now. 
+% main to-do's:
+% find way to mask empty cells
+% hopefully find a way to speed it up
+% find a way to combine SVD results from each run 
+% re=semicolon unsemicolon'ed lines
+
 
 % addpath needed for reading cifti
 addpath(genpath('/cbica/projects/abcdfnets/scripts/code_nmf_cifti/tool_folder'));
@@ -14,10 +21,10 @@ xR=double(FM_r.vertices(:,1));
 yL=double(FM_l.vertices(:,2));
 yR=double(FM_r.vertices(:,2));
 % going to need to expand these to make seperable bins IN ACCORDANCE WITH PROC. POWER AVAILABLE
-xL=xL*.5; % example: xL*10 for 10x resolution
-xR=xR*.5;
-yL=yL*.5;
-yR=yR*.5;
+xL=xL*.2; % example: xL*10 for 10x resolution
+xR=xR*.2;
+yL=yL*.2;
+yR=yR*.2;
 
 %%% read in subject's clean TS, starting with rest
 sname=char(subj);
@@ -64,9 +71,9 @@ bwL = poly2mask(double(xLPartialFilt(vqBound_L)),double(yLPartialFilt(vqBound_L)
 bwR = poly2mask(double(xLPartialFilt(vqBound_R)),double(yLPartialFilt(vqBound_R)),double(max(max(yR))),double(max(max(xR))));	
 % convert to NaN's instead of 0
 bwNL=double(bwL);
-bwNL(bwNL==0)=NaN;
+%bwNL(bwNL==0)=NaN;
 bwNR=double(bwR);
-bwNR(bwNR==0)=NaN;
+%bwNR(bwNR==0)=NaN;
 
 %%% get time series in order
 % extract left hemi
@@ -97,11 +104,15 @@ params = setNeuroPattParams(params,'maxDisplacement', 1, 1.25);
 params = setNeuroPattParams(params,'minCritRadius', 1, 1.25);
 % downsampling the temporal domain by 5x hurts though, they say default is 1
 params = setNeuroPattParams(params,'downsampleScale', 1, 1.25);
-
 % initialize megastruct for results from each segment
-
+MegaStruct=struct();
+MegaStruct.P_Left={};
+MegaStruct.P_Right={};
+Mega.TRsInSeg={};
+MegaStruct.Vf_Left={};
+MegaStruct.Vf_Right={};
 %%% for each contin. segment, run opflow
-for S=1:length(num_segs)
+for S=1:num_segs
 	% get length of segment in TR
 	ts_seg_length=segments(S,2);
 	% index into master time series to grab this segment
@@ -126,16 +137,19 @@ for S=1:length(num_segs)
 		fMap_ts_R_grid(:,:,T)=masked_vqR;
 	end	
 	% small patch test
-	resultsL = mainProcessingWithOutput(fMap_ts_L_grid(100:140,100:140,:), 1.25, params);
+	% resultsL = mainProcessingWithOutput(fMap_ts_L_grid(100:140,100:140,:), 1.25, params);
 	% run opflow
 	resultsL = mainProcessingWithOutput(fMap_ts_L_grid, 1.25, params);
 	resultsR = mainProcessingWithOutput(fMap_ts_R_grid, 1.25, params);
 	% extract opflow results of interest
-
-	% insert into broader struct for this subj
-
-	% (save number of TRs in this segment for potential weighting later)
-
-% end
+	MegaStruct.P_Left{S}=resultsL.patterns;
+	MegaStruct.P_Right{S}=resultsR.patterns;
+        MegaStruct.Vf_Left{S}=resultsL.velocityFields;
+        MegaStruct.Vf_Right{S}=resultsR.velocityFields;
+	MegaStruct.TRsInSeg=resultsL.nTimeSteps+1
+ end
 
 % save aggregated output into waveoutput
+fn=['/cbica/projects/abcdfnets/results/wave_output/' sname '/' 'OpFlowResults.mat'];
+save(fn,'MegaStruct')
+
