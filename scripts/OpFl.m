@@ -146,7 +146,7 @@ for S=1:num_segs
 	MegaStruct.P_Right{S}=resultsR.patterns;
         MegaStruct.Vf_Left{S}=resultsL.velocityFields;
         MegaStruct.Vf_Right{S}=resultsR.velocityFields;
-	MegaStruct.TRsInSeg=resultsL.nTimeSteps+1
+	MegaStruct.TRsInSeg{S}=resultsL.nTimeSteps+1
  end
 
 % save aggregated output into waveoutput

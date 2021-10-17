@@ -73,10 +73,23 @@ PG_RH=PG.cdata(ciftilistR,1);
 PG_gr_L = griddata(double(xLPartialFilt),double(yLPartialFilt),double(PG_LH),double(xL),double(yL));
 PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),double(xR),double(yR));
 % get the gradient of the PG (I know, language sucks)
-[G_magL,G_dirL]=imgradient(PG_gr_L);
+[GxL,GyL]=imgradientxy(PG_gr_L);
+% alt method
 [G_magR,G_dirR]=imgradient(PG_gr_R);
 % just saving the magnitude out for now - combine mag and dir into real and imaginary set for comparable vectors to OpFl.m
-G_magL=(G_magL).*(bwNL);
-PG_gr_L=(PG_gr_L).*(bwNL);
-dlmwrite('~/dropbox/G_magL.csv',G_magL)
-dlmwrite('~/dropbox/PG_L.csv',PG_gr_L)
+% G_magL=(G_magL).*(bwNL);
+% PG_gr_L=(PG_gr_L).*(bwNL);
+% saving angle in -180 to 180 range for now: might be a way to tan or cos it if needed
+% G_dirL=(G_dirL).*(bwNL);
+% dlmwrite('~/dropbox/G_magL.csv',G_magL)
+% dlmwrite('~/dropbox/G_dirL.csv',G_dirL)
+% dlmwrite('~/dropbox/PG_L.csv',PG_gr_L)
+% attempt 1 to convert output to normal vectors
+% gradXL=G_magL.*cos(G_dirL);
+% gradYL=G_magL.*sin(G_dirL);
+% normxl= -gradXL;
+% normyl= -gradYL;
+% normz = 1;
+dlmwrite('~/dropbox/GxL.csv',GxL);
+dlmwrite('~/dropbox/GyL.csv',GyL);
+
