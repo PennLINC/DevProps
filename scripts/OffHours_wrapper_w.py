@@ -1,8 +1,9 @@
 import subprocess
 import time
 import datetime
+import os
 # grab some subjs as list
-my_file = open("/cbica/projects/abcdfnets/clean100.txt", "r")
+my_file = open("/cbica/projects/abcdfnets/all.txt", "r")
 content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)
@@ -27,11 +28,16 @@ while len(subjects)>0:
     # if weekend OR after 6 PM OR before 9 AM
     if weekno > 4 or Hour < 9 or Hour > 16 :
       newsub = subjects.pop()
-      # submit job (if above conditions are met)
-      subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
-      time.sleep(60) #wait a minute
+      # adding new condition: if gradient file does not exist
+      gradFile='/cbica/projects/abcdfnets/results/wave_output/' + str(newsub) + '/' + str(newsub) + '_PG_LR_32k.dscalar.nii'
+      if not os.path.exists(gradFile):
+        # submit job (if above conditions are met)
+        subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
+        time.sleep(60) #wait a minute
     # added this to run 3 subjs (1 slot for this job) during ON hours
     elif que < 4:
       newsub = subjects.pop()
-      subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
-      time.sleep(60) #wait a minute
+      gradFile='/cbica/projects/abcdfnets/results/wave_output/' + str(newsub) + '/' + str(newsub) + '_PG_LR_32k.dscalar.nii'
+      if not os.path.exists(gradFile):
+        subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
+        time.sleep(60) #wait a minute

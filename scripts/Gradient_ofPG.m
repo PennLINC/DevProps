@@ -1,3 +1,4 @@
+function Gradient_ofPG(subj)
 % addpath needed for reading cifti
 addpath(genpath('/cbica/projects/abcdfnets/scripts/code_nmf_cifti/tool_folder'));
 % and path needed for opflow
@@ -76,9 +77,10 @@ PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),dou
 [GxL,GyL]=imgradientxy(PG_gr_L);
 % alt method
 [G_magR,G_dirR]=imgradient(PG_gr_R);
+
 % just saving the magnitude out for now - combine mag and dir into real and imaginary set for comparable vectors to OpFl.m
-% G_magL=(G_magL).*(bwNL);
-% PG_gr_L=(PG_gr_L).*(bwNL);
+%G_magL=(G_magL).*(bwNL);
+PG_gr_L=(PG_gr_L).*(bwNL);
 % saving angle in -180 to 180 range for now: might be a way to tan or cos it if needed
 % G_dirL=(G_dirL).*(bwNL);
 % dlmwrite('~/dropbox/G_magL.csv',G_magL)
@@ -90,6 +92,22 @@ PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),dou
 % normxl= -gradXL;
 % normyl= -gradYL;
 % normz = 1;
+
 dlmwrite('~/dropbox/GxL.csv',GxL);
 dlmwrite('~/dropbox/GyL.csv',GyL);
 
+% extract single vectors for each point
+p1X=GxL(30,30)
+p2X=GxL(60,71)
+p3X=GxL(46,56)
+p1Y=GyL(30,30)
+p2Y=GyL(60,71)
+p3Y=GyL(46,56)
+
+% mark select points on PG flatmap
+PG_gr_L(30,30)=15;
+PG_gr_L(60,71)=15;
+PG_gr_L(46,56)=15;
+
+% print out altered flatmap
+dlmwrite('~/dropbox/PG_L_marked.csv',PG_gr_L)
