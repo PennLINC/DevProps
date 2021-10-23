@@ -1,4 +1,4 @@
-function [U, S, V] = plotcsvd(vf, nmodeplot, realTime, useComplexSVD, vectorScale, numSegs)
+function [U, S, V] = plotcsvd(vf, nmodeplot, realTime, useComplexSVD, vectorScale,plot_name,timevo_name)
 % PLOTCSVD performs a singular vector decomposition of a vector field.
 %   Plots most dominant spatial modes and their time courses, and the
 %   trajectory of the top 3 most dominant modes.
@@ -20,8 +20,8 @@ function [U, S, V] = plotcsvd(vf, nmodeplot, realTime, useComplexSVD, vectorScal
 %
 % Rory Townsend, Aug 2018
 % rory.townsend@sydney.edu.au
-% adjusted by apines on Oct 22nd to save rather than display plots, aggregate continuous segments for SVD
-
+% adjusted by apines on Oct 22nd to save rather than display plots
+% Use cat(3,vf{1},...vf{n}) to aggregate vector field across contin. segments prior to passing to this script
 %% Set default values
 if ~exist('nmodeplot', 'var')
     nmodeplot = 5;
@@ -100,7 +100,9 @@ for imode=1:nmodeplot
     end
     
     thisMode = reshape(V(:,imode), nr, nc);
-    quiver(real(thisMode), imag(thisMode), vectorScale);
+    % convert to saveout rather than display
+    quivPlot=quiver(real(thisMode), imag(thisMode), vectorScale);
+    %quivPlot.Visible='off';
     set(gca,'YDir','reverse', 'XTick', [], 'YTick', []);
     axis(0.5+[0 nc 0 nr])
     title(sprintf('Mode %i, Var = %0.1f%%', imode, prctVar(imode)))
@@ -114,7 +116,8 @@ for imode=1:nmodeplot
             plot(realTime, reUav(:,imode), realTime, imUav(:,imode), ...
                 realTime, absUav(:,imode))
         else
-            plot(realTime, reUav(:,imode))
+            timePlot=plot(realTime, reUav(:,imode));
+            %timePlot.Visible='off'
         end
         ylim(UavLims)
         xlim([realTime(1), realTime(end)])
@@ -126,12 +129,13 @@ for imode=1:nmodeplot
     end
 end
 suptitle('Top SVD modes')
+saveas(timePlot,plot_name)
 
 %% OPTIONAL: Also plot trajectory of top 3 modes
-% figure
-% plot3(smooth(reUav(:,1)), smooth(reUav(:,2)), smooth(reUav(:,3)))
-% grid on
-% xlabel('Mode 1')
-% ylabel('Mode 2')
-% zlabel('Mode 3')
-
+a=figure
+a=plot3(smooth(reUav(:,1)), smooth(reUav(:,2)), smooth(reUav(:,3)))
+grid on
+xlabel('Mode 1')
+ylabel('Mode 2')
+zlabel('Mode 3')
+saveas(a,timevo_name)
