@@ -102,6 +102,8 @@ params = setNeuroPattParams(params,'minDurationSecs', 10, 1.25);
 params = setNeuroPattParams(params,'maxTimeGapSecs', 5, 1.25);
 params = setNeuroPattParams(params,'maxDisplacement', 1, 1.25);
 params = setNeuroPattParams(params,'minCritRadius', 1, 1.25);
+% setting opAlpha to 1 to account for increased spatial domain/global patterning
+params.opAlpha =1.5;
 % downsampling the temporal domain by 5x hurts though, they say default is 1
 params = setNeuroPattParams(params,'downsampleScale', 1, 1.25);
 % initialize megastruct for results from each segment

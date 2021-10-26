@@ -132,9 +132,10 @@ PG2R.data=subjPG2MW[10242:20484,0]
 GradsL.darrays[1]=PG2L
 GradsR.darrays[1]=PG2R
 ### end pg2 match
-# save out subject-specific PG for upsampling
-LPGfp=parentfp+subj+'_PG_L_10k.func.gii'
-RPGfp=parentfp+subj+'_PG_R_10k.func.gii'
+# save out subject-specific PG for upsampling 
+# Oct 26th 2021: changed to saveout downsampled version to waveoutput: keeping downsampled and upsampled PGs
+LPGfp=childfp+subj+'_PG_L_10k_rest.func.gii'
+RPGfp=childfp+subj+'_PG_R_10k_rest.func.gii'
 nb.save(GradsL,LPGfp)
 nb.save(GradsR,RPGfp)
 # save out subject-specific PG for spinning, medial wall to 100 for NaN'ing

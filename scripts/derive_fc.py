@@ -39,7 +39,8 @@ childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
 aggregateTS=np.empty([1,59412])
 
 # for each task
-for T in range(len(tasks)):
+# Oct 26 2021: updated to range (1) to ONLY run on resting state: still printed out as AggTS 
+for T in range(1):
 	# load Concat-maskedtime series
 	filepath=parentfp + str(subj) + '_p2mm_masked_filtered_' + tasks[T] + '.dtseries.nii'
 	# if file exists

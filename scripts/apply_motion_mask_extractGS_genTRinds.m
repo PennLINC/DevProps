@@ -14,6 +14,10 @@ direc=dir(topleveldir);
 TRvecNum=[];
 % for each "task"
 tasks=["rest","MID","SST","nback"];
+% filepath for TR # output
+ProjectFolder = '/cbica/projects/abcdfnets/results';
+ResultantFolder = [ProjectFolder '/SingleParcel_1by1/'];
+% loop over each task
 for t=1:4
 	task=tasks(t);
 	sname=subj;
@@ -74,6 +78,10 @@ for t=1:4
 			if (sum([allRetainedSegmentTRLengths{:}])==~mask.motion_data{1,21}.remaining_combined_count)
 				error('3165 remaining combined count does not match internal representation')
 			end
+			% save remaining_combined_count
+			remaining_combined_count=mask.motion_data{1,21}.remaining_combined_count;
+			remaining_cmb_fn=strjoin([ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_remainingTRs.mat'],'');
+			save(remaining_cmb_fn, 'remaining_combined_count');
                         % find segments with more continuous TRs than threshold
                         OverThreshSegments=find(ContSegments>Threshold);
                         % sum remaining segments to get included TRs if this thresh chosen
