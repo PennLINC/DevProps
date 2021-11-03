@@ -8,13 +8,13 @@ function OpFl(subj)
 
 
 % addpath needed for reading cifti
-addpath(genpath('/cbica/projects/abcdfnets/scripts/code_nmf_cifti/tool_folder'));
+addpath(genpath('/cbica/projects/hcpd/scripts/tool_folder'));
 % and path needed for opflow
-addpath(genpath('/cbica/projects/abcdfnets/scripts/NeuroPattToolbox'));
+addpath(genpath('/cbica/projects/hcpd/scripts/NeuroPattToolbox'));
 
 %%% load in normative x y coordinates for left
-FM_l=gifti('/cbica/projects/abcdfnets/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
-FM_r=gifti('/cbica/projects/abcdfnets/scripts/normative_surfs/S900.R.flat.32k_fs_LR.surf.gii');
+FM_l=gifti('/cbica/projects/hcpd/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
+FM_r=gifti('/cbica/projects/hcpd/scripts/normative_surfs/S900.R.flat.32k_fs_LR.surf.gii');
 % extract coordinates
 xL=double(FM_l.vertices(:,1));
 xR=double(FM_r.vertices(:,1));
@@ -28,7 +28,7 @@ yR=yR*.1;
 
 %%% read in subject's clean TS, starting with rest
 sname=char(subj);
-parentfp=['/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' sname '/ses-baselineYear1Arm1/func/'];
+parentfp=['/scratch/hcpd/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' sname '/ses-baselineYear1Arm1/func/'];
 ts=read_cifti([parentfp sname '_p2mm_masked_filtered_rest.dtseries.nii']);
 
 % following - https://github.com/coalsont/cifti-matlab/blob/master/cifti_dense_get_surf_map.m
@@ -152,6 +152,6 @@ for S=1:num_segs
  end
 
 % save aggregated output into waveoutput
-fn=['/cbica/projects/abcdfnets/results/wave_output/' sname '/' 'OpFlowResults.mat'];
+fn=['/cbica/projects/hcpd/results/wave_output/' sname '/' 'OpFlowResults.mat'];
 save(fn,'MegaStruct')
 
