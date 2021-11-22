@@ -13,9 +13,11 @@ mkdirCommand=['mkdir ' direcString];
 system(mkdirCommand)
 
 % apply motion masks and extract TR indcies of continuous segments
+% TEST FPS
 apply_motion_mask_extractGS_genTRinds(subj)
 
 % bandpass the global signal and time series to isolate freqs of interest
+% UPDATE FPS
 BandPass_ts(subj)
 
 % don't mess about with this stuff if it's already been ran
@@ -25,17 +27,21 @@ BandPass_ts(subj)
 % if ~exist(PGfp)
 
 % derive FC - grayOrd level and network level
+% UPDATE FPS
 deriveFCcommand=['python derive_fc.py ' subj];
 system(deriveFCcommand)
 
 % downsample aggregated TS 
+% UPDATE FPS
 dsCommand=['~/scripts/PWs/PWs/scripts/downsample_FC.sh ' subj];
 system(dsCommand)
 
 % derive personalized PG
+% UPDATE FPS
 derivePGcommand=['python derive_pg.py ' subj];
 system(derivePGcommand)
 
 %%% Run neuropattTB
+% UPDATE FPS
 OpFl(subj)
 
