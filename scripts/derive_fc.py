@@ -18,22 +18,22 @@ def corr2_coeff(A, B):
     # Finally get corr coeff
     return np.dot(A_mA, B_mB.T) / np.sqrt(np.dot(ssA[:, None],ssB[None]))
 
-# all the scan types
+# all the scan types, range(1) only probes rest
 tasks=['rest','SST','nback','mid']
 
 # Subject is set to the passed argument
 subj = sys.argv[1]
 
 # load individualized parcellation
-parcelLoc='/cbica/projects/abcdfnets/results/SingleParcel_1by1/' + str(subj) + '/' + str(subj) + '_Parcel.dscalar.nii'
-parcel=nb.load(parcelLoc)
-parcelCort=parcel.dataobj[:,hcp.struct.cortex]
+# parcelLoc='/cbica/projects/abcdfnets/results/SingleParcel_1by1/' + str(subj) + '/' + str(subj) + '_Parcel.dscalar.nii'
+# parcel=nb.load(parcelLoc)
+# parcelCort=parcel.dataobj[:,hcp.struct.cortex]
 
 # parent filepath for time series
-parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' + str(subj) + '/ses-baselineYear1Arm1/func/'
+parentfp='/cbica/projects/pinesParcels/results/PWs/PreProc/' + str(subj) + '/'
 
-# child (output) filepath
-childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
+# child (output) filepath is equivalent to parent in this instance
+childfp=parentfp;
 
 # initialize master time series for aggregate fc matrix for dmap
 aggregateTS=np.empty([1,59412])
