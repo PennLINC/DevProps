@@ -14,10 +14,10 @@ from scipy.io import savemat
 subj = sys.argv[1]
 
 # parent filepath for time series
-parentfp='/scratch/abcdfnets/nda-abcd-s3-downloader/August_2021_DL/derivatives/abcd-hcp-pipeline/' + str(subj) + '/ses-baselineYear1Arm1/func/'
+parentfp='/cbica/projects/pinesParcels/results/PWs/PreProc/' + str(subj) + '/'
 
 # child (output) filepath
-childfp='/cbica/projects/abcdfnets/results/wave_output/' + str(subj) + '/'
+childfp='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(subj) + '/'
 
 # load in downsampled aggregate time series
 AgTS_l=nb.load(parentfp+subj+'_AggTS_L_10k.func.gii')
@@ -65,8 +65,8 @@ aff = cosine_similarity(fcmatrix)
 emb, res = embed.compute_diffusion_map(aff, alpha = 0.5, return_result=True)
 # select PG based on max absolute corr with group-level PG
 # (loading in downsampled PG)
-GradsL=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_L_10k.func.gii')
-GradsR=nb.load('/cbica/projects/abcdfnets/data/hcp.gradients_R_10k.func.gii')
+GradsL=nb.load('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/Brain_Organization/hcp.gradients_L_10k.func.gii')
+GradsR=nb.load('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/Brain_Organization/hcp.gradients_R_10k.func.gii')
 # extract 1st grad
 PGL=GradsL.darrays[0]
 PGR=GradsR.darrays[0]

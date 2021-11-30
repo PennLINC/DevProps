@@ -24,15 +24,23 @@ apply_motion_mask_genTRinds(subj)
 %%%%%%%%%%%%%%%
 
 % downsample aggregated TS 
-dsCommand=['~/scripts/PWs/PWs/scripts/downsample_TS.sh ' subj];
+dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
 system(dsCommand)
 
+% make a "Proced" dir
+direcString=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
+mkdirCommand=['mkdir ' direcString];
+system(mkdirCommand)
+
 % derive personalized PG
-% UPDATE FPS
 derivePGcommand=['python derive_pg.py ' subj];
 system(derivePGcommand)
 
+% filepaths updated, not tested
+
+% note distinct interpolation for time series for opfl (within opflow) and time series to fsaverage5 (within downsample_ts)
+% consider equivalent interpolation 
+
 %%% Run neuropattTB
-% UPDATE FPS
 OpFl(subj)
 
