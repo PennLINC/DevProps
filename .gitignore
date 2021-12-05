@@ -1,3 +1,5 @@
+hcpd_subj_list.txt
+*core.*
 *.sh.e*
 *.sh.o*
 ThreshDirec/*
