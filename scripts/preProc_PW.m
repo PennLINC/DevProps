@@ -33,7 +33,7 @@ mkdirCommand=['mkdir ' direcString];
 system(mkdirCommand)
 
 % derive personalized PG
-derivePGcommand=['python derive_pg.py ' subj];
+derivePGcommand=['/cbica/projects/pinesParcels/miniconda3/envs/mv_preds/bin/python derive_pg.py ' subj];
 system(derivePGcommand)
 
 % filepaths updated, not tested

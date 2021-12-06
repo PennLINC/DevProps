@@ -19,10 +19,10 @@ xR=double(FM_r.vertices(:,1));
 yL=double(FM_l.vertices(:,2));
 yR=double(FM_r.vertices(:,2));
 % going to need to expand these to make seperable bins IN ACCORDANCE WITH PROC. POWER AVAILABLE
-xL=xL*.3; % example: xL*10 for 10x resolution
-xR=xR*.3;
-yL=yL*.3;
-yR=yR*.3;
+xL=xL*.2; % example: xL*10 for 10x resolution
+xR=xR*.2;
+yL=yL*.2;
+yR=yR*.2;
 
 %%% read in subject's clean TS, starting with rest
 sname=char(subj);
@@ -92,6 +92,9 @@ params = setNeuroPattParams(params,'zscoreChannels', 1, 1.25);
 % filter does not seem to be stopping 
 % params = setNeuroPattParams(params,'filterData',logical(0), 1.25);
 % if you can't beat 'em, join em
+%params = setNeuroPattParams(params,'useHilbert', true, 1.25);
+%params = setNeuroPattParams(params,'hilbFreqLow', 0.01, 1.25);
+%params = setNeuroPattParams(params,'hilbFreqHigh', 0.08, 1.25);
 params = setNeuroPattParams(params,'morletCfreq', .05, 1.25);
 params = setNeuroPattParams(params,'opBeta', 10, 1.25);
 params = setNeuroPattParams(params,'planeWaveThreshold', 0.7, 1.25);
@@ -100,8 +103,8 @@ params = setNeuroPattParams(params,'minDurationSecs', 10, 1.25);
 params = setNeuroPattParams(params,'maxTimeGapSecs', 5, 1.25);
 params = setNeuroPattParams(params,'maxDisplacement', 1, 1.25);
 params = setNeuroPattParams(params,'minCritRadius', 1, 1.25);
-% setting opAlpha to 1 to account for increased spatial domain/global patterning
-params.opAlpha =1.5;
+% setting opAlpha to 3 to account for increased spatial domain/global patterning
+params.opAlpha = 3;
 % downsampling the temporal domain by 5x hurts though, they say default is 1
 params = setNeuroPattParams(params,'downsampleScale', 1, 1.25);
 % initialize megastruct for results from each segment
@@ -111,8 +114,11 @@ MegaStruct.P_Right={};
 Mega.TRsInSeg={};
 MegaStruct.Vf_Left={};
 MegaStruct.Vf_Right={};
+MegaStruct.Ts_Left={};
+MegaStruct.Ts_Right={};
 %%% for each contin. segment, run opflow
 for S=1:num_segs
+	segments(S,:)
 	% get length of segment in TR
 	ts_seg_length=segments(S,2);
 	% index into master time series to grab this segment
@@ -147,7 +153,9 @@ for S=1:num_segs
         MegaStruct.Vf_Left{S}=resultsL.velocityFields;
         MegaStruct.Vf_Right{S}=resultsR.velocityFields;
 	MegaStruct.TRsInSeg{S}=resultsL.nTimeSteps+1
- end
+	MegaStruct.Ts_Left{S}=resultsL.filteredSignal;
+	MegaStruct.Ts_Right{S}=resultsR.filteredSignal;
+end
 
 % make a subject-level directory
 s_levelDir=['/cbica/projects/pinesParcels/results/OpFl_output/' sname];

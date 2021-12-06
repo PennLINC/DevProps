@@ -1,1 +1,1 @@
-matlab -nodisplay -r "preProc_PWs('${1}')"
+matlab -nodisplay -r "preProc_PW('${1}')"

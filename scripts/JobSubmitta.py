@@ -15,7 +15,7 @@ while len(subjects)>0:
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 5 job slots (one is occupied by this script)
-  if que < 6:
+  if que < 8:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -24,6 +24,6 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
       # submit job (if above conditions are met)
-      subprocess.run(["qsub","-l","h_vmem=28G,s_vmem=25G","qsubMatlab.sh",newsub])
+      subprocess.run(["qsub","-l","h_vmem=18G,s_vmem=16G","qsubMatlab.sh",newsub])
       time.sleep(40) #wait a minute
 

@@ -57,8 +57,8 @@ if exist(fp,'file')
 		% reconfig cifti metadata to reflect new number of TRs
 		newciftiSize=size(masked_trs);
 		newTRnum=newciftiSize(2);
-		% setting continuous frame threshold to 10 TRs in a row
-		Threshold=10;			% find changepoints in binary bask
+		% setting continuous frame threshold to 13 TRs in a row
+		Threshold=13;			% find changepoints in binary bask
 		% find changepoints in binary bask
 		d = [true, diff(TRwise_mask') ~= 0];
 		% index of changepoints
@@ -89,6 +89,7 @@ if exist(fp,'file')
 		end
 		% save remaining_combined_count
 		remaining_combined_count=mask.motion_data{21}.remaining_frame_count;
+		mask.motion_data{21}.remaining_frame_count
 		remaining_cmb_fn=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_remainingTRs.mat'];
 		save(remaining_cmb_fn, 'remaining_combined_count');
                 % find segments with more continuous TRs than threshold
