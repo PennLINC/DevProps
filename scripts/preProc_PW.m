@@ -36,7 +36,9 @@ system(mkdirCommand)
 derivePGcommand=['/cbica/projects/pinesParcels/miniconda3/envs/mv_preds/bin/python derive_pg.py ' subj];
 system(derivePGcommand)
 
-% filepaths updated, not tested
+% upsample for equivalent grid resampling
+dsCommand=['~/PWs/scripts/upsample_PG.sh ' subj];
+system(dsCommand)
 
 % note distinct interpolation for time series for opfl (within opflow) and time series to fsaverage5 (within downsample_ts)
 % consider equivalent interpolation 

@@ -1,12 +1,12 @@
 function Gradient_ofPG(subj)
 % addpath needed for reading cifti
-addpath(genpath('/cbica/projects/abcdfnets/scripts/code_nmf_cifti/tool_folder'));
+addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 % and path needed for opflow
 addpath(genpath('/cbica/projects/abcdfnets/scripts/NeuroPattToolbox'));
 
 %%% load in normative x y coordinates for left
-FM_l=gifti('/cbica/projects/abcdfnets/scripts/normative_surfs/S900.L.flat.32k_fs_LR.surf.gii');
-FM_r=gifti('/cbica/projects/abcdfnets/scripts/normative_surfs/S900.R.flat.32k_fs_LR.surf.gii');
+FM_l=gifti('/cbica/projects/pinesParcels/data/Surfs/S900.L.flat.32k_fs_LR.surf.gii');
+FM_r=gifti('/cbica/projects/pinesParcels/data/Surfs/S900.R.flat.32k_fs_LR.surf.gii');
 % extract coordinates
 xL=double(FM_l.vertices(:,1));
 xR=double(FM_r.vertices(:,1));
@@ -20,8 +20,8 @@ yR=yR*.2;
 
 %%% read in subject's PG
 sname=char(subj);
-childfp=['/cbica/projects/abcdfnets/results/wave_output/' sname '/'];
-PG=read_cifti([childfp sname '_PG_LR_32k.dscalar.nii']);
+childfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' sname '/'];
+PG=read_cifti([childfp sname '_PG_LR_32k_rest.dscalar.nii']);
 
 % following - https://github.com/coalsont/cifti-matlab/blob/master/cifti_dense_get_surf_map.m
 % prepare indices of left hemi
@@ -71,16 +71,20 @@ PG_LH=PG.cdata(ciftilistL,1);
 % extract right
 PG_RH=PG.cdata(ciftilistR,1);
 % Interp. onto grid CHECK MESHGRID TO LOOK FOR SOURCE OF TRANSPOSE HERE
+% source of transpose is matlab and python naturally don't represent matrices the same way: one is transposed from the other 
 PG_gr_L = griddata(double(xLPartialFilt),double(yLPartialFilt),double(PG_LH),double(xL),double(yL));
 PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),double(xR),double(yR));
 % get the gradient of the PG (I know, language sucks)
 [GxL,GyL]=imgradientxy(PG_gr_L);
+[GxR,GyR]=imgradientxy(PG_gr_R);
+
 % alt method
-[G_magR,G_dirR]=imgradient(PG_gr_R);
+%[G_magR,G_dirR]=imgradient(PG_gr_R);
 
 % just saving the magnitude out for now - combine mag and dir into real and imaginary set for comparable vectors to OpFl.m
 %G_magL=(G_magL).*(bwNL);
-PG_gr_L=(PG_gr_L).*(bwNL);
+%PG_gr_L=(PG_gr_L).*(bwNL);
+%PG_gr_L=(PG_gr_R).*(bwNR);
 % saving angle in -180 to 180 range for now: might be a way to tan or cos it if needed
 % G_dirL=(G_dirL).*(bwNL);
 % dlmwrite('~/dropbox/G_magL.csv',G_magL)
@@ -93,21 +97,24 @@ PG_gr_L=(PG_gr_L).*(bwNL);
 % normyl= -gradYL;
 % normz = 1;
 
-dlmwrite('~/dropbox/GxL.csv',GxL);
-dlmwrite('~/dropbox/GyL.csv',GyL);
+% save out gradient gradients
+dlmwrite([childfp sname '_PG_GxR.csv'],GxR);
+dlmwrite([childfp sname '_PG_GyR.csv'],GyR);
+dlmwrite([childfp sname '_PG_GxL.csv'],GxL);
+dlmwrite([childfp sname '_PG_GyL.csv'],GyL);
 
 % extract single vectors for each point
-p1X=GxL(30,30)
-p2X=GxL(60,71)
-p3X=GxL(46,56)
-p1Y=GyL(30,30)
-p2Y=GyL(60,71)
-p3Y=GyL(46,56)
+%p1X=GxL(30,30)
+%p2X=GxL(60,71)
+%p3X=GxL(46,56)
+%p1Y=GyL(30,30)
+%p2Y=GyL(60,71)
+%p3Y=GyL(46,56)
 
 % mark select points on PG flatmap
-PG_gr_L(30,30)=15;
-PG_gr_L(60,71)=15;
-PG_gr_L(46,56)=15;
+%PG_gr_L(30,30)=15;
+%PG_gr_L(60,71)=15;
+%PG_gr_L(46,56)=15;
 
 % print out altered flatmap
-dlmwrite('~/dropbox/PG_L_marked.csv',PG_gr_L)
+%dlmwrite('~/dropbox/PG_L_marked.csv',PG_gr_L)
