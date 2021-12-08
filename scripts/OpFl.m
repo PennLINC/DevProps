@@ -132,7 +132,7 @@ for S=1:num_segs
 		% extract this TR
 		TRVals_L=ts_segL(:,T);
 		TRVals_R=ts_segR(:,T);
-		% Interp. onto grid CHECK MESHGRID TO LOOK FOR SOURCE OF TRANSPOSE HERE
+		% Interp. onto grid
 		vqL = griddata(double(xLPartialFilt),double(yLPartialFilt),double(TRVals_L),double(xL),double(yL));
 		vqR = griddata(double(xRPartialFilt),double(yRPartialFilt),double(TRVals_R),double(xR),double(yR));
 		% use mask to select flatmap patch

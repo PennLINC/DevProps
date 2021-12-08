@@ -26,7 +26,6 @@ PG=read_cifti([childfp sname '_PG_LR_32k_rest.dscalar.nii']);
 % following - https://github.com/coalsont/cifti-matlab/blob/master/cifti_dense_get_surf_map.m
 % prepare indices of left hemi
 [vertlist1L, ciftilistL, numvertsL] = cifti_dense_get_surf_map(PG.diminfo{1}, 'CORTEX_LEFT');
-
 % prepare indices of right hemi
 [vertlist1R, ciftilistR, numvertsR] = cifti_dense_get_surf_map(PG.diminfo{1}, 'CORTEX_RIGHT');
 
@@ -77,6 +76,9 @@ PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),dou
 % get the gradient of the PG (I know, language sucks)
 [GxL,GyL]=imgradientxy(PG_gr_L);
 [GxR,GyR]=imgradientxy(PG_gr_R);
+% above reveals bottom-up progression, below is top-down
+[GxLNeg,GyLNeg]=imgradientxy(-PG_gr_L);
+[GxRNeg,GyRNeg]=imgradientxy(-PG_gr_R);
 
 % alt method
 %[G_magR,G_dirR]=imgradient(PG_gr_R);
@@ -98,10 +100,20 @@ PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),dou
 % normz = 1;
 
 % save out gradient gradients
-dlmwrite([childfp sname '_PG_GxR.csv'],GxR);
-dlmwrite([childfp sname '_PG_GyR.csv'],GyR);
-dlmwrite([childfp sname '_PG_GxL.csv'],GxL);
-dlmwrite([childfp sname '_PG_GyL.csv'],GyL);
+dlmwrite([childfp sname '_PG_GxR_BU.csv'],GxR);
+dlmwrite([childfp sname '_PG_GyR_BU.csv'],GyR);
+dlmwrite([childfp sname '_PG_GxL_BU.csv'],GxL);
+dlmwrite([childfp sname '_PG_GyL_BU.csv'],GyL);
+
+dlmwrite([childfp sname '_PG_GxR_TD.csv'],GxRNeg);
+dlmwrite([childfp sname '_PG_GyR_TD.csv'],GyRNeg);
+dlmwrite([childfp sname '_PG_GxL_TD.csv'],GxLNeg);
+dlmwrite([childfp sname '_PG_GyL_TD.csv'],GyLNeg);
+
+% save out mask
+%dlmwrite([childfp sname '_FlatMask_L.csv'],bwNL);
+%dlmwrite([childfp sname '_FlatMask_R.csv'],bwNR);
+
 
 % extract single vectors for each point
 %p1X=GxL(30,30)
