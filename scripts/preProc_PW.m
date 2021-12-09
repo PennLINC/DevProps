@@ -40,23 +40,12 @@ system(derivePGcommand)
 dsCommand=['~/PWs/scripts/upsample_PG.sh ' subj];
 system(dsCommand)
 
+
+% Get the calculus gradient of the dmap gradient
+Gradient_ofPG(subj)
+
 % note distinct interpolation for time series for opfl (within opflow) and time series to fsaverage5 (within downsample_ts)
 % consider equivalent interpolation 
 
 %%% Run neuropattTB
 OpFl(subj)
-
-% spin PG 1000 times
-spin_pg(subj)
-
-% initialize 1000 * 2(x,y) * 64 * 89 matrix
-
-for spin = 1:1000
-% upsample 
-% derive gradient gradient
-% insert gradient gradient into 4D array
-% delete actual brain map
-end
-
-% test angular distance on spins
-
