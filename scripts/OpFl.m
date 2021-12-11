@@ -19,10 +19,10 @@ xR=double(FM_r.vertices(:,1));
 yL=double(FM_l.vertices(:,2));
 yR=double(FM_r.vertices(:,2));
 % going to need to expand these to make seperable bins IN ACCORDANCE WITH PROC. POWER AVAILABLE
-xL=xL*.3; % example: xL*10 for 10x resolution
-xR=xR*.3;
-yL=yL*.3;
-yR=yR*.3;
+xL=xL*.2; % example: xL*10 for 10x resolution
+xR=xR*.2;
+yL=yL*.2;
+yR=yR*.2;
 
 %%% read in subject's clean TS, starting with rest
 sname=char(subj);
@@ -66,7 +66,7 @@ YqR=1:s_gridY_R;
 [xR,yR]=meshgrid(XqR,YqR);
 % create mask for vertices within boundaries of shape (within rectangle)
 bwL = poly2mask(double(xLPartialFilt(vqBound_L)),double(yLPartialFilt(vqBound_L)),double(max(max(yL))),double(max(max(xL))));
-bwR = poly2mask(double(xLPartialFilt(vqBound_R)),double(yLPartialFilt(vqBound_R)),double(max(max(yR))),double(max(max(xR))));	
+bwR = poly2mask(double(xRPartialFilt(vqBound_R)),double(yRPartialFilt(vqBound_R)),double(max(max(yR))),double(max(max(xR))));	
 % convert to NaN's instead of 0
 bwNL=double(bwL);
 %bwNL(bwNL==0)=NaN;
@@ -95,7 +95,7 @@ params = setNeuroPattParams(params,'zscoreChannels', 1, 1.25);
 %params = setNeuroPattParams(params,'useHilbert', true, 1.25);
 %params = setNeuroPattParams(params,'hilbFreqLow', 0.01, 1.25);
 %params = setNeuroPattParams(params,'hilbFreqHigh', 0.08, 1.25);
-params = setNeuroPattParams(params,'morletCfreq', .05, 1.25);
+params = setNeuroPattParams(params,'morletCfreq', .07, 1.25);
 params = setNeuroPattParams(params,'opBeta', 10, 1.25);
 params = setNeuroPattParams(params,'planeWaveThreshold', 0.7, 1.25);
 params = setNeuroPattParams(params,'synchronyThreshold', 0.7, 1.25);
@@ -163,6 +163,6 @@ mkdircommand=['mkdir ' s_levelDir];
 system(mkdircommand)
 
 % save aggregated output into waveoutput
-fn=['/cbica/projects/pinesParcels/results/OpFl_output/' sname '/OpFlowResults3.mat'];
+fn=['/cbica/projects/pinesParcels/results/OpFl_output/' sname '/OpFlowResults_cf7.mat'];
 save(fn,'MegaStruct')
 

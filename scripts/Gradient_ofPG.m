@@ -13,10 +13,10 @@ xR=double(FM_r.vertices(:,1));
 yL=double(FM_l.vertices(:,2));
 yR=double(FM_r.vertices(:,2));
 % going to need to expand these to make seperable bins IN ACCORDANCE WITH PROC. POWER AVAILABLE
-xL=xL*.3; % example: xL*10 for 10x resolution
-xR=xR*.3;
-yL=yL*.3;
-yR=yR*.3;
+xL=xL*.2; % example: xL*10 for 10x resolution
+xR=xR*.2;
+yL=yL*.2;
+yR=yR*.2;
 
 %%% read in subject's PG
 sname=char(subj);
