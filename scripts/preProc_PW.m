@@ -8,8 +8,8 @@ subj
 addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % make output folder
-%direcString=['/cbica/projects/pinesParcels/results/wave_output/' subj];
-%mkdirCommand=['mkdir ' direcString];
+direcString=['/cbica/projects/pinesParcels/results/wave_output/' subj];
+mkdirCommand=['mkdir ' direcString];
 system(mkdirCommand)
 
 % apply motion masks and extract TR indcies of continuous segments
@@ -19,7 +19,7 @@ apply_motion_mask_genTRinds(subj)
 % don't mess about with this stuff if it's already been ran
 fp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
 PGfp=[fp '/' subj '_PG_LR_32k_rest.dscalar.nii'];
-if ~exist(PGfp)
+%%if ~exist(PGfp)
 %%%%%%%%%%%%%%%
 
 % downsample aggregated TS 
@@ -38,12 +38,12 @@ system(derivePGcommand)
 % upsample for equivalent grid resampling
 dsCommand=['~/PWs/scripts/upsample_PG.sh ' subj];
 system(dsCommand)
-end
+%%end
 
 %%%%%%%%%%%%%%%
 % don't mess about with OpFl if it's already been ran
 OFfp=['/cbica/projects/pinesParcels/results/OpFl_output/' subj '/OpFlowResults.mat'];
-if ~exist(OFfp)
+%%if ~exist(OFfp)
 %%%%%%%%%%%%%%%
 
 % Get the calculus gradient of the dmap gradient
@@ -56,4 +56,4 @@ Gradient_ofPG(subj)
 
 %%% Run neuropattTB
 OpFl(subj)
-end
+%%end

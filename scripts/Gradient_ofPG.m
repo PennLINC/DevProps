@@ -76,28 +76,6 @@ PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),dou
 % get the gradient of the PG (I know, language sucks)
 [GxL,GyL]=imgradientxy(PG_gr_L);
 [GxR,GyR]=imgradientxy(PG_gr_R);
-% above reveals bottom-up progression, below is top-down
-[GxLNeg,GyLNeg]=imgradientxy(-PG_gr_L);
-[GxRNeg,GyRNeg]=imgradientxy(-PG_gr_R);
-
-% alt method
-%[G_magR,G_dirR]=imgradient(PG_gr_R);
-
-% just saving the magnitude out for now - combine mag and dir into real and imaginary set for comparable vectors to OpFl.m
-%G_magL=(G_magL).*(bwNL);
-%PG_gr_L=(PG_gr_L).*(bwNL);
-%PG_gr_L=(PG_gr_R).*(bwNR);
-% saving angle in -180 to 180 range for now: might be a way to tan or cos it if needed
-% G_dirL=(G_dirL).*(bwNL);
-% dlmwrite('~/dropbox/G_magL.csv',G_magL)
-% dlmwrite('~/dropbox/G_dirL.csv',G_dirL)
-% dlmwrite('~/dropbox/PG_L.csv',PG_gr_L)
-% attempt 1 to convert output to normal vectors
-% gradXL=G_magL.*cos(G_dirL);
-% gradYL=G_magL.*sin(G_dirL);
-% normxl= -gradXL;
-% normyl= -gradYL;
-% normz = 1;
 
 % save out gradient gradients
 dlmwrite([childfp sname '_PG_GxR_BU.csv'],GxR);
@@ -105,28 +83,6 @@ dlmwrite([childfp sname '_PG_GyR_BU.csv'],GyR);
 dlmwrite([childfp sname '_PG_GxL_BU.csv'],GxL);
 dlmwrite([childfp sname '_PG_GyL_BU.csv'],GyL);
 
-dlmwrite([childfp sname '_PG_GxR_TD.csv'],GxRNeg);
-dlmwrite([childfp sname '_PG_GyR_TD.csv'],GyRNeg);
-dlmwrite([childfp sname '_PG_GxL_TD.csv'],GxLNeg);
-dlmwrite([childfp sname '_PG_GyL_TD.csv'],GyLNeg);
-
-% save out mask
-%dlmwrite([childfp sname '_FlatMask_L.csv'],bwNL);
-%dlmwrite([childfp sname '_FlatMask_R.csv'],bwNR);
-
-
-% extract single vectors for each point
-%p1X=GxL(30,30)
-%p2X=GxL(60,71)
-%p3X=GxL(46,56)
-%p1Y=GyL(30,30)
-%p2Y=GyL(60,71)
-%p3Y=GyL(46,56)
-
-% mark select points on PG flatmap
-%PG_gr_L(30,30)=15;
-%PG_gr_L(60,71)=15;
-%PG_gr_L(46,56)=15;
-
-% print out altered flatmap
-%dlmwrite('~/dropbox/PG_L_marked.csv',PG_gr_L)
+% save out low-res gradients for percentile binning
+dlmwrite([childfp sname '_PG_lowResFlat_L.csv'],PG_gr_L);
+dlmwrite([childfp sname '_PG_lowResFlat_R.csv'],PG_gr_R);

@@ -1,6 +1,8 @@
 function TrueAngDist(subj)
 
 %%% pull out PG grad, OpFl distribution, calculate angular distance per pixel
+%%% 12/11/21 - adding gradient bin recording
+
 
 % char conversion and input file locations
 sname=char(subj);
@@ -11,13 +13,13 @@ PGBU_L_x=load([childfp sname '_PG_GxL_BU.csv']);
 PGBU_L_y=load([childfp sname '_PG_GyL_BU.csv']);
 PGBU_R_x=load([childfp sname '_PG_GxR_BU.csv']);
 PGBU_R_y=load([childfp sname '_PG_GyR_BU.csv']);
-PGTD_L_x=load([childfp sname '_PG_GxL_TD.csv']);
-PGTD_L_y=load([childfp sname '_PG_GyL_TD.csv']);
-PGTD_R_x=load([childfp sname '_PG_GxR_TD.csv']);
-PGTD_R_y=load([childfp sname '_PG_GyR_TD.csv']);
+
+% load PGs themselves for saving in same format/order
+PG_L_small=load([childfp sname '_PG_lowResFlat_L.csv']);
+PG_R_small=load([childfp sname '_PG_lowResFlat_R.csv']);
 
 % extract OpFl results
-OpFlResfn=['/cbica/projects/pinesParcels/results/OpFl_output/' sname '/OpFlowResults3.mat'];
+OpFlResfn=['/cbica/projects/pinesParcels/results/OpFl_output/' sname '/OpFlowResults.mat'];
 OpFlRes=load(OpFlResfn);
 
 % pull in mask
@@ -35,9 +37,13 @@ NumFrames=sizeOfVfs(3);
 % get coordinates of each viable pixel
 [Lrow,Lcol]=find(~isnan(PGBU_L_x));
 [Rrow,Rcol]=find(~isnan(PGBU_R_x));
+size(Lrow)
+size(Rrow)
 
-% initialize TD,BU,and angle-doubled outArray
+% initialize BU array
 BU_angDist=zeros(NumFrames,(length(Lrow)+length(Rrow)));
+% initialize PGbin array
+PGVals=zeros(1,(length(Lrow)+length(Rrow)));
 
 % for each Left pixel
 for P = 1:length(Lrow)
@@ -59,9 +65,10 @@ for P = 1:length(Lrow)
 		% throw em in the ang Dist vectors. To be averaged over TRs
 		BU_angDist(V,P)=BUThetaInDegrees;
 	end
+	% fill out PG value in pixel
+	PGVals(1,P)=PG_L_small(Row,Col);
 % end for each pixel
 end
-
 % for each Right pixel
 for P = 1:length(Rrow)
         % get coordinates
@@ -82,7 +89,10 @@ for P = 1:length(Rrow)
                 % throw em in the ang Dist vectors. To be averaged over TRs
                 BU_angDist(V,P+length(Lrow))=BUThetaInDegrees;
         end
+	% fill out PG value in pixel
+        PGVals(1,P+length(Lrow))=PG_R_small(Row,Col);
 end
 
 % save out files
 writetable(table(BU_angDist),[childfp sname '_BU_angDist.csv']);
+writetable(table(PGVals),[childfp sname '_PixPG_Vals.csv']);

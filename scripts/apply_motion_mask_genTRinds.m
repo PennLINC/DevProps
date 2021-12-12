@@ -57,8 +57,8 @@ if exist(fp,'file')
 		% reconfig cifti metadata to reflect new number of TRs
 		newciftiSize=size(masked_trs);
 		newTRnum=newciftiSize(2);
-		% setting continuous frame threshold to 13 TRs in a row
-		Threshold=13;			% find changepoints in binary bask
+		% setting continuous frame threshold to 20 TRs in a row
+		Threshold=20;			% find changepoints in binary bask
 		% find changepoints in binary bask
 		d = [true, diff(TRwise_mask') ~= 0];
 		% index of changepoints

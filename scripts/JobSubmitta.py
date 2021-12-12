@@ -26,14 +26,14 @@ while len(subjects)>0:
       newsub = subjects.pop()
       OpFile='/cbica/projects/pinesParcels/results/OpFl_output/' + str(newsub) + '/' + str(newsub) + '/OpFlowResults.mat'
       # submit job (if above conditions are met)
-      if not os.path.exists(OpFile):
-        subprocess.run(["qsub","-l","h_vmem=18G,s_vmem=16G","qsubMatlab.sh",newsub])
-        time.sleep(60) #wait a minute
+      # if not os.path.exists(OpFile):
+      subprocess.run(["qsub","-l","h_vmem=18G,s_vmem=16G","qsubMatlab.sh",newsub])
+      time.sleep(80) #wait a bit
       # added this to run 3 subjs (1 slot for this job) during ON hours
     elif que < 4:
       newsub = subjects.pop()
       OpFile='/cbica/projects/pinesParcels/results/OpFl_output/' + str(newsub) + '/' + str(newsub) + '/OpFlowResults.mat'
-      if not os.path.exists(OpFile):
+      # if not os.path.exists(OpFile):
       # submit job (if above conditions are met)
-        subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
-        time.sleep(60) #wait a minute
+      subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_w.sh",newsub])
+      time.sleep(80) #wait a bit
