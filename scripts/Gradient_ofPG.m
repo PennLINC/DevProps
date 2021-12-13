@@ -73,9 +73,12 @@ PG_RH=PG.cdata(ciftilistR,1);
 % source of transpose is matlab and python naturally don't represent matrices the same way: one is transposed from the other 
 PG_gr_L = griddata(double(xLPartialFilt),double(yLPartialFilt),double(PG_LH),double(xL),double(yL));
 PG_gr_R = griddata(double(xRPartialFilt),double(yRPartialFilt),double(PG_RH),double(xR),double(yR));
+% mask gaps that were interpolated in
+masked_PG_gr_L=(PG_gr_L).*(bwNL);
+masked_PG_gr_R=(PG_gr_R).*(bwNR);
 % get the gradient of the PG (I know, language sucks)
-[GxL,GyL]=imgradientxy(PG_gr_L);
-[GxR,GyR]=imgradientxy(PG_gr_R);
+[GxL,GyL]=imgradientxy(masked_PG_gr_L);
+[GxR,GyR]=imgradientxy(masked_PG_gr_R);
 
 % save out gradient gradients
 dlmwrite([childfp sname '_PG_GxR_BU.csv'],GxR);
@@ -84,5 +87,5 @@ dlmwrite([childfp sname '_PG_GxL_BU.csv'],GxL);
 dlmwrite([childfp sname '_PG_GyL_BU.csv'],GyL);
 
 % save out low-res gradients for percentile binning
-dlmwrite([childfp sname '_PG_lowResFlat_L.csv'],PG_gr_L);
-dlmwrite([childfp sname '_PG_lowResFlat_R.csv'],PG_gr_R);
+dlmwrite([childfp sname '_PG_lowResFlat_L.csv'],masked_PG_gr_L);
+dlmwrite([childfp sname '_PG_lowResFlat_R.csv'],masked_PG_gr_R);

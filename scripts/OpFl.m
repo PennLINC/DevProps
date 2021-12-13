@@ -69,9 +69,9 @@ bwL = poly2mask(double(xLPartialFilt(vqBound_L)),double(yLPartialFilt(vqBound_L)
 bwR = poly2mask(double(xRPartialFilt(vqBound_R)),double(yRPartialFilt(vqBound_R)),double(max(max(yR))),double(max(max(xR))));	
 % convert to NaN's instead of 0
 bwNL=double(bwL);
-%bwNL(bwNL==0)=NaN;
+bwNL(bwNL==0)=NaN;
 bwNR=double(bwR);
-%bwNR(bwNR==0)=NaN;
+bwNR(bwNR==0)=NaN;
 
 %%% get time series in order
 % extract left hemi
@@ -88,13 +88,6 @@ num_segs=length(segments);
 %%% set opflow params
 params = setNeuroPattParams(1.25); 
 params = setNeuroPattParams(params,'zscoreChannels', 1, 1.25);
-% params = setNeuroPattParams(params,'subtractBaseline', 0, 1.25); 
-% filter does not seem to be stopping 
-% params = setNeuroPattParams(params,'filterData',logical(0), 1.25);
-% if you can't beat 'em, join em
-%params = setNeuroPattParams(params,'useHilbert', true, 1.25);
-%params = setNeuroPattParams(params,'hilbFreqLow', 0.01, 1.25);
-%params = setNeuroPattParams(params,'hilbFreqHigh', 0.08, 1.25);
 params = setNeuroPattParams(params,'morletCfreq', .05, 1.25);
 params = setNeuroPattParams(params,'opBeta', 10, 1.25);
 params = setNeuroPattParams(params,'planeWaveThreshold', 0.7, 1.25);
@@ -142,8 +135,6 @@ for S=1:num_segs
 		fMap_ts_L_grid(:,:,T)=masked_vqL;
 		fMap_ts_R_grid(:,:,T)=masked_vqR;
 	end	
-	% small patch test
-	% resultsL = mainProcessingWithOutput(fMap_ts_L_grid(100:140,100:140,:), 1.25, params);
 	% run opflow
 	resultsL = mainProcessingWithOutput(fMap_ts_L_grid, 1.25, params);
 	resultsR = mainProcessingWithOutput(fMap_ts_R_grid, 1.25, params);
@@ -163,6 +154,6 @@ mkdircommand=['mkdir ' s_levelDir];
 system(mkdircommand)
 
 % save aggregated output into waveoutput
-fn=['/cbica/projects/pinesParcels/results/OpFl_output/' sname '/OpFlowResults_cf7.mat'];
+fn=['/cbica/projects/pinesParcels/results/OpFl_output/' sname '/OpFlowResults.mat'];
 save(fn,'MegaStruct')
 
