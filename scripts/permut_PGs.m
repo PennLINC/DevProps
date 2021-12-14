@@ -4,7 +4,7 @@ function permut_PGs(subj)
 % spin the gradient 1000 times
 spin_pg(subj)
 
-% load in spun values
+% set FP
 sname=char(subj);
 parentfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' sname '/'];
 
@@ -84,14 +84,13 @@ for s=1:1000
 	% convert data vector to brainmap (fsaverage5 space)
 	applySpinsCmd=['/cbica/projects/pinesParcels/miniconda3/envs/mv_preds/bin/python applyPGSpins.py ' sname ' ' num2str(s) ];
 	system(applySpinsCmd);
-	pause(xxx)
+	%pause(xxx)
 
 	% project to high-res
 	UScmd=['./upsample_PG_spun.sh ' sname];
 	system(UScmd);
-	pause(xxx)
+	%pause(xxx)
 
-	%%% UNTESTED
 	% load in upsample
 	usFN=[parentfp sname '_PG_LR_spun_32k.dscalar.nii'];
 	spunion=read_cifti(usFN);
