@@ -24,9 +24,9 @@ xR=double(FM_r.vertices(:,1));
 yL=double(FM_l.vertices(:,2));
 yR=double(FM_r.vertices(:,2));
 
-% get indices of where mw verts are'NT
-LeftMW=find(sum(FM_l.vertices(:,:)')~=0);
-RightMW=find(sum(FM_r.vertices(:,:)')~=0);
+% get indices of where mw verts are
+LeftMW=find(sum(FM_l.vertices(:,:)')==0);
+RightMW=find(sum(FM_r.vertices(:,:)')==0);
 
 % no negative coordinates
 xL=xL+abs(min(xL));
@@ -42,10 +42,46 @@ SyR=yR*.2;
 
 %%% just need to sub in x,y coords for 64*89 as first and second arg to griddata, grid data in same order, and xL yL and 3rd and 4th
 
+% coords of data
+[Lrow,Lcol]=find(~isnan(LH));
+[Rrow,Rcol]=find(~isnan(RH));
+
+% only valid pixels
+%for P=1:length(Lrow)
+%LH_v(P)=LH(Lrow(P),Lcol(P));
+%end
+
+% mirror for right
 
 
+% rescale image to size of cifti flatmap
+LH_big = imresize(LH,[max(yL),max(xL)]);
 
+% coords of resamp data
+[Lrow,Lcol]=find(~isnan(LH_big));
 
+% same loop to vectoriz big map
+LH_bigV=[];
+for P=1:length(Lrow)
+LH_bigV(P)=LH_big(Lrow(P),Lcol(P));
+end
+
+LH_flatmap=griddata(double(Lrow),double(Lcol),double(LH_bigV),double(yL),double(xL));
+
+% vert ordering
+LH_ordered=1:max(vertlist1L);
+LH_ordered(vertlist1L)=LH_flatmap(vertlist1L);
+LH_ordered(LeftMW)=0;
+
+test=[];
+% * 26 just to humor cifti
+for D=1:26
+test(:,D)=LH_ordered;
+end
+a=cifti_dense_replace_surfdata(PG,test,'CORTEX_LEFT',1)
+write_cifti(a,'testcif.dscalar.nii')  
+
+%%%% STOP IT!
 %%% get flatmap and masks in order
 % need to use combined index where xL yL xR yR are not 0 and cifti index is not 0, first step is filtering by vertlist from ciftiinfo
 % this extracts the shape of the flatmap in the form of x and y coordinates - vertices of all coordinates comprising the flatmaps
@@ -105,4 +141,3 @@ dlmwrite([childfp sname '_PG_GxR_BU.csv'],GxR);
 dlmwrite([childfp sname '_PG_GyR_BU.csv'],GyR);
 dlmwrite([childfp sname '_PG_GxL_BU.csv'],GxL);
 dlmwrite([childfp sname '_PG_GyL_BU.csv'],GyL);
-
