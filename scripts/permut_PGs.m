@@ -109,10 +109,10 @@ for s=1:1000
 	[GxR,GyR]=imgradientxy(PG_gr_R);
 
 	% insert resample into struct
-	SpunPG_Gs.Left.Xs(s,:,:)=GxL;
-	SpunPG_Gs.Left.Ys(s,:,:)=GyL;
-        SpunPG_Gs.Right.Xs(s,:,:)=GxR;
-        SpunPG_Gs.Right.Ys(s,:,:)=GyR;
+	SpunPG_Gs.Lefts.Xs(s,:,:)=GxL;
+	SpunPG_Gs.Lefts.Ys(s,:,:)=GyL;
+        SpunPG_Gs.Rights.Xs(s,:,:)=GxR;
+        SpunPG_Gs.Rights.Ys(s,:,:)=GyR;
 end
 
 outFN=[parentfp sname '_spunFlats.mat'];

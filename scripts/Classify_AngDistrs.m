@@ -11,7 +11,8 @@ addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/
 % convert to character vector
 sname=char(subj);
 childfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' sname '/'];
-
+% in this case output dir is same as input dir
+parentfp=childfp;
 % load in this subjs opFlow
 OpFlfn=['/cbica/projects/pinesParcels/results/OpFl_output/' sname '/OpFlowResults.mat'];
 OpFlmat=load(OpFlfn);
@@ -40,7 +41,6 @@ pVecL=zeros(1,length(Lrow));
 tVecL=zeros(1,length(Lrow));
 % t-stat map = left
 HR_t_L=PGBU_L_x;
-
 % HR test each pixel
 for P=1:length(Lrow);
 	P
@@ -255,17 +255,21 @@ circMeanMapL=PGBU_L_x;
 classMapL=PGBU_L_x;
 % for left
 for i=1:length(Lrow);
-	circMeanMapL(Lrow,Lcol)=CM_VecL(i);
-	classMapL(Lrow,Lcol)=PixClassL(i);
+        Row=Lrow(i);
+        Col=Lcol(i);
+	circMeanMapL(Row,Col)=CM_VecL(i);
+	classMapL(Row,Col)=PixClassL(i);
 end
 
 % use gradient gradient map for template
 circMeanMapR=PGBU_R_x;
 classMapR=PGBU_R_x;
-% for left
-for i=1:length(Lrow);
-        circMeanMapL(Lrow,Lcol)=CM_VecL(i);
-        classMapL(Lrow,Lcol)=PixClassL(i);
+% for Right
+for i=1:length(Rrow);
+        Row=Rrow(i);
+        Col=Rcol(i);
+	circMeanMapR(Row,Col)=CM_VecR(i);
+        classMapR(Row,Col)=PixClassR(i);
 end
 
 % saveout left hemi
