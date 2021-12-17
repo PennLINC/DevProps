@@ -19,7 +19,7 @@ apply_motion_mask_genTRinds(subj)
 % don't mess about with this stuff if it's already been ran
 fp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
 PGfp=[fp '/' subj '_PG_LR_32k_rest.dscalar.nii'];
-if ~exist(PGfp)
+%if ~exist(PGfp)
 %%%%%%%%%%%%%%%
 
 % downsample aggregated TS 
@@ -36,9 +36,9 @@ derivePGcommand=['/cbica/projects/pinesParcels/miniconda3/envs/mv_preds/bin/pyth
 system(derivePGcommand)
 
 % upsample for equivalent grid resampling
-dsCommand=['~/PWs/scripts/upsample_PG.sh ' subj];
-system(dsCommand)
-end
+usCommand=['~/PWs/scripts/upsample_PG.sh ' subj];
+system(usCommand)
+%end
 
 %%%%%%%%%%%%%%%
 % don't mess about with OpFl if it's already been ran
