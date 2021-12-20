@@ -101,7 +101,7 @@ LHmw_Inds=LHmw(:,1);
 LHmw_Inds=LHmw_Inds+1;
 
 % Get incenters of triangles.
-TR = TriRep(F, V);
+TR = TriRep(faces_l, vx_l);
 P = TR.incenters;
 
 % vector field
@@ -114,7 +114,7 @@ axis([-1, 1, -1, 1, 0, 1]);
 %hold on;
 quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 4, 'k');
 hold on
-trisurf(F, V(:, 1), V(:, 2), V(:, 3), vATTR, 'EdgeColor','none');
+trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), vATTR, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
 caxis([-45,45]);
@@ -142,7 +142,7 @@ u=us.vf_left{j};
 c = double(squeeze(computeColour(u(:, 1)/nmax, u(:, 2)/nmax))) ./ 255;
 figure;
 axis([-1, 1, -1, 1, 0, 1]);
-trisurf(F, V(:, 1), V(:, 2), V(:, 3), 'FaceColor', 'flat', 'FaceVertexCData', c, 'EdgeColor', 'none');
+trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), 'FaceColor', 'flat', 'FaceVertexCData', c, 'EdgeColor', 'none');
 daspect([1, 1, 1]);
 view(115,315);
 Direcs(j)=getframe(gcf)
@@ -165,7 +165,7 @@ axis([-1, 1, -1, 1, 0, 1]);
 vATTR=fl.TRs{j};
 % apply mask
 vATTR(LHmw_Inds)=-35;
-trisurf(F, V(:, 1), V(:, 2), V(:, 3), 'FaceColor', 'flat', 'FaceVertexCData', vATTR, 'EdgeColor', 'none');
+trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), 'FaceColor', 'flat', 'FaceVertexCData', vATTR, 'EdgeColor', 'none');
 daspect([1, 1, 1]);
 caxis([-45,45]);
 colorbar

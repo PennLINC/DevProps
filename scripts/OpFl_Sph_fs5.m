@@ -18,7 +18,7 @@ s = 1; % R(u), regularizing functional, scales Tikhonov regularization more rapi
 %%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% uptake surface data
-% load in fsaverage4 faces and vertices
+% load in fsaverage5 faces and vertices
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage5';
 % for surface data
@@ -33,10 +33,10 @@ faces_r = faces_r + 1;
 % normalize verts to unit sphere
 % left
 numV=length(vx_l);
-vx_l(numV+1:end, :) = Normalize(vx_l(numV+1:end, :));
+vx_l(numV+1:end, :) = VecNormalize(vx_l(numV+1:end, :));
 % right
 numV=length(vx_r);
-vx_l(numV+1:end, :) = Normalize(vx_l(numV+1:end, :));
+vx_l(numV+1:end, :) = VecNormalize(vx_l(numV+1:end, :));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -103,34 +103,34 @@ save('~/dropbox/OpFl_Sph_fs5_test.mat','us')
 % LHmw_Inds=LHmw_Inds+1;
 
 % Get incenters of triangles.
-% TR = TriRep(F, V);
+% TR = TriRep(faces_l, vx_l);
 % P = TR.incenters;
 
 % vector field
-%DirecsVecs=struct('cdata',[],'colormap',[]);
-%for j=1:300
-%u=us.vf_left{j};
-%vATTR=fl.TRs{j};
-%figure;
-%axis([-1, 1, -1, 1, 0, 1]);
-%quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 4, 'k');
-%hold on
-%trisurf(F, V(:, 1), V(:, 2), V(:, 3), vATTR, 'EdgeColor','none');
-%axis equal
-%daspect([1, 1, 1]);
-%caxis([-45,45]);
-%colorbar
-%view(115,315); %medial wall view
+DirecsVecs=struct('cdata',[],'colormap',[]);
+for j=1:50
+u=us.vf_left{j};
+vATTR=fl.TRs{j};
+figure;
+axis([-1, 1, -1, 1, 0, 1]);
+quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 4, 'k');
+hold on
+trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), vATTR, 'EdgeColor','none');
+axis equal
+daspect([1, 1, 1]);
+caxis([-45,45]);
+colorbar
+view(115,315); %medial wall view
 %view(200,200);
-%DirecsVecs(j)=getframe(gcf);
-%end
+DirecsVecs(j)=getframe(gcf);
+end
 % create videowriter object
-%video = VideoWriter('testDirecVecs_rot.avi', 'Uncompressed AVI');
-%video.FrameRate = 4;
+video = VideoWriter('testDirecVecs_rot.avi', 'Uncompressed AVI');
+video.FrameRate = 4;
 % open it, plop Direcs in
-%open(video)
-%writeVideo(video, DirecsVecs);
-%close(video);
+open(video)
+writeVideo(video, DirecsVecs);
+close(video);
 
 % color instead of vecs for dir
 % compute color space scaling: scaled to last u
