@@ -1,9 +1,11 @@
-function us = OpFl_Sph_fs5(TRs_l,TRs_r)
-
+function us = OpFl_Sph_fs5(subj)
 
 % f should be data in {----}, both in the same order as vx_l (and vx_r) below. 
 % adapted from Decomposition of Optical Flow on the Sphere, by Kirisits, Lang, and Scherzer (2014)
+% Thank you Kirisits, Lang, and Scherzer!
+
 % https://www.csc.univie.ac.at/paper/KirLanSch14.pdf
+
 
 % set to run independently on each pair of temporally adjacent frames... yikes
 
@@ -21,10 +23,21 @@ s = 1; % R(u), regularizing functional, scales Tikhonov regularization more rapi
 % load in fsaverage5 faces and vertices
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage5';
+
+%%%%%%%%% HARDCODE FILEPATH TO THESE 
+% load in TRs_l and TRs_r
+TRs_lfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_L_10k.mgh'];
+TRs_rfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_R_10k.mgh'];
+% filepaths to files
+TRs_lf=MRIread(TRs_lfp);
+TRs_rf=MRIread(TRs_rfp);
+% files to data
+TRs_l=squeeze(TRs_lf.vol);
+TRs_r=squeeze(TRs_rf.vol);
 % for surface data
 surfL = [SubjectsFolder '/surf/lh.sphere'];
 surfR = [SubjectsFolder '/surf/rh.sphere'];
-% surface topology
+% surface topography
 [vx_l, faces_l] = read_surf(surfL);
 [vx_r, faces_r] = read_surf(surfR);
 % +1 the faces: begins indexing at 0
@@ -58,14 +71,26 @@ for TRP=1:TR_n;
 	fl.TRs{TRP}=TRs_l(:,TRP);
 end
 
-%disp('converting right hemi to struct')
+% r h 
+disp('converting right hemi to struct')
+fr=struct;
+for TRP=1:TR_n;
+	fr.TRs{TRP}=TRs_r(:,TRP);
+end
 
-% right hemi
-%fr=struct;
-% populate struct
-%for TRP=1:TR_n;
-%        fr.TRs{TRP}=TRs_r(:,TRP);
-%end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% load in continuous segment indices
+parentfp = '/cbica/projects/hcpd/data/motMasked_contSegs/';
+CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
+CSI = readtable(CSIfp);
+
+% assure that TR count is the same between time series and valid segments txt
+SegNum=height(CSI);
+% trailing -1 is because the count column (,2) is inclusive of the start TR (,1)
+numTRsVS=CSI(SegNum,1)+(CSI(SegNum,2)-1;
+if numTRsVS != TR_n
+	disp('TRs from Valid Segments txt and cifti do not match. Fix it.')
+	return
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compute optical flow on every pair of sequential TRs
@@ -73,23 +98,31 @@ end
 us=struct;
 disp('Computing optical flow...');
 
-% loop over each TR-Pair: 1 fewer pair than number of TRs
+% for each continuous segment
+for seg in 1:SegNum;
 
-for TRP=1:(TR_n-1);
-TRP
-% Compute decomposition.
-tic;
-% pull out adjacent frames
-u = of(N, faces_l, vx_l, fl.TRs{TRP}, fl.TRs{TRP+1}, h, alpha, s);
-toc;
-% throw u into struct
-us.vf_left{TRP}=u;
-% now right hemi
-%u = of(N, faces_l, vx_l, fr.TRs{TRP}, fr.TRs{TRP+1}, h, alpha, s);
-%toc;
-% throw u into struct
-%us.vf_right{TRP}=u;
+%%%%%%%% UNTESTED
 
+	SegStart=CSI(seg,1);
+	SegSpan=CSI(seg,2);
+	% get corresponding TRs from aggregate time series
+	segTS_l=fl.TRs{SegStart:(SegStart+SegSpan-1)};
+	segTS_r=fr.TRs{SegStart:(SegStart+SegSpan-1)};
+	% loop over each TR-Pair: 1 fewer pair than number of TRs
+	for TRP=1:(SegSpan-1);
+		TRP
+		% Compute decomposition.
+		tic;
+		% pull out adjacent frames
+		u = of(N, faces_l, vx_l, segTS_l{TRP}, segTS_l{TRP+1}, h, alpha, s);
+		% throw u into struct
+		us.vf_left{TRP}=u;
+		% now right hemi
+		u = of(N, faces_l, vx_l, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
+		toc;
+		% throw u into struct
+		us.vf_right{TRP}=u;
+	end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

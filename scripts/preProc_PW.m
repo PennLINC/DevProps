@@ -49,11 +49,7 @@ OFfp=['/cbica/projects/pinesParcels/results/OpFl_output/' subj '/OpFlowResults.m
 % Get the calculus gradient of the dmap gradient
 Gradient_ofPG(subj)
 
-%%%
-% note distinct interpolation for time series for opfl (within opflow) and time series to fsaverage5 (within downsample_ts)
-% consider equivalent interpolation 
-%%%
+%%% Run Spherical OpFl
+OpFl_Sph_fs5(subj)
 
-%%% Run neuropattTB
-OpFl(subj)
 end
