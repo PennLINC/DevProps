@@ -86,8 +86,8 @@ CSI = readtable(CSIfp);
 % assure that TR count is the same between time series and valid segments txt
 SegNum=height(CSI);
 % trailing -1 is because the count column (,2) is inclusive of the start TR (,1)
-numTRsVS=CSI(SegNum,1)+(CSI(SegNum,2)-1;
-if numTRsVS != TR_n
+numTRsVS=CSI{SegNum,1}+CSI{SegNum,2}-1;
+if numTRsVS ~= TR_n
 	disp('TRs from Valid Segments txt and cifti do not match. Fix it.')
 	return
 end
@@ -98,35 +98,40 @@ end
 us=struct;
 disp('Computing optical flow...');
 
+% initialize TRP counter: for plopping u outputs into master struct w/o/r/t their segment
+TRPC=1;
+
 % for each continuous segment
-for seg in 1:SegNum;
-
-%%%%%%%% UNTESTED
-
-	SegStart=CSI(seg,1);
-	SegSpan=CSI(seg,2);
+for seg=1:SegNum;
+	% just to print out count of current segment
+	seg
+	SegStart=CSI{seg,1};
+	SegSpan=CSI{seg,2};
 	% get corresponding TRs from aggregate time series
-	segTS_l=fl.TRs{SegStart:(SegStart+SegSpan-1)};
-	segTS_r=fr.TRs{SegStart:(SegStart+SegSpan-1)};
+	segTS_l=fl.TRs(SegStart:(SegStart+SegSpan-1));
+	segTS_r=fr.TRs(SegStart:(SegStart+SegSpan-1));
 	% loop over each TR-Pair: 1 fewer pair than number of TRs
 	for TRP=1:(SegSpan-1);
+		% print TR pair iter
 		TRP
 		% Compute decomposition.
 		tic;
 		% pull out adjacent frames
 		u = of(N, faces_l, vx_l, segTS_l{TRP}, segTS_l{TRP+1}, h, alpha, s);
 		% throw u into struct
-		us.vf_left{TRP}=u;
+		us.vf_left{TRPC}=u;
 		% now right hemi
 		u = of(N, faces_l, vx_l, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
 		toc;
 		% throw u into struct
-		us.vf_right{TRP}=u;
+		us.vf_right{TRPC}=u;
+		% update TR pair counter, which should increase +1 across segments
+		TRPC=TRPC+1;
 	end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-save('~/dropbox/OpFl_Sph_fs5_test.mat','us')
+save(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs5.mat'],'us')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Visualize
 % extract medial wall mask
@@ -140,30 +145,30 @@ save('~/dropbox/OpFl_Sph_fs5_test.mat','us')
 % P = TR.incenters;
 
 % vector field
-DirecsVecs=struct('cdata',[],'colormap',[]);
-for j=1:50
-u=us.vf_left{j};
-vATTR=fl.TRs{j};
-figure;
-axis([-1, 1, -1, 1, 0, 1]);
-quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 4, 'k');
-hold on
-trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), vATTR, 'EdgeColor','none');
-axis equal
-daspect([1, 1, 1]);
-caxis([-45,45]);
-colorbar
-view(115,315); %medial wall view
+%DirecsVecs=struct('cdata',[],'colormap',[]);
+%for j=1:50
+%u=us.vf_left{j};
+%vATTR=fl.TRs{j};
+%figure;
+%axis([-1, 1, -1, 1, 0, 1]);
+%quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 4, 'k');
+%hold on
+%trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), vATTR, 'EdgeColor','none');
+%axis equal
+%daspect([1, 1, 1]);
+%caxis([-45,45]);
+%colorbar
+%view(115,315); %medial wall view
 %view(200,200);
-DirecsVecs(j)=getframe(gcf);
-end
+%DirecsVecs(j)=getframe(gcf);
+%end
 % create videowriter object
-video = VideoWriter('testDirecVecs_rot.avi', 'Uncompressed AVI');
-video.FrameRate = 4;
+%video = VideoWriter('testDirecVecs_rot.avi', 'Uncompressed AVI');
+%video.FrameRate = 4;
 % open it, plop Direcs in
-open(video)
-writeVideo(video, DirecsVecs);
-close(video);
+%open(video)
+%writeVideo(video, DirecsVecs);
+%close(video);
 
 % color instead of vecs for dir
 % compute color space scaling: scaled to last u

@@ -7,13 +7,9 @@ subj
 % add matlab path for used functions
 addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
-% make output folder
-direcString=['/cbica/projects/pinesParcels/results/wave_output/' subj];
-mkdirCommand=['mkdir ' direcString];
-system(mkdirCommand)
-
 % apply motion masks and extract TR indcies of continuous segments
-apply_motion_mask_genTRinds(subj)
+%%% already ran on subjs - NOTE HCPD DIREC VERSION RUN, EXCLUDES NONCONTINUOUS SEGMENTS 
+%apply_motion_mask(subj)
 
 %%%%%%%%%%%%%%%
 % don't mess about with this stuff if it's already been ran
@@ -22,9 +18,10 @@ PGfp=[fp '/' subj '_PG_LR_32k_rest.dscalar.nii'];
 %if ~exist(PGfp)
 %%%%%%%%%%%%%%%
 
+%%% already ran on subjs
 % downsample aggregated TS 
-dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
-system(dsCommand)
+% dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
+% system(dsCommand)
 
 % make a "Proced" dir
 direcString=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
@@ -35,14 +32,15 @@ system(mkdirCommand)
 derivePGcommand=['/cbica/projects/pinesParcels/miniconda3/envs/mv_preds/bin/python derive_pg.py ' subj];
 system(derivePGcommand)
 
+%%% no need as it is all in fsaverage5 space now?
 % upsample for equivalent grid resampling
-usCommand=['~/PWs/scripts/upsample_PG.sh ' subj];
-system(usCommand)
+%%usCommand=['~/PWs/scripts/upsample_PG.sh ' subj];
+%%%system(usCommand)
 %end
 
 %%%%%%%%%%%%%%%
 % don't mess about with OpFl if it's already been ran
-OFfp=['/cbica/projects/pinesParcels/results/OpFl_output/' subj '/OpFlowResults.mat'];
+OFfp=['/cbica/projects/pinesParcels/results/Proced/' subj '/' subj '_OpFl_fs5.mat'];
 %if ~exist(OFfp)
 %%%%%%%%%%%%%%%
 

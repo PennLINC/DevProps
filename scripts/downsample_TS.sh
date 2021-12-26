@@ -21,3 +21,9 @@ AgTS=/cbica/projects/hcpd/data/motMasked_contSegs/${subj}/${subj}_ses-baselineYe
 mri_convert /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_L_10k.func.gii /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_L_10k.mgh
 
 mri_convert /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_R_10k.func.gii /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_R_10k.mgh
+
+# cp to hcpd
+
+cp /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_L_10k.mgh /cbica/projects/hcpd/data/motMasked_contSegs/${subj}/
+
+cp /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_R_10k.mgh /cbica/projects/hcpd/data/motMasked_contSegs/${subj}/
