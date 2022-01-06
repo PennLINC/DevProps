@@ -40,7 +40,13 @@ TR_R = TriRep(F_R,V_R);
 P_R = TR_R.incenters;
 
 % load in subject's PG
-%%%%% DOOO IT
+LPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_L_10k_rest.func.gii'];
+LPGf=gifti(LPGfp);
+PG_LH=LPGf.cdata(:,1);
+% right hemi
+RPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_R_10k_rest.func.gii'];
+RPGf=gifti(RPGfp);
+PG_RH=RPGf.cdata(:,1);
 
 % calculate PG gradient on sphere
 PGg_L = grad(F_L, V_L, PG_LH);
@@ -84,7 +90,7 @@ for i=1:length(azd_R)
 end
 
 % get length of OpFl pairs
-lenOpFl=
+lenOpFl=length(data.us.vf_left);
 
 % translate xyz vector fields from opfl to az/el/r
 azesOpf_L=zeros(length(azd_L),lenOpFl);
@@ -166,7 +172,7 @@ angDist_R=zeros(lenOpFl,length(azd_R));
 % for each vertex
 for Vert=1:length(azd_R)
     % note azimuth elevation ordering for atan2d
-    PGvec_L=[azes_R(Vert) els_R(Vert)];
+    PGvec_R=[azes_R(Vert) els_R(Vert)];
     for fr=1:lenOpFl
         OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
         a = atan2d(PGvec_R(1)*OpFlVec_R(2)-PGvec_R(2)*OpFlVec_R(1),PGvec_R(1)*PGvec_R(2)+OpFlVec_R(1)*OpFlVec_R(2));
@@ -177,6 +183,6 @@ end
 % save it out
 AngDist=struct;
 AngDist.Left=angDist_L;
-AngDist.Rifht=angDist_R;
+AngDist.Right=angDist_R;
 AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
 save(AngDistFP,'AngDist')

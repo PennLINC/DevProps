@@ -21,19 +21,18 @@ while len(subjects)>0:
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
     Hour = time.localtime().tm_hour 
+    # endgame file to see if subj ran
     # if weekend OR after 6 PM OR before 9 AM
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/OpFl_output/' + str(newsub) + '/' + str(newsub) + '/OpFlowResults.mat'
-      # submit job (if above conditions are met)
+      # submit job (if conditions are met)
+      #OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_OpFl_fs5.mat'
       #if not os.path.exists(OpFile):
-      subprocess.run(["qsub","-l","h_vmem=18G,s_vmem=16G","qsubMatlab.sh",newsub])
-      time.sleep(80) #wait a bit
+      subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
     elif que < 4:
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/OpFl_output/' + str(newsub) + '/' + str(newsub) + '/OpFlowResults.mat'
+      #OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_OpFl_fs5.mat'
       #if not os.path.exists(OpFile):
-      # submit job (if above conditions are met)
+      # submit job (if conditions are met)
       subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab.sh",newsub])
-      time.sleep(80) #wait a bit

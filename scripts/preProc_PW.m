@@ -9,7 +9,7 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % apply motion masks and extract TR indcies of continuous segments
 %%% already ran on subjs - NOTE HCPD DIREC VERSION RUN, EXCLUDES NONCONTINUOUS SEGMENTS 
-%apply_motion_mask(subj)
+apply_motion_mask(subj)
 
 %%%%%%%%%%%%%%%
 % don't mess about with this stuff if it's already been ran
@@ -20,13 +20,13 @@ PGfp=[fp '/' subj '_PG_LR_32k_rest.dscalar.nii'];
 
 %%% already ran on subjs
 % downsample aggregated TS 
-% dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
-% system(dsCommand)
+dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
+system(dsCommand)
 
 % make a "Proced" dir
-direcString=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
-mkdirCommand=['mkdir ' direcString];
-system(mkdirCommand)
+%direcString=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
+%mkdirCommand=['mkdir ' direcString];
+%system(mkdirCommand)
 
 % derive personalized PG
 derivePGcommand=['/cbica/projects/pinesParcels/miniconda3/envs/mv_preds/bin/python derive_pg.py ' subj];
@@ -41,11 +41,8 @@ system(derivePGcommand)
 %%%%%%%%%%%%%%%
 % don't mess about with OpFl if it's already been ran
 OFfp=['/cbica/projects/pinesParcels/results/Proced/' subj '/' subj '_OpFl_fs5.mat'];
-%if ~exist(OFfp)
+if ~exist(OFfp)
 %%%%%%%%%%%%%%%
-
-% Get the calculus gradient of the dmap gradient
-Gradient_ofPG(subj)
 
 %%% Run Spherical OpFl
 OpFl_Sph_fs5(subj)
