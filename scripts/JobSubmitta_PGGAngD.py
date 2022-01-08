@@ -8,6 +8,8 @@ content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)
 content_list.pop()
+# temp
+time.sleep(9000)
 # feed em' in as subjects
 subjects = content_list
 # while there are more than 0 subjects left to run
