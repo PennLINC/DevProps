@@ -4,7 +4,7 @@ Modes=readtable('test_leftmode.csv')
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 %%%% Load in angular distances
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
+AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat_L.mat'];
 data=load(AngDistFP)
 
 %%% Load in surface data
