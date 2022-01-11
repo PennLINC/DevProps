@@ -1,1 +1,1 @@
-matlab -nodisplay -r "preProc_PW('${1}')"
+matlab -nodisplay -r "mask_mw_faces('${1}')"

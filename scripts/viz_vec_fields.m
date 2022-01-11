@@ -113,7 +113,7 @@ for j=1:100
 j
 u=OpFl.vf_left{j};
 vATTR=fl.TRs{j};
-figure('units','pixels','position',[0 0 2000 2000])
+figure('units','pixels','position',[0 0 1000 1000])
 subplot(2,2,1)
 axis([-1, 1, -1, 1, 0, 1]);
 quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 3, 'k');
@@ -138,7 +138,7 @@ view(200,200);
 
 % 3
 subplot(2,2,[2 4])
-limz=[-45 45];
+limz=[-100 100];
 % get time series org. by PG
 PGts=TRs_l(idxL,:);
 imagesc(PGts,limz);
@@ -150,7 +150,7 @@ DirecsVecs(j)=getframe(gcf);
 end
 
 % create videowriter object
-video = VideoWriter([vizdir 'testDirecVecs_rot.avi'],'Uncompressed AVI');
+video = VideoWriter([vizdir 'testDirecVecs2.avi'],'Uncompressed AVI');
 video.FrameRate = 2;
 
 % open it, plop Direcs in
