@@ -1,3 +1,4 @@
+scripts/sub-*.sh
 hcpd_subj_list.txt
 *core.*
 *.sh.e*
