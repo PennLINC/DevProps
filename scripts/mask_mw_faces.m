@@ -52,6 +52,10 @@ AngD_L=data.AngDist.Left;
 AngD_R=data.AngDist.Right;
 AngD_L_masked=AngD_L(:,noMW_combined_L);
 AngD_R_masked=AngD_R(:,noMW_combined_R);
+gAngD_L=data.AngDist.gLeft;
+gAngD_R=data.AngDist.gRight;
+gAngD_L_masked=gAngD_L(:,noMW_combined_L);
+gAngD_R_masked=gAngD_R(:,noMW_combined_R);
 
 %%% mask PG
 % convert PG to faces, average value across three vertices defining face
@@ -66,4 +70,7 @@ AngD_R_masked=AngD_R(:,noMW_combined_R);
 % write in R-friendly format
 writetable(table(AngD_L_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDist_Masked_L.csv']);
 writetable(table(AngD_R_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDist_Masked_R.csv']);
+% and group
+writetable(table(gAngD_L_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_gAngDist_Masked_L.csv']);
+writetable(table(gAngD_R_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_gAngDist_Masked_R.csv']);
 

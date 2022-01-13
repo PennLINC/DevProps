@@ -8,8 +8,6 @@ content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)
 content_list.pop()
-# temp
-time.sleep(9000)
 # feed em' in as subjects
 subjects = content_list
 # while there are more than 0 subjects left to run
@@ -21,6 +19,6 @@ while len(subjects)>0:
   if que < 6:
     newsub = subjects.pop()
     # test if output file exists
-    OF='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_AngDistMat.mat'
-    if not os.path.exists(OF):
-      subprocess.run(["qsub","-l","h_vmem=11G,s_vmem=10G","qsubMatlab_PGG_ANGD.sh",newsub])
+    #OF='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_AngDistMat.mat'
+    #if not os.path.exists(OF):
+    subprocess.run(["qsub","-l","h_vmem=15G,s_vmem=14G","qsubMatlab_PGG_ANGD.sh",newsub])

@@ -220,4 +220,3 @@ save(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs
 %writeVideo(video, BOLD);
 %close(video);
 
-% right hemi next?
