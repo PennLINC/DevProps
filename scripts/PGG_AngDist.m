@@ -6,7 +6,7 @@ subj
 % add matlab path for used functions
 addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
-PGG_AngDistCalc(subj)
+%PGG_AngDistCalc(subj)
 
 % add a script that masks medial wall w/r/t faces (not verts) out
 mask_mw_faces(subj)

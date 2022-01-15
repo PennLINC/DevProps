@@ -10,6 +10,8 @@ content_list = content. split("\n")
 content_list.pop()
 # feed em' in as subjects
 subjects = content_list
+# temp
+time.sleep(21000)
 # while there are more than 0 subjects left to run
 while len(subjects)>0:
   # grab qsub info, get number of jobs being run

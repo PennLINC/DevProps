@@ -16,7 +16,7 @@ while len(subjects)>0:
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 6 job slots (one is occupied by this script)
-  if que < 6:
+  if que < 12:
     newsub = subjects.pop()
     # test if output file exists
     #OF='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_AngDistMat.mat'

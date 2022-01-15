@@ -43,19 +43,58 @@ MW_combined_L=union(MW_combined_L,MW_f3_L);
 % now for right hemisphere
 MW_combined_R=union(MW_f1_R,MW_f2_R);
 MW_combined_R=union(MW_combined_R,MW_f3_R);
+% to be combined with mask vector derived below from PGGs
+
+% MASK WHERE PGG = 0: individ AND group
+% load in GROUP PG
+gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/Gradients.lh.fsaverage5.func.gii'];
+gLPGf=gifti(gLPGfp);
+gPG_LH=gLPGf.cdata(:,1);
+% right hemi
+gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/Gradients.rh.fsaverage5.func.gii'];
+gRPGf=gifti(gRPGfp);
+gPG_RH=gRPGf.cdata(:,1);
+% load in subject's PG
+LPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_L_10k_rest.func.gii'];
+LPGf=gifti(LPGfp);
+PG_LH=LPGf.cdata(:,1);
+% right hemi
+RPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_R_10k_rest.func.gii'];
+RPGf=gifti(RPGfp);
+PG_RH=RPGf.cdata(:,1);
+% calculate PG gradient on sphere
+PGg_L = grad(F_L, V_L, PG_LH);
+PGg_R = grad(F_R, V_R, PG_RH);
+% calculate group PG gradient on sphere
+gPGg_L = grad(F_L, V_L, gPG_LH);
+gPGg_R = grad(F_R, V_R, gPG_RH);
+% get index of where they are 0 in all directions
+PGg_L0=find(all(PGg_L')==0);
+gPGg_L0=find(all(gPGg_L')==0);
+PGg_R0=find(all(PGg_R')==0);
+gPGg_R0=find(all(gPGg_R')==0);
+
+% continue to get unions
+ind_MW_combined_L=union(MW_combined_L,PGg_L0);
+gro_MW_combined_L=union(MW_combined_L,gPGg_L0);
+% and right hemi
+ind_MW_combined_R=union(MW_combined_R,PGg_R0);
+gro_MW_combined_R=union(MW_combined_R,gPGg_R0);
 % get inverse for indexing : faces that ARE NOT touching mW verts
-noMW_combined_L=setdiff([1:20480],MW_combined_L);
-noMW_combined_R=setdiff([1:20480],MW_combined_R);
+i_noMW_combined_L=setdiff([1:20480],ind_MW_combined_L);
+i_noMW_combined_R=setdiff([1:20480],ind_MW_combined_R);
+g_noMW_combined_L=setdiff([1:20480],gro_MW_combined_L);
+g_noMW_combined_R=setdiff([1:20480],gro_MW_combined_R);
 
 % mask angular distances
 AngD_L=data.AngDist.Left;
 AngD_R=data.AngDist.Right;
-AngD_L_masked=AngD_L(:,noMW_combined_L);
-AngD_R_masked=AngD_R(:,noMW_combined_R);
+AngD_L_masked=AngD_L(:,i_noMW_combined_L);
+AngD_R_masked=AngD_R(:,i_noMW_combined_R);
 gAngD_L=data.AngDist.gLeft;
 gAngD_R=data.AngDist.gRight;
-gAngD_L_masked=gAngD_L(:,noMW_combined_L);
-gAngD_R_masked=gAngD_R(:,noMW_combined_R);
+gAngD_L_masked=gAngD_L(:,g_noMW_combined_L);
+gAngD_R_masked=gAngD_R(:,g_noMW_combined_R);
 
 %%% mask PG
 % convert PG to faces, average value across three vertices defining face

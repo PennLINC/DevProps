@@ -1,1 +1,1 @@
-python JobSubmitta_PGGAngD.py
+python JobSubmitta_R.py
