@@ -55,24 +55,27 @@ saveRDS(gDipT,paste0('~/results/PWs/Proced/',subj,'/',subj,'_gDipTest.rds'))
 # initialize vecs
 dipvecL=array(0,length(angdL))
 dipvecR=array(0,length(angdR))
-gdipvecL=array(0,length(angdL))
-gdipvecR=array(0,length(angdR))
+gdipvecL=array(0,length(gangdL))
+gdipvecR=array(0,length(gangdR))
 
 # loop over left
 for (f in 1:length(angdL)){
 	dipSt=dip.test(angdL[,f])
-	gdipSt=dip.test(gangdL[,f])
 	dipvecL[f]=dipSt$statistic
+}
+for (f in 1:length(gangdL)){
+	gdipSt=dip.test(gangdL[,f])
 	gdipvecL[f]=gdipSt$statistic
 }
 # loop over right
 for (f in 1:length(angdR)){
         dipSt=dip.test(angdR[,f])
         gdipSt=dip.test(gangdR[,f])
+}
+for (f in 1:length(gangdR)){
         dipvecR[f]=dipSt$statistic
         gdipvecR[f]=gdipSt$statistic
 }
-
 # saveout
 saveRDS(dipvecL,paste0('~/results/PWs/Proced/',subj,'/',subj,'_LVerts_DipTest.rds'))
 saveRDS(gdipvecL,paste0('~/results/PWs/Proced/',subj,'/',subj,'_LVerts_gDipTest.rds'))
