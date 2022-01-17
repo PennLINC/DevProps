@@ -26,20 +26,20 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
       # submit job (if conditions are met)
-      #OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_DipTest.rds'
-      #if not os.path.exists(OpFile):
-      tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
-      JobName=str(newsub)+".sh"
-      with open(JobName, 'w') as f:
-        f.write(tmpSh)
-      subprocess.run(["qsub","-l","h_vmem=19G,s_vmem=18G",JobName])
+      DipFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_RVerts_DipTest.rds'
+      if not os.path.exists(OpFile):
+        tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
+        JobName=str(newsub)+".sh"
+        with open(JobName, 'w') as f:
+          f.write(tmpSh)
+        subprocess.run(["qsub","-l","h_vmem=26G,s_vmem=25G",JobName])
     elif que < 12:
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_DipTest.rds'
-      #if not os.path.exists(OpFile):
+      DipFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_RVerts_DipTest.rds'
+      if not os.path.exists(DipFile):
       # submit job (if conditions are met)
-      tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
-      JobName=str(newsub)+".sh"
-      with open(JobName, 'w') as f:
-        f.write(tmpSh)
-      subprocess.run(["qsub","-l","h_vmem=19G,s_vmem=18G",JobName])
+        tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
+        JobName=str(newsub)+".sh"
+        with open(JobName, 'w') as f:
+          f.write(tmpSh)
+        subprocess.run(["qsub","-l","h_vmem=26G,s_vmem=26G",JobName])
