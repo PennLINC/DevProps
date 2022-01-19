@@ -1,1 +1,1 @@
-matlab -nodisplay -r "mask_mw_faces('${1}')"
+matlab -nodisplay -r "aggregate_OpFlDistrModes"

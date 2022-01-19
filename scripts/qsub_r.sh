@@ -1,1 +1,1 @@
-Rscript aggregate_OpFlAngDistributions.R
+Rscript facewise_stats_R.R

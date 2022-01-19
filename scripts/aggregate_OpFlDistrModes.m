@@ -1,12 +1,15 @@
 % load subjs list
 Subjs=readtable('~/PWs/hcpd_subj_list.txt')
 % initialize intermed array (to take another set of modes from)
-IntermedArray=zeros(20484,height(Subjs));
+IntermedArray_L=zeros(20480,height(Subjs));
+IntermedArray_R=zeros(20480,height(Subjs));
+
 %initialize output array
-OutArray=zeros(20480,1);
+OutArray_L=zeros(20480,1);
+OutArray_R=zeros(20480,1);
 
 % edges to apply in discretize
-edges = -180:15:180 ;
+edges = 0:10:180 ;
 
 % loop over each subj
 for s = 1:height(Subjs)
@@ -17,24 +20,32 @@ for s = 1:height(Subjs)
 		s
 		% load in subj's distr
 		Angs=load([fp '/' Subj{:} '_AngDistMat.mat']);
-		AngsL=Angs.AngDist.Left;
+		AngsL=Angs.AngDist.gLeft;
+		AngsR=Angs.AngDist.gRight;
 		%discretize each face's distribution
 		for f = 1:20480
-			Angbins=discretize(AngsL(:,f),edges);
+			Angbins_L=discretize(AngsL(:,f),edges);
 			%get mode of distribution
-			IntermedArray(f,s)=mode(Angbins);
+			IntermedArray_L(f,s)=mode(Angbins_L);
+			% and for right
+			Angbins_R=discretize(AngsR(:,f),edges);
+			IntermedArray_R(f,s)=mode(Angbins_R);
 		end	
 	end
 end
 
 % find where subjects were missing, remove
 PopulatedCols=find(sum(IntermedArray)~=0);
-IntermedArray=IntermedArray(:,PopulatedCols);
+IntermedArray_L=IntermedArray_L(:,PopulatedCols);
+IntermedArray_R=IntermedArray_R(:,PopulatedCols);
 
 %get modes across subjs
 for f = 1:20480
-OutArray(f,1)=mode(IntermedArray(f,:));
+	OutArray_L(f,1)=mode(IntermedArray_L(f,:));
+	OutArray_R(f,1)=mode(IntermedArray_R(f,:));	
 end
 
 %save
-writetable(table(OutArray),'/cbica/projects/pinesParcels/results/PWs/ModeModes_L.csv');
+writetable(table(OutArray_L),'/cbica/projects/pinesParcels/results/PWs/ModeModes_L.csv');
+writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/ModeModes_R.csv');
+
