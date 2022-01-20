@@ -1,11 +1,6 @@
 Modes=readtable('test_leftmode.csv')
 
-
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
-
-%%%% Load in angular distances
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat_L.mat'];
-data=load(AngDistFP)
 
 %%% Load in surface data
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage5';
@@ -47,21 +42,51 @@ MW_combined_R=union(MW_combined_R,MW_f3_R);
 % get inverse for indexing : faces that ARE NOT touching mW verts
 noMW_combined_L=setdiff([1:20480],MW_combined_L);
 noMW_combined_R=setdiff([1:20480],MW_combined_R);
+% further mask derivation
+% MASK WHERE PGG = 0: individ AND group
+% load in GROUP PG
+gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/Gradients.lh.fsaverage5.func.gii'];
+gLPGf=gifti(gLPGfp);
+gPG_LH=gLPGf.cdata(:,1);
+% right hemi
+gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/Gradients.rh.fsaverage5.func.gii'];
+gRPGf=gifti(gRPGfp);
+gPG_RH=gRPGf.cdata(:,1);
+% load in subject's PG
+LPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_L_10k_rest.func.gii'];
+LPGf=gifti(LPGfp);
+PG_LH=LPGf.cdata(:,1);
+% right hemi
+RPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_R_10k_rest.func.gii'];
+RPGf=gifti(RPGfp);
+PG_RH=RPGf.cdata(:,1);
+% calculate PG gradient on sphere
+PGg_L = grad(F_L, V_L, PG_LH);
+PGg_R = grad(F_R, V_R, PG_RH);
+% calculate group PG gradient on sphere
+gPGg_L = grad(F_L, V_L, gPG_LH);
+gPGg_R = grad(F_R, V_R, gPG_RH);
+% get index of where they are 0 in all directions
+PGg_L0=find(all(PGg_L')==0);
+gPGg_L0=find(all(gPGg_L')==0);
+PGg_R0=find(all(PGg_R')==0);
+gPGg_R0=find(all(gPGg_R')==0);
 
+% continue to get unions
+ind_MW_combined_L=union(MW_combined_L,PGg_L0);
+gro_MW_combined_L=union(MW_combined_L,gPGg_L0);
+% and right hemi
+ind_MW_combined_R=union(MW_combined_R,PGg_R0);
+gro_MW_combined_R=union(MW_combined_R,gPGg_R0);
+% get inverse for indexing : faces that ARE NOT touching mW verts
+i_noMW_combined_L=setdiff([1:20480],ind_MW_combined_L);
+i_noMW_combined_R=setdiff([1:20480],ind_MW_combined_R);
+g_noMW_combined_L=setdiff([1:20480],gro_MW_combined_L);
+g_noMW_combined_R=setdiff([1:20480],gro_MW_combined_R);
 
-
-
-
-
-
-
-
-mycolormap = customcolormap([0 .2 .4 .6 .8 1], {'#ff0000','#ffa500','#ffff00','#00ff00','#00ffff','#0000ff'});
-
-
-%%%%
+%%%%%%%%
 data=zeros(1,20480);
-data(noMW_combined_L)=table2array(Modes(:,2));
+data(g_noMW_combined_L)=table2array(Modes(:,2));
 
 
 
@@ -81,11 +106,31 @@ camlight;
 alpha(1)
 colorbar
 
-
-
-
-set(gca,'CLim',[0,24]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
+
+%=zeros(1,20480);
+data(g_noMW_combined_L)=table2array(Modes(:,2));
+
+
+
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage5/surf/lh.inflated');
+
+
+figure
+aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3))
+view([270 0]);
+colormap(mycolormap)
+daspect([1 1 1]);
+axis tight;
+axis vis3d off;
+lighting gouraud; %phong;
+shading flat;
+camlight;
+alpha(1)
+colorbar
+
+set(gca,'CLim',[0,0.5]);
+set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 print('test_subj2.png','-dpng')

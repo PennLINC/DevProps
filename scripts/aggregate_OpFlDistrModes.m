@@ -35,9 +35,10 @@ for s = 1:height(Subjs)
 end
 
 % find where subjects were missing, remove
-PopulatedCols=find(sum(IntermedArray)~=0);
-IntermedArray_L=IntermedArray_L(:,PopulatedCols);
-IntermedArray_R=IntermedArray_R(:,PopulatedCols);
+PopulatedColsL=find(sum(IntermedArray_L)~=0);
+PopulatedColsR=find(sum(IntermedArray_R)~=0);
+IntermedArray_L=IntermedArray_L(:,PopulatedColsL);
+IntermedArray_R=IntermedArray_R(:,PopulatedColsR);
 
 %get modes across subjs
 for f = 1:20480

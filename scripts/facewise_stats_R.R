@@ -114,10 +114,10 @@ for (f in 1:18546){
 }
 
 # saveout mean
-saveRDS(meanD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_Mean_',VertBin,'.rds'))
+saveRDS(meanD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_Mean.rds'))
 # saveout sd
-saveRDS(sdD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_SD_',VertBin,'.rds'))
+saveRDS(sdD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_SD.rds'))
 # saveout age DR2
-saveRDS(ageDR2_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_DR2_',VertBin,'.rds'))
+saveRDS(ageDR2_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_DR2.rds'))
 # saveout age P
-saveRDS(agepval_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_p_',VertBin,'.rds'))
+saveRDS(agepval_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_p.rds'))
