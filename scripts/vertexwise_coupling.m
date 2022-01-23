@@ -1,4 +1,4 @@
-function facewise_coupling(subj)
+%function facewise_coupling(subj)
 
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 
@@ -15,7 +15,7 @@ TRs_r=squeeze(TRs_rf.vol);
 
 %%%% load in fsaverage5 faces and vertices
 % for surface data
-SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage5';
+SubjectsFolder='/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage5';
 surfL = [SubjectsFolder '/surf/lh.sphere'];
 surfR = [SubjectsFolder '/surf/rh.sphere'];
 % surface topography
@@ -66,7 +66,6 @@ for lv=1:length(vx_l)
 	for TR=1:OlengthTSl
 		VertAngsL(lv,TR)=mean(AngsL(allinds,TR));
 	end
-	lv
 end
 
 for rv=1:length(vx_r)
@@ -88,9 +87,11 @@ mw_v_r=read_medial_wall_label([SubjectsFolder '/label/rh.Medial_wall.label']);
 % load in GROUP PG
 gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/Gradients.lh.fsaverage5.func.gii'];
 gLPGf=gifti(gLPGfp);
+gPG_LH=gLPGf.cdata(:,1);
 % right hemi
 gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/Gradients.rh.fsaverage5.func.gii'];
 gRPGf=gifti(gRPGfp);
+gPG_RH=gRPGf.cdata(:,1);
 % get index of where they are 0 in all directions
 gPGg_L0=find(all(gLPGf.cdata(:,1:10)')==0);
 gPGg_R0=find(all(gRPGf.cdata(:,1:10)')==0);
@@ -135,6 +136,44 @@ TriuMask=triu(ones(18594,18594),1);
 % vectors of both
 VertFCvec=VertFC(logical(TriuMask));
 AngFCvec=AngFC(logical(TriuMask));
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%% Distance vectors
+
+gPHmerged=vertcat(gPG_LH(noMW_combined_L),gPG_RH(noMW_combined_R));
+pgDistmat=zeros(18594,18594);
+for i=1:18594
+	for j=1:18594
+		pgDistmat(i,j)=abs(gPHmerged(i)-gPHmerged(j));
+	end
+end
+% same upper triangle mask
+pgdistvec=pgDistmat(logical(TriuMask));
+
+
+%%%% Convert Angular FC and FC back to single-hemisphere for comparison
+LHfc=corrcoef(vertTS_l');
+RHfc=corrcoef(vertTS_r');
+
+
+% now get a distance vector
+eucl_l=load('/cbica/projects/pinesParcels/data/aggregated_data/euclidean_distance_left_fsaverage5.mat');
+eucl_r=load('/cbica/projects/pinesParcels/data/aggregated_data/euclidean_distance_right_fsaverage5.mat');
+eucl_l=eucl_l.bdsml;
+eucl_r=eucl_r.bdsmr;
+
+% import connectome-workbench-generated geodesic distance matrices (calc on fsaverage5.surf.gii)
+lhfile=ciftiopen('/cbica/projects/pinesParcels/data/lh_GeoDist.dconn.nii','/cbica/software/external/connectome_workbench/1.4.2/bin/wb_command');
+rhfile=ciftiopen('/cbica/projects/pinesParcels/data/rh_GeoDist.dconn.nii','/cbica/software/external/connectome_workbench/1.4.2/bin/wb_command');
+lhGeoDmat=lhfile.cdata;
+rhGeoDmat=rhfile.cdata;
+
+
 CouplingTable=table(VertFCvec,AngFCvec);
 
 % save out both as tall csv for this subj (for R)
