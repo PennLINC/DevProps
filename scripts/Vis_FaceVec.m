@@ -103,15 +103,36 @@ i_noMW_combined_R=setdiff([1:20480],ind_MW_combined_R);
 g_noMW_combined_L=setdiff([1:20480],gro_MW_combined_L);
 g_noMW_combined_R=setdiff([1:20480],gro_MW_combined_R);
 
+
+%%% PCA section
+bothHemisHierAngTS=vertcat(AngsL(g_noMW_combined_L,:),AngsR(g_noMW_combined_R,:));
+AngFC=corrcoef(bothHemisHierAngTS');
+disp('Running PCA')
+% make matrix a lil sparser
+smol=find(abs(AngFC)<0.1);
+AngFC(smol)=0;
+% recover PCs of AngFC
+[coeffs,scores,latent,explained]=fastpca(AngFC);
+
+% print out variances explained
+scores(1:2)
+latent(1:2)
+
+% assign to facevels
+FaceVecL=coeffs(1:length(g_noMW_combined_L),2);
+FaceVecR=coeffs((length(g_noMW_combined_L)+1:37066),2);
+
 %%%%%%%%
+
+
 data=zeros(1,20480);
-data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
+data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale for correlations
-mincol=-1;
-maxcol=1;
+mincol=-.01;
+maxcol=.01;
 
-custommap=colormap(b2r(-1,1));
+custommap=colormap(b2r(mincol,maxcol));
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage5/surf/lh.inflated');
 
@@ -129,7 +150,7 @@ camlight;
 alpha(1)
 
 
-set(gca,'CLim',[-1,1]);
+set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 asub = subaxis(2,2,4, 'sh', 0.00, 'sv', 0.00, 'padding', 0, 'margin', 0);
@@ -150,13 +171,13 @@ alpha(1)
  posnew = pos; posnew(2) = posnew(2) + 0.13; posnew(1) = posnew(1) -.11; set(asub, 'Position', posnew);
 set(gcf,'Color','w')
 
-set(gca,'CLim',[-1,1]);
+set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 
 %%% right hemisphere
 data=zeros(1,20480);
-data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
+data(g_noMW_combined_R)=FaceVecR;
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage5/surf/rh.inflated');
 
@@ -178,7 +199,7 @@ camlight;
 alpha(1)
 
 
-set(gca,'CLim',[-1,1]);
+set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 asub = subaxis(2,2,3, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0);
@@ -199,7 +220,7 @@ alpha(1)
 set(gcf,'Color','w')
 
 
-set(gca,'CLim',[-1,1]);
+set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 colorbar
 
