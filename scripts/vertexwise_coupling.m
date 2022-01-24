@@ -35,8 +35,8 @@ vx_l(numV+1:end, :) = VecNormalize(vx_l(numV+1:end, :));
 %%% load in Angular distance from PGG
 angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
 Angs=load(angDistFP);
-AngsL=Angs.AngDist.gLeft';
-AngsR=Angs.AngDist.gRight';
+AngsL=Angs.AngDist.Left';
+AngsR=Angs.AngDist.Right';
 
 %%% NEED TO CONVERT ANG DIST TO VERTS RATHER THAN TS TO FACES
 
@@ -138,12 +138,8 @@ VertFCvec=VertFC(logical(TriuMask));
 AngFCvec=AngFC(logical(TriuMask));
 
 
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%% Distance vectors
+
 
 gPHmerged=vertcat(gPG_LH(noMW_combined_L),gPG_RH(noMW_combined_R));
 pgDistmat=zeros(18594,18594);
@@ -159,22 +155,38 @@ pgdistvec=pgDistmat(logical(TriuMask));
 %%%% Convert Angular FC and FC back to single-hemisphere for comparison
 LHfc=corrcoef(vertTS_l');
 RHfc=corrcoef(vertTS_r');
-
+LHafc=corrcoef(AngsL');
+RHafc=corrcoef(AngsR');
 
 % now get a distance vector
 eucl_l=load('/cbica/projects/pinesParcels/data/aggregated_data/euclidean_distance_left_fsaverage5.mat');
 eucl_r=load('/cbica/projects/pinesParcels/data/aggregated_data/euclidean_distance_right_fsaverage5.mat');
-eucl_l=eucl_l.bdsml;
-eucl_r=eucl_r.bdsmr;
+eucl_l=eucl_l.bdsml(noMW_combined_L,noMW_combined_L);
+eucl_r=eucl_r.bdsmr(noMW_combined_R,noMW_combined_R);
 
 % import connectome-workbench-generated geodesic distance matrices (calc on fsaverage5.surf.gii)
 lhfile=ciftiopen('/cbica/projects/pinesParcels/data/lh_GeoDist.dconn.nii','/cbica/software/external/connectome_workbench/1.4.2/bin/wb_command');
 rhfile=ciftiopen('/cbica/projects/pinesParcels/data/rh_GeoDist.dconn.nii','/cbica/software/external/connectome_workbench/1.4.2/bin/wb_command');
-lhGeoDmat=lhfile.cdata;
-rhGeoDmat=rhfile.cdata;
+lhGeoDmat=lhfile.cdata(noMW_combined_L,noMW_combined_L);
+rhGeoDmat=rhfile.cdata(noMW_combined_R,noMW_combined_R);
+
+% single hemi triu masks
+TriuMaskL=triu(ones(9286,9286),1);
+TriuMaskR=triu(ones(9308,9308),1);
+% turn em into vectors
+eucvecL=eucl_l(logical(TriuMaskL));
+eucvecR=eucl_r(logical(TriuMaskR));
+geovecl=lhGeoDmat(logical(TriuMaskL));
+geovecr=rhGeoDmat(logical(TriuMaskR));
+
+% equiv for fcs
+LHfcvec=LHfc(logical(TriuMaskL));
+RHfcvec=RHfc(logical(TriuMaskR));
+LHafcvec=LHafc(logical(TriuMaskL));
+RHafcvec=RHafc(logical(TriuMaskR));
 
 
-CouplingTable=table(VertFCvec,AngFCvec);
+%CouplingTable=table(VertFCvec,AngFCvec);
 
 % save out both as tall csv for this subj (for R)
 writetable(CouplingTable,['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_CouplingTable.csv']);

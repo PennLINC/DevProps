@@ -38,8 +38,6 @@ Angs=load(angDistFP);
 AngsL=Angs.AngDist.gLeft';
 AngsR=Angs.AngDist.gRight';
 
-%%% NEED TO CONVERT ANG DIST TO VERTS RATHER THAN TS TO FACES
-
 %%%% convert vertex ts to face ts
 sizeTsl=size(TRs_l);
 lengthTSl=sizeTsl(2);
