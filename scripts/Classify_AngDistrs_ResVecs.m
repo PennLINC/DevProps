@@ -184,58 +184,33 @@ FaceClassR=zeros(1,length(azs_R_masked));
 FaceMeanL=zeros(1,length(azs_L_masked));
 FaceMeanR=zeros(1,length(azs_R_masked));
 
-%%%%%%%%%% HR TEST FOR NON-NORMALITY OF CIRCULAR DISTRIBUTIONS
 % initialize output arrays
-% HR test - Left
-pVecL=zeros(1,length(azs_L_masked));
-%tVecL=zeros(1,length(Lrow));
-% t-stat map = left
-HR_t_L=zeros(1,length(azs_L_masked));
-% HR test each face
+ResLen_L=zeros(1,length(azs_L_masked));
 for P=1:length(azs_L_masked);
-	P
 	% extract the angular distribution of this pixel over all frames and segments
 	FaceDistrX=azs_L_masked(P,:);
 	FaceDistrY=els_L_masked(P,:);
 	% convert to radians
 	FaceRads=cart2pol(FaceDistrX,FaceDistrY);
-	% HR test
-	[p,T]=hrtest(FaceRads(:),1000);
-	pVecL(P)=p;
-	% save out test stat purely for viz
-	HR_t_L(P)=T;
+	% resultant vector length
+	ResLen_L(P)=circ_r(FaceRads(:));
 end
-
-% HR test - Right
-pVecR=zeros(1,length(azs_R_masked));
-%tVecL=zeros(1,length(Lrow));
-% t-stat map = left
-HR_t_R=zeros(1,length(azs_R_masked));
-% HR test each face
+ResLen_R=zeros(1,length(azs_R_masked));
 for P=1:length(azs_R_masked);
-        P
         % extract the angular distribution of this pixel over all frames and segments
         FaceDistrX=azs_R_masked(P,:);
         FaceDistrY=els_R_masked(P,:);
         % convert to radians
         FaceRads=cart2pol(FaceDistrX,FaceDistrY);
-        % HR test
-        [p,T]=hrtest(FaceRads(:),1000);
-        pVecR(P)=p;
-        % save out test stat purely for viz
-        HR_t_R(P)=T;
+        % resultant vector length
+        ResLen_R(P)=circ_r(FaceRads(:));
 end
 
 % saveout
-HRT_outFN_L=[parentfp sname '_HRT_L.mat'];
-save(HRT_outFN_L,'HR_t_L')
-HRT_outFN_R=[parentfp sname '_HRT_R.mat'];
-save(HRT_outFN_R,'HR_t_R')
-HRT_outFN_L=[parentfp sname '_pvecL.mat'];
-save(P_outFN_L,'pVecL')
-HRT_outFN_R=[parentfp sname '_pvecR.mat'];
-save(P_outFN_R,'pVecR')
-
+HRT_outFN_L=[parentfp sname '_resV_L.mat'];
+save(HRT_outFN_L,'ResLen_L')
+HRT_outFN_R=[parentfp sname '_resV_R.mat'];
+save(HRT_outFN_R,'ResLen_R')
 
 %%%%%%%%%%%%%%%%% not adapted past this point
 
