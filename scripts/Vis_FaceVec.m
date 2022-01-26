@@ -1,23 +1,23 @@
-function Vis_FaceVec(subj,Fn) 
+function Vis_FaceVec(FaceVecL,FaceVecR,subj,Fn) 
 
-angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
-Angs=load(angDistFP);
-AngsL=Angs.AngDist.gLeft';
-AngsR=Angs.AngDist.gRight';
+%angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
+%Angs=load(angDistFP);
+%AngsL=Angs.AngDist.gLeft';
+%AngsR=Angs.AngDist.gRight';
 
 % calc AFC
-bothHemisHierAngTS=vertcat(AngsL,AngsR);
-AngFC=corrcoef(bothHemisHierAngTS');
+%bothHemisHierAngTS=vertcat(AngsL,AngsR);
+%AngFC=corrcoef(bothHemisHierAngTS');
 
 % arbitrarily pick a face to highlight the AFC profile of
-ArbFaceNum=720;
+%ArbFaceNum=720;
 
 %Modes=readtable('test_leftmode.csv')
 %FaceVec=table2array(Modes(:,2));
 
 % get ang dist in
-FaceVecL=AngFC(ArbFaceNum,1:20480);
-FaceVecR=AngFC(ArbFaceNum,20481:40960);
+%FaceVecL=AngFC(ArbFaceNum,1:20480);
+%FaceVecR=AngFC(ArbFaceNum,20481:40960);
 
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
@@ -105,22 +105,22 @@ g_noMW_combined_R=setdiff([1:20480],gro_MW_combined_R);
 
 
 %%% PCA section
-bothHemisHierAngTS=vertcat(AngsL(g_noMW_combined_L,:),AngsR(g_noMW_combined_R,:));
-AngFC=corrcoef(bothHemisHierAngTS');
-disp('Running PCA')
+%bothHemisHierAngTS=vertcat(AngsL(g_noMW_combined_L,:),AngsR(g_noMW_combined_R,:));
+%AngFC=corrcoef(bothHemisHierAngTS');
+%disp('Running PCA')
 % make matrix a lil sparser
-smol=find(abs(AngFC)<0.1);
-AngFC(smol)=0;
+%smol=find(abs(AngFC)<0.1);
+%AngFC(smol)=0;
 % recover PCs of AngFC
-[coeffs,scores,latent,explained]=fastpca(AngFC);
+%[coeffs,scores,latent,explained]=fastpca(AngFC);
 
 % print out variances explained
-scores(1:2)
-latent(1:2)
+%scores(1:2)
+%latent(1:2)
 
 % assign to facevels
-FaceVecL=coeffs(1:length(g_noMW_combined_L),2);
-FaceVecR=coeffs((length(g_noMW_combined_L)+1:37066),2);
+%FaceVecL=coeffs(1:length(g_noMW_combined_L),2);
+%FaceVecR=coeffs((length(g_noMW_combined_L)+1:37066),2);
 
 %%%%%%%%
 
@@ -129,10 +129,12 @@ data=zeros(1,20480);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale for correlations
-mincol=-.01;
-maxcol=.01;
+mincol=0;
+maxcol=.33;
 
-custommap=colormap(b2r(mincol,maxcol));
+custommap=colormap('inferno');
+% for red/blue 0-centered
+%custommap=colormap(b2r(mincol,maxcol));
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage5/surf/lh.inflated');
 

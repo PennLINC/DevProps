@@ -118,8 +118,9 @@ for (i in 1:30){
 ```
 
 ```{r}
+library(visreg)
 # dev analyses
-visreg(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
+summary(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
 summary(gam(PC2score~s(interview_age,k=4)+FD+sex,data=masterdf))
 #visreg(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
 ```
