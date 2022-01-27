@@ -1,1 +1,1 @@
-python JobSubmitta_R.py
+python JobSubmitta.py

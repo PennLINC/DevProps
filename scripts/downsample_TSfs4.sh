@@ -22,8 +22,3 @@ mri_convert /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_Agg
 
 mri_convert /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_R_3k.func.gii /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_R_3k.mgh
 
-# cp to hcpd
-
-cp /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_L_10k.mgh /cbica/projects/hcpd/data/motMasked_contSegs/${subj}/
-
-cp /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_AggTS_R_10k.mgh /cbica/projects/hcpd/data/motMasked_contSegs/${subj}/

@@ -1,5 +1,5 @@
-function viz_vec_fields(subj)
-% visualize calculated vector fields on fsaverage5 sphere
+function viz_vec_fields4(subj)
+% visualize calculated vector fields on fsaverage4 sphere
 
 % 1 is vector fields overlaid onto spherical harmonic time series representation, left and righ hemisphere
 

@@ -17,4 +17,5 @@ subaxis.m
 read_medial_wall_label.m
 parseArgs.m
 b2r.m
+G600TRs.txt
 freesurfer_read_surf.m

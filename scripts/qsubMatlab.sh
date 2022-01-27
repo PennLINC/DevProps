@@ -1,1 +1,1 @@
-matlab -nodisplay -r "aggregate_OpFlDistrModes"
+matlab -nodisplay -r "preProc_PW('${1}')"
