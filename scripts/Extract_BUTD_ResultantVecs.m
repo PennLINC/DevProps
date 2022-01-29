@@ -95,8 +95,9 @@ AngDist=load(AngDistFP);
 AngDist=AngDist.AngDist;
 
 % initialize output (bu_az,bu_el,td_az,td_el,propBu for each face)
-OutDf_L=cell(length(F_L),5);
-OutDf_R=cell(length(F_R),5);
+% and last 2 columns are BU vec length, TD vec length
+OutDf_L=cell(length(F_L),7);
+OutDf_R=cell(length(F_R),7);
 
 % count Number of TRs once rather than iteratively
 NumTRs=size(AngDist.gLeft);
@@ -163,13 +164,38 @@ for F=1:length(F_L)
 	BUAngs_L=Thetas_L(BU_Trs_L);
 	BUAngs_R=Thetas_R(BU_Trs_R);
 
+	% get resVec thetas
+	BU_L_CM=circ_mean(BUAngs_L);
+	BU_R_CM=circ_mean(BUAngs_R);
+
+	% center on angular distance from gPGG
+	PGGang_L=cart2pol(gazes_L(F),gels_L(F));
+	PGGang_R=cart2pol(gazes_R(F),gels_R(F));
+	BU_L_CM_rel=PGGang_L-BU_L_CM;
+	BU_R_CM_rel=PGGang_R-BU_R_CM;	
+	% correct for < -pi or > pi
+	if BU_L_CM_rel > pi
+		BU_L_CM_rel=BU_L_CM_rel-pi;
+	end
+        if BU_R_CM_rel > pi
+                BU_R_CM_rel=BU_R_CM_rel-pi;
+        end
+        if BU_L_CM_rel < -pi
+                BU_L_CM_rel=BU_L_CM_rel+pi;
+        end
+        if BU_R_CM_rel < -pi
+                BU_R_CM_rel=BU_R_CM_rel+pi;
+        end
+
 	% get BU resultant vector angle, convert back to cartesian in the proccess (1 as fill-in for rho, discards OpFl magn.)
-	[BUHorzC_L,BUVertC_L]=pol2cart(circ_mean(BUAngs_L),1);
-	[BUHorzC_R,BUVertC_R]=pol2cart(circ_mean(BUAngs_R),1);
-	
-	% get BU resultant vector length
-       	VL_L=circ_r(BUAngs_L);
+	[BUHorzC_L,BUVertC_L]=pol2cart(BU_L_CM_rel,1);
+	[BUHorzC_R,BUVertC_R]=pol2cart(BU_R_CM_rel,1);
+
+        % get BU resultant vector length
+        VL_L=circ_r(BUAngs_L);
         VL_R=circ_r(BUAngs_R);
+        OutDf_L(F,6)=num2cell(VL_L);
+        OutDf_R(F,6)=num2cell(VL_R);
 
 	% if in valid face, scale x y to vector length and plop in output df
 	if (std(FaceAngDistPGG_L)~=0)
@@ -184,19 +210,44 @@ for F=1:length(F_L)
         	OutDf_R(F,2)=num2cell(BUHorzC_R);
         	OutDf_R(F,3)=num2cell(BUVertC_R);
 	end
+
 	%%%%%%%%%%%%%
 	% get topdown TRs (broadly)
         TDAngs_L=Thetas_L(TD_Trs_L);
         TDAngs_R=Thetas_R(TD_Trs_R);	
 
+	 % get resVec thetas
+        TD_L_CM=circ_mean(TDAngs_L);
+        TD_R_CM=circ_mean(TDAngs_R);
+
+        % center on angular distance from gPGG (note - before pGGang in TD sector)
+        TD_L_CM_rel=PGGang_L-TD_L_CM;
+        TD_R_CM_rel=PGGang_R-TD_R_CM;
+
+        % correct for < -pi or > pi
+        if TD_L_CM_rel > pi
+                TD_L_CM_rel=TD_L_CM_rel-pi;
+        end
+        if TD_R_CM_rel > pi
+                TD_R_CM_rel=TD_R_CM_rel-pi;
+        end
+        if TD_L_CM_rel < -pi
+                TD_L_CM_rel=TD_L_CM_rel+pi;
+        end
+        if TD_R_CM_rel < -pi
+                TD_R_CM_rel=TD_R_CM_rel+pi;
+        end
+
 	% get TD resultant vector angle
-	[TDHorzC_L,TDVertC_L]=pol2cart(circ_mean(TDAngs_L),1);
-        [TDHorzC_R,TDVertC_R]=pol2cart(circ_mean(TDAngs_R),1);
+	[TDHorzC_L,TDVertC_L]=pol2cart(TD_L_CM_rel,1);
+        [TDHorzC_R,TDVertC_R]=pol2cart(TD_R_CM_rel,1);
 
-	% get TD resultant vector length 
-	VL_L=circ_r(TDAngs_L);
+        % get TD resultant vector length
+        VL_L=circ_r(TDAngs_L);
         VL_R=circ_r(TDAngs_R);
-
+        OutDf_L(F,7)=num2cell(VL_L);
+        OutDf_R(F,7)=num2cell(VL_R);
+	
         % if in valid face, scale x y to vector length and plop in output df
         if (std(FaceAngDistPGG_L)~=0)
                 TDHoirzC_L=TDHorzC_L*VL_L;
