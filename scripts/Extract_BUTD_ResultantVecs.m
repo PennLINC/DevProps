@@ -49,9 +49,16 @@ gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.fu
 gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
 
+%%% For masking out the medial wall
 % calculate group PG gradient on sphere
 gPGg_L = grad(F_L, V_L, gPG_LH);
 gPGg_R = grad(F_R, V_R, gPG_RH);
+% get index of where they are 0 in all directions
+gPGg_L0=find(all(gPGg_L')==0);
+gPGg_R0=find(all(gPGg_R')==0);
+% get inverse for indexing : faces that ARE NOT touching mW verts
+g_noMW_combined_L=setdiff([1:5120],gPGg_L0);
+g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 
 % extract face-wise vector cartesian vector components
 gPGx_L=gPGg_L(:,1);
@@ -104,28 +111,23 @@ NumTRs=size(AngDist.gLeft);
 NumTRs=NumTRs(1);
 lenOpFl=NumTRs;
 
-%%% for each face %% NOTE THIS LOOPING STRATEGY WOULD NOT WORK IF FACE # WASN'T = BETWEEN HEMIS (as is the case for verts)
-
-for F=1:length(F_L)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%% Starting for the left hemisphere
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% note we are loopign over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
+for F=g_noMW_combined_L
 	% extract indices of bottom up (broadly, dist < 90)
 	FaceAngDistPGG_L=AngDist.gLeft(:,F);
-	FaceAngDistPGG_R=AngDist.gRight(:,F);
 	BU_Trs_L=find(FaceAngDistPGG_L<90);
-	BU_Trs_R=find(FaceAngDistPGG_R<90);
 	% get inverse indices for top down (broadly, dist > 90)
 	TD_Trs_L=find(FaceAngDistPGG_L>90);
-	TD_Trs_R=find(FaceAngDistPGG_R>90);
 
 	% get proportion of TRs that are BU for this face
 	propBU_L=(length(BU_Trs_L))/NumTRs;
-	propBU_R=(length(BU_Trs_R))/NumTRs;
 
 	% plop prop in output df, 1st column
 	OutDf_L(F,1)=num2cell(propBU_L);	
-	OutDf_R(F,1)=num2cell(propBU_R);
 	
-	%%%%%%%%%%%%%
-
 	% get angles into needed format
 
 	% translate xyz vector fields from opfl to az/el/r to polar angles
@@ -143,59 +145,41 @@ for F=1:length(F_L)
 	        % store in output vector (r is redundant across all vecs, only using az and el)
 		[Thetas_L(fr),rho]=cart2pol(vs_L(1),vs_L(2));
 	end
-	% right hemisphre
-	Thetas_R=zeros(1,lenOpFl);
-	for fr=1:lenOpFl
-		% current vector field
-	        relVf_R=vfr{fr};
-		% xyz components
-	        xComp_R=relVf_R(F,1);
-	        yComp_R=relVf_R(F,2);
-	        zComp_R=relVf_R(F,3);
-		% convert to spherical coord system
-	        vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(F),eld_R(F));
-	        % store in output vector (r is redundant across all vecs)
-		[Thetas_R(fr),rho]=cart2pol(vs_R(1),vs_R(2));
-	end
 
-	%%%%%%%%%%%%%
+%%%%%%%%%%%% Bottom-up
 
+% contingent on BU TRs existing. Note this is within the F loop despite indentation.
+if length(BU_Trs_L)>0
+	% unfortunately, will require splitting up left and right and making EACH a contingency (4 contg, BULBUR,TDLTDR)
 	% get bottom up TRs (broadly)	
 	BUAngs_L=Thetas_L(BU_Trs_L);
-	BUAngs_R=Thetas_R(BU_Trs_R);
 
 	% get resVec thetas
 	BU_L_CM=circ_mean(BUAngs_L);
-	BU_R_CM=circ_mean(BUAngs_R);
 
 	% center on angular distance from gPGG
 	PGGang_L=cart2pol(gazes_L(F),gels_L(F));
-	PGGang_R=cart2pol(gazes_R(F),gels_R(F));
 	BU_L_CM_rel=PGGang_L-BU_L_CM;
-	BU_R_CM_rel=PGGang_R-BU_R_CM;	
 	% correct for < -pi or > pi
 	if BU_L_CM_rel > pi
-		BU_L_CM_rel=BU_L_CM_rel-pi;
+		% residual value after going past max distance (pi radians away)
+		resid=BU_L_CM_rel-pi;
+		% the extra distance just brings them closer
+		BU_L_CM_rel=pi-resid;
 	end
-        if BU_R_CM_rel > pi
-                BU_R_CM_rel=BU_R_CM_rel-pi;
-        end
         if BU_L_CM_rel < -pi
-                BU_L_CM_rel=BU_L_CM_rel+pi;
-        end
-        if BU_R_CM_rel < -pi
-                BU_R_CM_rel=BU_R_CM_rel+pi;
+		% residual value after going past min distance, -pi radians away
+                resid=BU_L_CM_rel+pi;
+		% extra distance brings it back from max angular distance of -pi
+		BU_L_CM_rel=-pi+resid;
         end
 
 	% get BU resultant vector angle, convert back to cartesian in the proccess (1 as fill-in for rho, discards OpFl magn.)
 	[BUHorzC_L,BUVertC_L]=pol2cart(BU_L_CM_rel,1);
-	[BUHorzC_R,BUVertC_R]=pol2cart(BU_R_CM_rel,1);
 
         % get BU resultant vector length
         VL_L=circ_r(BUAngs_L);
-        VL_R=circ_r(BUAngs_R);
         OutDf_L(F,6)=num2cell(VL_L);
-        OutDf_R(F,6)=num2cell(VL_R);
 
 	% if in valid face, scale x y to vector length and plop in output df
 	if (std(FaceAngDistPGG_L)~=0)
@@ -204,50 +188,40 @@ for F=1:length(F_L)
 		OutDf_L(F,2)=num2cell(BUHorzC_L);
 		OutDf_L(F,3)=num2cell(BUVertC_L);
 	end
-	if (std(FaceAngDistPGG_R)~=0)
-		BUHorzC_R=BUHorzC_R*VL_R;
-		BUVertC_R=BUVertC_R*VL_R;
-        	OutDf_R(F,2)=num2cell(BUHorzC_R);
-        	OutDf_R(F,3)=num2cell(BUVertC_R);
-	end
+end
+% end "if bottom down TRs instances at this face exist" contingency
 
-	%%%%%%%%%%%%%
-	% get topdown TRs (broadly)
+%%%%%%%%%% Top-down
+
+% same contingency as above
+if length(TD_Trs_L)<0
+        % get topdown TRs (broadly)
         TDAngs_L=Thetas_L(TD_Trs_L);
-        TDAngs_R=Thetas_R(TD_Trs_R);	
 
-	 % get resVec thetas
+         % get resVec thetas
         TD_L_CM=circ_mean(TDAngs_L);
-        TD_R_CM=circ_mean(TDAngs_R);
 
-        % center on angular distance from gPGG (note - before pGGang in TD sector)
+        % center on angular distance from gPGG
         TD_L_CM_rel=PGGang_L-TD_L_CM;
-        TD_R_CM_rel=PGGang_R-TD_R_CM;
 
         % correct for < -pi or > pi
         if TD_L_CM_rel > pi
-                TD_L_CM_rel=TD_L_CM_rel-pi;
-        end
-        if TD_R_CM_rel > pi
-                TD_R_CM_rel=TD_R_CM_rel-pi;
+                % same procedure documented above for bottom-up
+                resid=TD_L_CM_rel-pi;
+                TD_L_CM_rel=pi-resid;
         end
         if TD_L_CM_rel < -pi
-                TD_L_CM_rel=TD_L_CM_rel+pi;
-        end
-        if TD_R_CM_rel < -pi
-                TD_R_CM_rel=TD_R_CM_rel+pi;
+                resid=TD_L_CM_rel+pi;
+                TD_L_CM_rel=-pi+resid;
         end
 
-	% get TD resultant vector angle
-	[TDHorzC_L,TDVertC_L]=pol2cart(TD_L_CM_rel,1);
-        [TDHorzC_R,TDVertC_R]=pol2cart(TD_R_CM_rel,1);
+        % get TD resultant vector angle
+        [TDHorzC_L,TDVertC_L]=pol2cart(TD_L_CM_rel,1);
 
         % get TD resultant vector length
         VL_L=circ_r(TDAngs_L);
-        VL_R=circ_r(TDAngs_R);
         OutDf_L(F,7)=num2cell(VL_L);
-        OutDf_R(F,7)=num2cell(VL_R);
-	
+
         % if in valid face, scale x y to vector length and plop in output df
         if (std(FaceAngDistPGG_L)~=0)
                 TDHoirzC_L=TDHorzC_L*VL_L;
@@ -255,13 +229,83 @@ for F=1:length(F_L)
                 OutDf_L(F,4)=num2cell(TDHorzC_L);
                 OutDf_L(F,5)=num2cell(TDVertC_L);
         end
-        if (std(FaceAngDistPGG_R)~=0)
+end
+% end looping over every face
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% the right hemisphere
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for F=g_noMW_combined_R
+	FaceAngDistPGG_R=AngDist.gRight(:,F);
+	BU_Trs_R=find(FaceAngDistPGG_R<90);
+	TD_Trs_R=find(FaceAngDistPGG_R>90);
+	propBU_R=(length(BU_Trs_R))/NumTRs;
+	OutDf_R(F,1)=num2cell(propBU_R);
+	Thetas_R=zeros(1,lenOpFl);
+        for fr=1:lenOpFl
+                % current vector field
+                relVf_R=vfr{fr};
+                % xyz components
+                xComp_R=relVf_R(F,1);
+                yComp_R=relVf_R(F,2);
+                zComp_R=relVf_R(F,3);
+                % convert to spherical coord system
+                vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(F),eld_R(F));
+                % store in output vector (r is redundant across all vecs)
+                [Thetas_R(fr),rho]=cart2pol(vs_R(1),vs_R(2));
+        end
+%%%%%%% Bottom up
+if length(BU_Trs_R)>0
+	BUAngs_R=Thetas_R(BU_Trs_R);
+	BU_R_CM=circ_mean(BUAngs_R);
+	PGGang_R=cart2pol(gazes_R(F),gels_R(F));
+	BU_R_CM_rel=PGGang_R-BU_R_CM;	
+	if BU_R_CM_rel > pi
+                resid=BU_R_CM_rel-pi
+                BU_R_CM_rel=pi-resid;
+        end
+	if BU_R_CM_rel < -pi
+                resid=BU_R_CM_rel+pi;
+                BU_R_CM_rel=-pi+resid;
+        end
+	[BUHorzC_R,BUVertC_R]=pol2cart(BU_R_CM_rel,1);
+	VL_R=circ_r(BUAngs_R);
+	OutDf_R(F,6)=num2cell(VL_R);
+`	if (std(FaceAngDistPGG_R)~=0)
+                BUHorzC_R=BUHorzC_R*VL_R;
+                BUVertC_R=BUVertC_R*VL_R;
+                OutDf_R(F,2)=num2cell(BUHorzC_R);
+                OutDf_R(F,3)=num2cell(BUVertC_R);
+        end
+end
+
+%%%%%% Top-down
+if length(TD_Trs_R)>0
+        TDAngs_R=Thetas_R(TD_Trs_R);
+	TD_R_CM=circ_mean(TDAngs_R);
+	TD_R_CM_rel=PGGang_R-TD_R_CM;
+	 if TD_R_CM_rel > pi
+                resid=TD_L_CM_rel-pi;
+                TD_R_CM_rel=pi-resid;
+        end
+	if TD_R_CM_rel < -pi
+                resid=TD_R_CM_rel+pi;
+                TD_R_CM_rel=-pi+resid;
+        end
+        [TDHorzC_R,TDVertC_R]=pol2cart(TD_R_CM_rel,1);
+        VL_R=circ_r(TDAngs_R);
+        OutDf_R(F,7)=num2cell(VL_R);	
+	if (std(FaceAngDistPGG_R)~=0)
                 TDHorzC_R=TDHorzC_R*VL_R;
                 TDVertC_R=TDVertC_R*VL_R;
                 OutDf_R(F,4)=num2cell(TDHorzC_R);
                 OutDf_R(F,5)=num2cell(TDVertC_R);
-        end
+        end	
+end
 
+% end looping over every face
 end
 
 %%% save output df
