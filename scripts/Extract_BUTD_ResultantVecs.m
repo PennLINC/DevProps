@@ -161,18 +161,18 @@ if length(BU_Trs_L)>0
 	PGGang_L=cart2pol(gazes_L(F),gels_L(F));
 	BU_L_CM_rel=PGGang_L-BU_L_CM;
 	% correct for < -pi or > pi
-	if BU_L_CM_rel > pi
+	% if BU_L_CM_rel > pi
 		% residual value after going past max distance (pi radians away)
-		resid=BU_L_CM_rel-pi;
+	%	resid=BU_L_CM_rel-pi;
 		% the extra distance just brings them closer
-		BU_L_CM_rel=pi-resid;
-	end
-        if BU_L_CM_rel < -pi
+	%	BU_L_CM_rel=pi-resid
+	%end
+        %if BU_L_CM_rel < -pi
 		% residual value after going past min distance, -pi radians away
-                resid=BU_L_CM_rel+pi;
+        %        resid=BU_L_CM_rel+pi;
 		% extra distance brings it back from max angular distance of -pi
-		BU_L_CM_rel=-pi+resid;
-        end
+	%	BU_L_CM_rel=-pi+resid
+        %end
 
 	% get BU resultant vector angle, convert back to cartesian in the proccess (1 as fill-in for rho, discards OpFl magn.)
 	[BUHorzC_L,BUVertC_L]=pol2cart(BU_L_CM_rel,1);
@@ -183,7 +183,7 @@ if length(BU_Trs_L)>0
 
 	% if in valid face, scale x y to vector length and plop in output df
 	if (std(FaceAngDistPGG_L)~=0)
-		BUHoirzC_L=BUHorzC_L*VL_L;
+		BUHorzC_L=BUHorzC_L*VL_L;
 		BUVertC_L=BUVertC_L*VL_L;
 		OutDf_L(F,2)=num2cell(BUHorzC_L);
 		OutDf_L(F,3)=num2cell(BUVertC_L);
@@ -194,7 +194,7 @@ end
 %%%%%%%%%% Top-down
 
 % same contingency as above
-if length(TD_Trs_L)<0
+if length(TD_Trs_L)>0
         % get topdown TRs (broadly)
         TDAngs_L=Thetas_L(TD_Trs_L);
 
@@ -205,15 +205,15 @@ if length(TD_Trs_L)<0
         TD_L_CM_rel=PGGang_L-TD_L_CM;
 
         % correct for < -pi or > pi
-        if TD_L_CM_rel > pi
+        %if TD_L_CM_rel > pi
                 % same procedure documented above for bottom-up
-                resid=TD_L_CM_rel-pi;
-                TD_L_CM_rel=pi-resid;
-        end
-        if TD_L_CM_rel < -pi
-                resid=TD_L_CM_rel+pi;
-                TD_L_CM_rel=-pi+resid;
-        end
+        %        resid=TD_L_CM_rel-pi;
+        %        TD_L_CM_rel=pi-resid;
+        %end
+        %if TD_L_CM_rel < -pi
+        %        resid=TD_L_CM_rel+pi;
+        %        TD_L_CM_rel=-pi+resid;
+        %end
 
         % get TD resultant vector angle
         [TDHorzC_L,TDVertC_L]=pol2cart(TD_L_CM_rel,1);
@@ -224,7 +224,7 @@ if length(TD_Trs_L)<0
 
         % if in valid face, scale x y to vector length and plop in output df
         if (std(FaceAngDistPGG_L)~=0)
-                TDHoirzC_L=TDHorzC_L*VL_L;
+                TDHorzC_L=TDHorzC_L*VL_L;
                 TDVertC_L=TDVertC_L*VL_L;
                 OutDf_L(F,4)=num2cell(TDHorzC_L);
                 OutDf_L(F,5)=num2cell(TDVertC_L);
@@ -262,18 +262,18 @@ if length(BU_Trs_R)>0
 	BU_R_CM=circ_mean(BUAngs_R);
 	PGGang_R=cart2pol(gazes_R(F),gels_R(F));
 	BU_R_CM_rel=PGGang_R-BU_R_CM;	
-	if BU_R_CM_rel > pi
-                resid=BU_R_CM_rel-pi
-                BU_R_CM_rel=pi-resid;
-        end
-	if BU_R_CM_rel < -pi
-                resid=BU_R_CM_rel+pi;
-                BU_R_CM_rel=-pi+resid;
-        end
+	%if BU_R_CM_rel > pi
+        %        resid=BU_R_CM_rel-pi;
+        %        BU_R_CM_rel=pi-resid;
+        %end
+	%if BU_R_CM_rel < -pi
+        %        resid=BU_R_CM_rel+pi;
+        %        BU_R_CM_rel=-pi+resid;
+        %end
 	[BUHorzC_R,BUVertC_R]=pol2cart(BU_R_CM_rel,1);
 	VL_R=circ_r(BUAngs_R);
 	OutDf_R(F,6)=num2cell(VL_R);
-`	if (std(FaceAngDistPGG_R)~=0)
+	if (std(FaceAngDistPGG_R)~=0)
                 BUHorzC_R=BUHorzC_R*VL_R;
                 BUVertC_R=BUVertC_R*VL_R;
                 OutDf_R(F,2)=num2cell(BUHorzC_R);
@@ -286,14 +286,14 @@ if length(TD_Trs_R)>0
         TDAngs_R=Thetas_R(TD_Trs_R);
 	TD_R_CM=circ_mean(TDAngs_R);
 	TD_R_CM_rel=PGGang_R-TD_R_CM;
-	 if TD_R_CM_rel > pi
-                resid=TD_L_CM_rel-pi;
-                TD_R_CM_rel=pi-resid;
-        end
-	if TD_R_CM_rel < -pi
-                resid=TD_R_CM_rel+pi;
-                TD_R_CM_rel=-pi+resid;
-        end
+	%if TD_R_CM_rel > pi
+        %        resid=TD_R_CM_rel-pi;
+        %        TD_R_CM_rel=pi-resid;
+        %end
+	%if TD_R_CM_rel < -pi
+        %        resid=TD_R_CM_rel+pi;
+        %        TD_R_CM_rel=-pi+resid;
+        %end
         [TDHorzC_R,TDVertC_R]=pol2cart(TD_R_CM_rel,1);
         VL_R=circ_r(TDAngs_R);
         OutDf_R(F,7)=num2cell(VL_R);	
