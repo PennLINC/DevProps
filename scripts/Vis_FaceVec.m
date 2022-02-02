@@ -1,4 +1,4 @@
-function Vis_FaceVec(FaceVecL,FaceVecR,subj,Fn) 
+function Vis_FaceVec(FaceVecL,FaceVecR,Fn) 
 
 %angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
 %Angs=load(angDistFP);
@@ -112,16 +112,16 @@ g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 
 
 data=zeros(1,5120);
-data(g_noMW_combined_L)=FaceVecL;
+data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
-% fixed colorscale for correlations
-mincol=-.25;
-maxcol=.25;
+% fixed colorscale
+mincol=-.01;
+maxcol=.01;
 
-custommap=colormap('inferno');
+%custommap=colormap('inferno');
 % for red/blue 0-centered
-%custommap=colormap(b2r(mincol,maxcol));
-
+custommap=colormap(b2r(mincol,maxcol));
+figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
 asub = subaxis(2,2,1, 'sh', 0, 'sv', 0, 'padding', 0, 'margin', 0);
@@ -166,7 +166,7 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 %%% right hemisphere
 data=zeros(1,5120);
-data(g_noMW_combined_R)=FaceVecR;
+data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
@@ -180,7 +180,7 @@ daspect([1 1 1]);
 axis tight;
 axis vis3d off;
 lighting phong; %gouraud
-material metal %shiny %metal;
+material metal %shiny %metal;%shading flat;
 shading flat;
 camlight;
  pos = get(asub, 'Position');

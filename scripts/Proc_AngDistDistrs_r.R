@@ -54,6 +54,6 @@ for (f in 1:length(gangdR)){
         gdipvecR[f]=gdipSt$statistic
 }
 # saveout
-saveRDS(dipvecR,paste0('~/results/PWs/Proced/',subj,'/',subj,'_RVerts_DipTest.rds'))
+saveRDS(gdipvecL,paste0('~/results/PWs/Proced/',subj,'/',subj,'_LVerts_gDipTest.rds'))
 saveRDS(gdipvecR,paste0('~/results/PWs/Proced/',subj,'/',subj,'_RVerts_gDipTest.rds'))
 

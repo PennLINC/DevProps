@@ -122,5 +122,5 @@ library(visreg)
 # dev analyses
 summary(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
 summary(gam(PC2score~s(interview_age,k=4)+FD+sex,data=masterdf))
-#visreg(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
+visreg(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
 ```

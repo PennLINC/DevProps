@@ -16,7 +16,7 @@ while len(subjects)>0:
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 5 job slots (one is occupied by this script)
-  if que < 14:
+  if que < 18:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -30,16 +30,16 @@ while len(subjects)>0:
       #if not os.path.exists(OpFile):
       tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
       JobName=str(newsub)+".sh"
-      #with open(JobName, 'w') as f:
-      #  f.write(tmpSh)
-      subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G",JobName])
-    elif que < 12:
+      with open(JobName, 'w') as f:
+        f.write(tmpSh)
+      subprocess.run(["qsub",JobName])
+    elif que < 15:
       newsub = subjects.pop()
       #DipFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_RVerts_DipTest.rds'
       #if not os.path.exists(DipFile):
       # submit job (if conditions are met)
       tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
       JobName=str(newsub)+".sh"
-      #with open(JobName, 'w') as f:
-      #  f.write(tmpSh)
-      subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G",JobName])
+      with open(JobName, 'w') as f:
+        f.write(tmpSh)
+      subprocess.run(["qsub",JobName])

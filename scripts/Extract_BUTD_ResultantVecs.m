@@ -146,6 +146,15 @@ for F=g_noMW_combined_L
 		[Thetas_L(fr),rho]=cart2pol(vs_L(1),vs_L(2));
 	end
 
+%%%%%%%%%%%% all directions
+
+% delineate this face's resultant vector angle
+L_CM=circ_mean(Thetas_L);
+
+% get angular distance from gPGG
+PGGang_L=cart2pol(gazes_L(F),gels_L(F));
+OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
+
 %%%%%%%%%%%% Bottom-up
 
 % contingent on BU TRs existing. Note this is within the F loop despite indentation.
@@ -158,7 +167,6 @@ if length(BU_Trs_L)>0
 	BU_L_CM=circ_mean(BUAngs_L);
 
 	% center on angular distance from gPGG
-	PGGang_L=cart2pol(gazes_L(F),gels_L(F));
 	BU_L_CM_rel=PGGang_L-BU_L_CM;
 
 	% get BU resultant vector angle, convert back to cartesian in the proccess (1 as fill-in for rho, discards OpFl magn.)
@@ -214,7 +222,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for F=g_noMW_combined_R
-	FaceAngDistPGG_R=AngDist.gRight(:,F);
+        FaceAngDistPGG_R=AngDist.gRight(:,F);
 	BU_Trs_R=find(FaceAngDistPGG_R<90);
 	TD_Trs_R=find(FaceAngDistPGG_R>90);
 	propBU_R=(length(BU_Trs_R))/NumTRs;
@@ -224,7 +232,7 @@ for F=g_noMW_combined_R
                 % current vector field
                 relVf_R=vfr{fr};
                 % xyz components
-                xComp_R=relVf_R(F,1);
+		xComp_R=relVf_R(F,1);
                 yComp_R=relVf_R(F,2);
                 zComp_R=relVf_R(F,3);
                 % convert to spherical coord system
@@ -232,6 +240,16 @@ for F=g_noMW_combined_R
                 % store in output vector (r is redundant across all vecs)
                 [Thetas_R(fr),rho]=cart2pol(vs_R(1),vs_R(2));
         end
+
+%%%%%%%%%%%% all directions
+
+% delineate this face's resultant vector angle
+R_CM=circ_mean(Thetas_R);
+
+% get angular distance from gPGG
+PGGang_R=cart2pol(gazes_R(F),gels_R(F));
+OutDf_R(F,8)=num2cell(PGGang_R-R_CM);
+
 %%%%%%% Bottom up
 if length(BU_Trs_R)>0
 	BUAngs_R=Thetas_R(BU_Trs_R);

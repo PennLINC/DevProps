@@ -2,8 +2,9 @@ import os
 import subprocess
 import time
 import datetime
+time.sleep(15000)
 # grab subjects list
-my_file = open("/cbica/projects/pinesParcels/PWs/G600TRs.txt", "r")
+my_file = open("/cbica/projects/pinesParcels/PWs/hcpd_subj_list.txt", "r")
 content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)
@@ -26,13 +27,13 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
       # submit job (if conditions are met)
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_BUTD_L_resultantVecs.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_gAngDist_Masked4_c_L.csv'
       if not os.path.exists(OpFile):
-        subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab.sh",newsub])
+        subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab_c.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
     elif que < 8:
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_BUTD_L_resultantVecs.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_gAngDist_Masked4_c_L.csv'
       if not os.path.exists(OpFile):
       # submit job (if conditions are met)
-        subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab.sh",newsub])
+        subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab_c.sh",newsub])
