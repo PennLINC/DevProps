@@ -9,7 +9,7 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % apply motion masks and extract TR indcies of continuous segments
 %%% already ran on subjs - NOTE HCPD DIREC VERSION RUN, EXCLUDES NONCONTINUOUS SEGMENTS 
-% apply_motion_mask(subj)
+apply_motion_mask(subj)
 
 %%%%%%%%%%%%%%%
 % don't mess about with this stuff if it's already been ran
@@ -20,8 +20,8 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 %%% already ran on subjs
 % downsample aggregated TS 
-%dsCommand=['~/PWs/scripts/downsample_TSfs4.sh ' subj];
-%system(dsCommand)
+dsCommand=['~/PWs/scripts/downsample_TSfs4.sh ' subj];
+system(dsCommand)
 
 % make a "Proced" dir
 %direcString=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
@@ -39,11 +39,11 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 %%%%%%%%%%%%%%%
 
 %%% Run Spherical Optical flow
-%OpFl_Sph_fs4(subj)
+OpFl_Sph_fs4(subj)
 %end
 
 %%% Calculate the calculus gradient of the principal gradient, calculate angular distance of OpFl directions
-%PGG_AngDistCalc4(subj)
+PGG_AngDistCalc4(subj)
 
 %%% mask medial wall and extract R-friendly face data
 mask_mw_faces_4(subj)

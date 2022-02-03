@@ -1,1 +1,1 @@
-matlab -nodisplay -r "Extract_BUTD_ResultantVecs('${1}')"
+matlab -nodisplay -r "preProc_PW('${1}')"

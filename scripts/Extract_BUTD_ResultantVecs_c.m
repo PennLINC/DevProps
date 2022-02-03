@@ -10,7 +10,7 @@ tic
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % Load in fsav4 opflow calc
-OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
+OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_c.mat'];
 data=load(OpFlFp)
 % Load in surface data
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
@@ -96,7 +96,7 @@ for i=1:length(azd_R)
 end
 
 % load in gPGG angular distances for parsing into top-down and bottom-up in the loops
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4.mat'];
+AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4_c.mat'];
 AngDist=load(AngDistFP);
 % just pretend this line doesn't exist
 AngDist=AngDist.AngDist;
@@ -286,9 +286,9 @@ end
 end
 
 %%% save output df
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs.mat'];
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_c.mat'];
 save(outFP_L,'OutDf_L')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_c.mat'];
 save(outFP_R,'OutDf_R')
 
 

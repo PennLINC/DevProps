@@ -2,7 +2,6 @@ import os
 import subprocess
 import time
 import datetime
-time.sleep(15000)
 # grab subjects list
 my_file = open("/cbica/projects/pinesParcels/PWs/hcpd_subj_list.txt", "r")
 content = my_file.read()
