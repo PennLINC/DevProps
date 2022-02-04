@@ -46,8 +46,8 @@ DeltaPEstVec<-function(x){
 # end functions - start actual script
 
 # extract range of vertices to be covered in this run from VertBin
-Lfaces=18520
-Rfaces=18546
+Lfaces=4851
+Rfaces=4842
 
 # load in subj list
 subjList=read.delim('/cbica/projects/pinesParcels/PWs/hcpd_subj_list.txt')
@@ -77,47 +77,98 @@ remainingSubjs=dim(df)[1]
 print(remainingSubjs)
 
 # initialize face-level vectors: keeping 0s in the slots untouched by this run to verify allocation later
-meanD_R=rep(0,Rfaces)
-sdD_R=rep(0,Rfaces)
-ageDR2_R=rep(0,Rfaces)
-agepval_R=rep(0,Rfaces)
+# for plotting means
+TD_L=rep(0,Lfaces)
+BU_L=rep(0,Lfaces)
+BuProp=rep(0,Lfaces)
+ThetasFromPG=rep(0,Lfaces)
+
+# for plotting age effect sizes
+TD_L_adr2=rep(0,Lfaces)
+BU_L_adr2=rep(0,Lfaces)
+BuProp_adr2=rep(0,Lfaces)
+ThetasFromPG_adr2=rep(0,Lfaces)
+
+# for fdr-correcting age associations
+TD_L_ap=rep(0,Lfaces)
+BU_L_ap=rep(0,Lfaces)
+BuProp_ap=rep(0,Lfaces)
+ThetasFromPG_ap=rep(0,Lfaces)
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,remainingSubjs)
 
 # initialize iterable face value column - to avoid storing this data for multiple faces over this upcoming loop
-df$Rdip=rep(0,remainingSubjs)
+df$FaceBuProp=rep(0,remainingSubjs)
+df$FaceBu_rv=rep(0,remainingSubjs)
+df$FaceTd_rv=rep(0,remainingSubjs)
+df$FaceThetaDist=rep(0,remainingSubjs)
+
 # that leaves a column for face value, one for age, one for FD, one for sex. Remaining TRs controlled for via exclusion
 
 # for each face in this run's range
-for (f in 1:18546){
+for (f in 1:4842){
 	print(f)
 	# load in D and shapes iteratively
 	for (s in 1:remainingSubjs){
 	    subj=df$SubjID[s]
-	    ResFp=paste0('/cbica/projects/pinesParcels/results/PWs/Proced/',subj,'/')
+	    ResFP_R=paste0('/cbica/projects/pinesParcels/results/PWs/Proced/',subj,'/',subj,'_BUTD_R.csv')
 	    # if output exists
-	    if (file.exists(paste0(ResFp,subj,'_RVerts_gDipTest.rds'))) {
-	      # load in dip
-	      SubjDips=readRDS(paste0(ResFp,subj,'_RVerts_gDipTest.rds'))
-	      df$Rdip[s]=SubjDips[f]
+	    if (file.exists(paste0(ResFP_R))) {
+	      # load in dat data
+	      Res=read.csv(ResFP_R)
+		# extract TD resvec length
+		df$FaceBuProp[s]=Res[f,1]	
+		# extract BU resvec length
+		df$FaceBu_rv[s]=Res[f,2]
+		# extract prop of BU TRs
+		df$FaceTd_rv[s]=Res[f,3]
+		# extract global resvec theta from gPGG
+		df$FaceThetaDist[s]=Res[f,4]
 	    }
 	}
 	# extract mean
-	meanD_R[f]=mean(df$Rdip)
-	# extract SD
-	sdD_R[f]=sd(df$Rdip)
-	# extract delta r2
-	ageDR2_R[f]=DeltaR2EstVec(df$Rdip)
-	# extract p
-	agepval_R[f]=DeltaPEstVec(df$Rdip)
+	TD_L[f]=mean(df$FaceTd_rv)
+	# extract mean
+	BU_L[f]=mean(df$FaceBu_rv)
+	# extract mean
+	BuProp[f]=mean(df$FaceBuProp)
+	# you already know doe
+	ThetasFromPG[f]=mean(df$FaceThetaDist)
+	
+        # extract age dr2
+        TD_L_adr2[f]=DeltaR2EstVec(df$FaceTd_rv)
+        # extract age dr2
+        BU_L_adr2[f]=DeltaR2EstVec(df$FaceBu_rv)
+        # extract age dr2
+        BuProp_adr2[f]=DeltaR2EstVec(df$FaceBuProp)
+        # you already know doe
+        ThetasFromPG_adr2[f]=DeltaR2EstVec(df$FaceThetaDist)
+	
+	# extract age p
+        TD_L_ap[f]=DeltaPEstVec(df$FaceTd_rv)
+        # extract age p
+        BU_L_ap[f]=DeltaPEstVec(df$FaceBu_rv)
+        # extract age p
+        BuProp_ap[f]=DeltaPEstVec(df$FaceBuProp)
+        # you already know doe
+        ThetasFromPG_ap[f]=DeltaPEstVec(df$FaceThetaDist)
 }
 
-# saveout mean
-saveRDS(meanD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_Mean.rds'))
-# saveout sd
-saveRDS(sdD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_SD.rds'))
-# saveout age DR2
-saveRDS(ageDR2_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_DR2.rds'))
-# saveout age P
-saveRDS(agepval_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_p.rds'))
+# saveout means
+write.csv(TD_L,'~/results/PWs/MeanTDresLen_R.csv',col.names=F,row.names=F,quote=F)
+write.csv(BU_L,'~/results/PWs/MeanBUresLen_R.csv',col.names=F,row.names=F,quote=F)
+write.csv(BuProp,'~/results/PWs/MeanPropBU_R.csv',col.names=F,row.names=F,quote=F)
+write.csv(ThetasFromPG,'~/results/PWs/MeanThetafromPGG_R.csv',col.names=F,row.names=F,quote=F)
+
+# saveout dr2s and ps - still needs to be merged with results from other hemi for MC correction
+saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_adr2.rds'))
+saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_adr2.rds'))
+saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_adr2.rds'))
+saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_adr2.rds'))
+
+saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_p.rds'))
+saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_p.rds'))
+saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_p.rds'))
+saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_p.rds'))
+

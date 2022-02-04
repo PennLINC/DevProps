@@ -3,7 +3,7 @@
 # read subject list
 subjList=read.delim('~/PWs/hcpd_subj_list.txt')
 
-for (s in 78:dim(subjList)[1]){
+for (s in 1:dim(subjList)[1]){
   subj=subjList[s,1]
   print(s)
   # if this subject ran, add it to the shape matrix 
