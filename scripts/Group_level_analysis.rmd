@@ -31,8 +31,7 @@ mergeddf<-merge(demo,FD_TRs,by='SubjID')
 # initialize D
 Ds=rep(0,dim(subjList)[1])
 Ps=rep(0,dim(subjList)[1])
-iDs=rep(0,dim(subjList)[1])
-iPs=rep(0,dim(subjList)[1])
+remTRs=rep(0,dim(subjList)[1])
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,dim(subjList)[1])
@@ -62,39 +61,37 @@ for (s in 1:dim(subjList)[1]){
       #shapeMatAbs[,2,s]=shapematAbs[,2]*divisorPt2a
       # load in dip test
       dipstat=readRDS(paste0(ResFp,subj,'_gDipTest.rds'))
-      idipstat=readRDS(paste0(ResFp,subj,'_DipTest.rds'))
       Ds[s]=dipstat$statistic
       Ps[s]=dipstat$p.value
-      iDs[s]=idipstat$statistic
-      iPs[s]=idipstat$p.value
       # and to record same order of subj loading and prevent funny biz
       Subjvec[s]=subj
       print(s)
+      # and remaining TRs
+      remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
     }
 }
 
 # merge populated vecs
-popDf=data.frame(Subjvec,Ds,Ps,iDs,iPs)
+popDf=data.frame(Subjvec,Ds,Ps,remTRs)
 colnames(popDf)[1]<-'SubjID'
 
-masterdf=merge(mergeddf,popDf,by='SubjID')
+# remaining TRs thresh
+inclusionVec<-popDf$remTRs>600
+includedSubjsvec<-popDf$SubjID[inclusionVec]
+popDfThresh=popDf[popDf$remTRs>600,]
+ThreshShapeMat<-shapeMat[,,inclusionVec]
 
-shapeMat<-shapeMat[,,Subjvec!=0]
-#shapeMatAbs<-shapeMatAbs[,,Subjvec!=0]
-procedSubjsVec=Subjvec[Subjvec!=0]
+masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 
 ```
 
 ```{r}
-# remaining TRs thresh
-inclusionVec<-masterdf$RemainingTRs>600
-ThreshShapeMat<-shapeMat[,,inclusionVec]
 
 # shape PCA
 ShapeOut<-procGPA(ThreshShapeMat,reflect = F,scale=F)
 shapepca(ShapeOut)
 
-scoresdf<-data.frame(procedSubjsVec[inclusionVec],ShapeOut$scores[,1],ShapeOut$scores[,2])
+scoresdf<-data.frame(includedSubjsvec,ShapeOut$scores[,1],ShapeOut$scores[,2])
 colnames(scoresdf)<-c('SubjID','PC1score','PC2score')
 
 masterdf<-merge(masterdf,scoresdf,by='SubjID')
@@ -123,4 +120,7 @@ library(visreg)
 summary(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
 summary(gam(PC2score~s(interview_age,k=4)+FD+sex,data=masterdf))
 visreg(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
+```
+```{r}
+write.table(masterdf$SubjID,'~/G600_TRs.txt',quote = F,col.names = F,row.names = F)
 ```

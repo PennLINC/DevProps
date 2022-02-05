@@ -19,3 +19,4 @@ parseArgs.m
 b2r.m
 G600TRs.txt
 freesurfer_read_surf.m
+G300_cTRs.txt

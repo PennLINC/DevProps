@@ -58,7 +58,7 @@ demo=read.csv('/cbica/projects/pinesParcels/PWs/hcpd_demographics.csv')
 demo$SubjID<-gsub('HCD','sub-',demo$src_subject_id)
 
 # load in FD
-FD_TRs=read.csv('/cbica/projects/pinesParcels/PWs/Subj_FD_RemTRs.csv')
+FD_TRs=read.csv('/cbica/projects/pinesParcels/PWs/Subj_FD_RemTRs_c.csv')
 colnames(FD_TRs)[1]<-'SubjID'
 colnames(FD_TRs)[2]<-'FD'
 colnames(FD_TRs)[3]<-'RemainingTRs'
@@ -66,8 +66,8 @@ colnames(FD_TRs)[3]<-'RemainingTRs'
 # merge by subjID
 mergeddf<-merge(demo,FD_TRs,by='SubjID')
 
-# exclude subjects with less than 600 TRs remaining
-inclusionVec<-mergeddf$RemainingTRs>600
+# exclude subjects with less than 300 TRs remaining
+inclusionVec<-mergeddf$RemainingTRs>300
 # include NAs in the exclusion
 inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
 # subset the master df accordingly
@@ -78,22 +78,22 @@ print(remainingSubjs)
 
 # initialize face-level vectors: keeping 0s in the slots untouched by this run to verify allocation later
 # for plotting means
-TD_L=rep(0,Rfaces)
-BU_L=rep(0,Rfaces)
-BuProp=rep(0,Rfaces)
-ThetasFromPG=rep(0,Rfaces)
+TD_L=rep(0,Lfaces)
+BU_L=rep(0,Lfaces)
+BuProp=rep(0,Lfaces)
+ThetasFromPG=rep(0,Lfaces)
 
 # for plotting age effect sizes
-TD_L_adr2=rep(0,Rfaces)
-BU_L_adr2=rep(0,Rfaces)
-BuProp_adr2=rep(0,Rfaces)
-ThetasFromPG_adr2=rep(0,Rfaces)
+TD_L_adr2=rep(0,Lfaces)
+BU_L_adr2=rep(0,Lfaces)
+BuProp_adr2=rep(0,Lfaces)
+ThetasFromPG_adr2=rep(0,Lfaces)
 
 # for fdr-correcting age associations
-TD_L_ap=rep(0,Rfaces)
-BU_L_ap=rep(0,Rfaces)
-BuProp_ap=rep(0,Rfaces)
-ThetasFromPG_ap=rep(0,Rfaces)
+TD_L_ap=rep(0,Lfaces)
+BU_L_ap=rep(0,Lfaces)
+BuProp_ap=rep(0,Lfaces)
+ThetasFromPG_ap=rep(0,Lfaces)
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,remainingSubjs)
@@ -107,16 +107,16 @@ df$FaceThetaDist=rep(0,remainingSubjs)
 # that leaves a column for face value, one for age, one for FD, one for sex. Remaining TRs controlled for via exclusion
 
 # for each face in this run's range
-for (f in 1:4842){
+for (f in 1:4851){
 	print(f)
 	# load in D and shapes iteratively
 	for (s in 1:remainingSubjs){
 	    subj=df$SubjID[s]
-	    ResFP_R=paste0('/cbica/projects/pinesParcels/results/PWs/Proced/',subj,'/',subj,'_BUTD_R.csv')
+	    ResFP_L=paste0('/cbica/projects/pinesParcels/results/PWs/Proced/',subj,'/',subj,'_BUTD_L_c.csv')
 	    # if output exists
-	    if (file.exists(paste0(ResFP_R))) {
+	    if (file.exists(paste0(ResFP_L))) {
 	      # load in dat data
-	      Res=read.csv(ResFP_R)
+	      Res=read.csv(ResFP_L)
 		# extract TD resvec length
 		df$FaceBuProp[s]=Res[f,1]	
 		# extract BU resvec length
@@ -156,19 +156,19 @@ for (f in 1:4842){
 }
 
 # saveout means
-write.csv(TD_L,'~/results/PWs/MeanTDresLen_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(BU_L,'~/results/PWs/MeanBUresLen_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(BuProp,'~/results/PWs/MeanPropBU_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(ThetasFromPG,'~/results/PWs/MeanThetafromPGG_R.csv',col.names=F,row.names=F,quote=F)
+write.csv(TD_L,'~/results/PWs/MeanTDresLen_L_c.csv',col.names=F,row.names=F,quote=F)
+write.csv(BU_L,'~/results/PWs/MeanBUresLen_L_c.csv',col.names=F,row.names=F,quote=F)
+write.csv(BuProp,'~/results/PWs/MeanPropBU_L_c.csv',col.names=F,row.names=F,quote=F)
+write.csv(ThetasFromPG,'~/results/PWs/MeanThetafromPGG_L_c.csv',col.names=F,row.names=F,quote=F)
 
 # saveout dr2s and ps - still needs to be merged with results from other hemi for MC correction
-saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_adr2.rds'))
-saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_adr2.rds'))
-saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_adr2.rds'))
-saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_adr2.rds'))
+saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_adr2_c.rds'))
+saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_adr2_c.rds'))
+saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_adr2_c.rds'))
+saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_adr2_c.rds'))
 
-saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_p.rds'))
-saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_p.rds'))
-saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_p.rds'))
-saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_p.rds'))
+saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_p_c.rds'))
+saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_p_c.rds'))
+saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_p_c.rds'))
+saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_p_c.rds'))
 
