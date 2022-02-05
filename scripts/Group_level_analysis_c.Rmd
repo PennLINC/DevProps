@@ -1,0 +1,126 @@
+---
+title: "Group_level"
+output: html_document
+---
+
+```{r}
+library(shapes)
+library(ggplot2)
+library(mgcv)
+```
+
+
+```{r}
+# load in subj list
+subjList=read.delim('Y:/PWs/hcpd_subj_list.txt')
+
+# load in ages
+demo=read.csv('Y:/PWs/hcpd_demographics.csv')
+# convert to used naming convention
+demo$SubjID<-gsub('HCD','sub-',demo$src_subject_id)
+
+# load in FD
+FD_TRs=read.csv('Y:/PWs/Subj_FD_RemTRs.csv')
+colnames(FD_TRs)[1]<-'SubjID'
+colnames(FD_TRs)[2]<-'FD'
+colnames(FD_TRs)[3]<-'RemainingTRs'
+
+# merge by subjID
+mergeddf<-merge(demo,FD_TRs,by='SubjID')
+
+# initialize D
+Ds=rep(0,dim(subjList)[1])
+Ps=rep(0,dim(subjList)[1])
+iDs=rep(0,dim(subjList)[1])
+iPs=rep(0,dim(subjList)[1])
+
+# subjvec to run in parallel for even more confidence in merging
+Subjvec=rep(0,dim(subjList)[1])
+
+# initialize shape matrix
+shapeMat=array(dim=c(24,2,dim(subjList)[1]))
+shapeMatAbs=array(dim=c(24,2,dim(subjList)[1]))
+
+# load in D and shapes iteratively
+for (s in 1:dim(subjList)[1]){
+    subj=subjList[s,1]
+    ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
+    # if output exists
+    if (file.exists(paste0(ResFp,subj,'_gShapeMatrix.rds'))) {
+      # load in shapemat
+      shapemat=readRDS(paste0(ResFp,subj,'_gShapeMatrix.rds'))
+      # scale it
+      divisorPt2=24/(max(shapemat[,2])-min(shapemat[,2]))
+      shapeMat[,1,s]=shapemat[,1]
+      shapeMat[,2,s]=shapemat[,2]*divisorPt2
+      # load in shapemat abs
+      #shapematAbs=readRDS(paste0(ResFp,subj,'_AbsShapeMatrix.rds'))
+      # scale it
+      #divisorPt1a=max(shapematAbs[,2])
+      #divisorPt2a=20/divisorPt1a
+      #shapeMatAbs[,1,s]=shapematAbs[,1]
+      #shapeMatAbs[,2,s]=shapematAbs[,2]*divisorPt2a
+      # load in dip test
+      dipstat=readRDS(paste0(ResFp,subj,'_gDipTest.rds'))
+      idipstat=readRDS(paste0(ResFp,subj,'_DipTest.rds'))
+      Ds[s]=dipstat$statistic
+      Ps[s]=dipstat$p.value
+      iDs[s]=idipstat$statistic
+      iPs[s]=idipstat$p.value
+      # and to record same order of subj loading and prevent funny biz
+      Subjvec[s]=subj
+      print(s)
+    }
+}
+
+# merge populated vecs
+popDf=data.frame(Subjvec,Ds,Ps,iDs,iPs)
+colnames(popDf)[1]<-'SubjID'
+
+masterdf=merge(mergeddf,popDf,by='SubjID')
+
+shapeMat<-shapeMat[,,Subjvec!=0]
+#shapeMatAbs<-shapeMatAbs[,,Subjvec!=0]
+procedSubjsVec=Subjvec[Subjvec!=0]
+
+```
+
+```{r}
+# remaining TRs thresh
+inclusionVec<-masterdf$RemainingTRs>600
+ThreshShapeMat<-shapeMat[,,inclusionVec]
+
+# shape PCA
+ShapeOut<-procGPA(ThreshShapeMat,reflect = F,scale=F)
+shapepca(ShapeOut)
+
+scoresdf<-data.frame(procedSubjsVec[inclusionVec],ShapeOut$scores[,1],ShapeOut$scores[,2])
+colnames(scoresdf)<-c('SubjID','PC1score','PC2score')
+
+masterdf<-merge(masterdf,scoresdf,by='SubjID')
+
+# plot some high PC examples
+PCscores=sort(ShapeOut$scores[,1],index.return=T)
+PCscoresneg=sort(-ShapeOut$scores[,2],index.return=T)
+
+for (i in 1:30){
+  index=PCscores$ix[i]
+  #plot(binnedFaces[,1,index],binnedFaces[,2,index])
+  plot(ThreshShapeMat[,1,index],ThreshShapeMat[,2,index],main=PCscores$x[i])
+}
+
+for (i in 1:30){
+  index=PCscoresneg$ix[i]
+  #plot(binnedFaces[,1,index],binnedFaces[,2,index])
+  plot(ThreshShapeMat[,1,index],ThreshShapeMat[,2,index],main=PCscoresneg$x[i])
+}
+
+```
+
+```{r}
+library(visreg)
+# dev analyses
+summary(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
+summary(gam(PC2score~s(interview_age,k=4)+FD+sex,data=masterdf))
+visreg(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
+```

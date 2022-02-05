@@ -28,7 +28,7 @@ while len(subjects)>0:
       # submit job (if conditions are met)
       #DipFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_RVerts_DipTest.rds'
       #if not os.path.exists(OpFile):
-      tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
+      tmpSh="Rscript " + "Proc_AngDistDistrs_r_c.R " + str(newsub)
       JobName=str(newsub)+".sh"
       with open(JobName, 'w') as f:
         f.write(tmpSh)
@@ -38,7 +38,7 @@ while len(subjects)>0:
       #DipFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_RVerts_DipTest.rds'
       #if not os.path.exists(DipFile):
       # submit job (if conditions are met)
-      tmpSh="Rscript " + "Proc_AngDistDistrs_r.R " + str(newsub)
+      tmpSh="Rscript " + "Proc_AngDistDistrs_r_c.R " + str(newsub)
       JobName=str(newsub)+".sh"
       with open(JobName, 'w') as f:
         f.write(tmpSh)
