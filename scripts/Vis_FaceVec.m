@@ -112,7 +112,7 @@ g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 
 
 data=zeros(1,5120);
-data(g_noMW_combined_L)=FaceVecL;
+data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
 % CIRCULAR
@@ -122,8 +122,8 @@ data(g_noMW_combined_L)=FaceVecL;
 
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
-mincol=-.1
-maxcol=.1
+mincol=-.003;
+maxcol=.003;
 custommap=colormap(b2r(mincol,maxcol));
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
@@ -170,7 +170,7 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 %%% right hemisphere
 data=zeros(1,5120);
-data(g_noMW_combined_R)=FaceVecR;
+data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 

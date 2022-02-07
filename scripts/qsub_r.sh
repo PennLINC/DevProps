@@ -1,1 +1,1 @@
-Rscript facewise_stats_R_c.R
+Rscript facewise_stats_L_c.R
