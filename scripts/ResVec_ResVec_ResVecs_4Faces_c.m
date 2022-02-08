@@ -5,12 +5,10 @@
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 
 % load in subjects list
-% subjs=readtable('/cbica/projects/pinesParcels/PWs/G600TRs.txt','ReadVariableNames',false);
-% this needs to be replaced with final carit participants over TR threshold
-
+subjs=readtable('/cbica/projects/pinesParcels/PWs/G300_cTRs.txt','ReadVariableNames',false);
 % initialize output dfs
-MasterMat=zeros((height(subjs),(4851+4842));
-MasterVector=zeros(1,(height(subjs)*(4851+4842));
+MasterMat=zeros(height(subjs),(4851+4842));
+MasterVector=zeros(1,(height(subjs)*(4851+4842)));
 
 % for each subj
 numSubjs=height(subjs);
