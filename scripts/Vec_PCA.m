@@ -5,7 +5,7 @@ VecMat=VecMat.FaceVecCompMat;
 addpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox')
 
 % note transpose
-[coeff,score,latent,tsquared,explained,mu]=pca(VecMat');
+[coeff,score,latent,tsquared,explained,mu]=pca(VecMat(1:40960,:)');
 
 % print out var explained by some components
 explained(1:40)

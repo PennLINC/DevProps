@@ -58,7 +58,7 @@ demo=read.csv('/cbica/projects/pinesParcels/PWs/hcpd_demographics.csv')
 demo$SubjID<-gsub('HCD','sub-',demo$src_subject_id)
 
 # load in FD
-FD_TRs=read.csv('/cbica/projects/pinesParcels/PWs/Subj_FD_RemTRs.csv')
+FD_TRs=read.csv('/cbica/projects/pinesParcels/PWs/Subj_FD_RemTRs_c.csv')
 colnames(FD_TRs)[1]<-'SubjID'
 colnames(FD_TRs)[2]<-'FD'
 colnames(FD_TRs)[3]<-'RemainingTRs'
@@ -67,7 +67,7 @@ colnames(FD_TRs)[3]<-'RemainingTRs'
 mergeddf<-merge(demo,FD_TRs,by='SubjID')
 
 # exclude subjects with less than 600 TRs remaining
-inclusionVec<-mergeddf$RemainingTRs>600
+inclusionVec<-mergeddf$RemainingTRs>300
 # include NAs in the exclusion
 inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
 # subset the master df accordingly
@@ -156,19 +156,19 @@ for (f in 1:4842){
 }
 
 # saveout means
-write.csv(TD_L,'~/results/PWs/MeanTDresLen_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(BU_L,'~/results/PWs/MeanBUresLen_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(BuProp,'~/results/PWs/MeanPropBU_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(ThetasFromPG,'~/results/PWs/MeanThetafromPGG_R.csv',col.names=F,row.names=F,quote=F)
+write.csv(TD_L,'~/results/PWs/MeanTDresLen_R_c.csv',col.names=F,row.names=F,quote=F)
+write.csv(BU_L,'~/results/PWs/MeanBUresLen_R_c.csv',col.names=F,row.names=F,quote=F)
+write.csv(BuProp,'~/results/PWs/MeanPropBU_R_c.csv',col.names=F,row.names=F,quote=F)
+write.csv(ThetasFromPG,'~/results/PWs/MeanThetafromPGG_R_c.csv',col.names=F,row.names=F,quote=F)
 
 # saveout dr2s and ps - still needs to be merged with results from other hemi for MC correction
-saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_adr2.rds'))
-saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_adr2.rds'))
-saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_adr2.rds'))
-saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_adr2.rds'))
+saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_adr2_c.rds'))
+saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_adr2_c.rds'))
+saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_adr2_c.rds'))
+saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_adr2_c.rds'))
 
-saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_p.rds'))
-saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_p.rds'))
-saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_p.rds'))
-saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_p.rds'))
+saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_p_c.rds'))
+saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_p_c.rds'))
+saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_p_c.rds'))
+saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_p_c.rds'))
 
