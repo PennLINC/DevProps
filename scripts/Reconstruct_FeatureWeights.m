@@ -11,7 +11,7 @@ Vec_PCAM=load('/cbica/projects/pinesParcels/results/PWs/FaceSpace_SubjVecsPCA.ma
 Vec_PCA=Vec_PCAM.Vecs_PC_struct;
 
 % initialize feature weight matrix for SSPs and vectors
-SSP_featWeights=zeros(40,174095);
+SSP_featWeights=zeros(40,174080);
 Vec_featWeights=zeros(40,40960);
 
 % reconstruct into original feature space, by adding the absolute feature weight of each PC in accordance with its PC loading
@@ -62,7 +62,7 @@ for k=2:17
         % starting point for network k
         Kstart_f=Kend_f+1;
         % ending point for network k
-        Kend_f=Kstart_f+(5120*2);
+        Kend_f=Kstart_f+(5120*2)-1;
         % K-network indices stored in cell structure
         Kind_f{k}=Kstart_f:Kend_f;
 end
@@ -79,9 +79,12 @@ BUR(:)=mVec_featWeights(BURH)+mVec_featWeights(BURV);
 TDL(:)=mVec_featWeights(TDLH)+mVec_featWeights(TDLV);
 TDR(:)=mVec_featWeights(TDRH)+mVec_featWeights(TDRV);
 
-% print TD BU horz and vert
+Vis_FaceVec(BUL,BUR,'BU_PLSc1_ws.png')
+Vis_FaceVec(TDL,TDR,'TD_PLSc1_ws.png')
 
-% INCOMPLETE past this point, need to check 174095 vs 174096 corresp.
+% merged weight vector
+MergedL=zeros(1,5120);
+MergedR=zeros(1,5120);
 
 % extract out each net and vis 
 for k=1:17
@@ -89,15 +92,18 @@ for k=1:17
         Inds=Kind_f{k};
         % extract the left face for this network
         NetIndsL=Inds(1:5120);
-        FaceVecL=coeff(NetIndsL,compNum);
+        FaceVecL=mSSP_featWeights(NetIndsL);
         % extract the right face for this network
         NetIndsR=Inds(5121:10240);
-        FaceVecR=coeff(NetIndsR,compNum);
+        FaceVecR=mSSP_featWeights(NetIndsR);
         % print mean coefficient loadings onto this network
         mean(abs(FaceVecR))
         % create png on surface
-        Fn=['~/results/PWs/Comp' num2str(compNum) '_Net' num2str(k) '.png'];
+        Fn=['~/results/PWs/PLSc1_Net' num2str(k) '_posNeg.png'];
         Vis_FaceVec(FaceVecL,FaceVecR,Fn)
+	MergedL=MergedL+FaceVecL;
+	MergedR=MergedR+FaceVecR;
 end
 
+Vis_FaceVec(MergedL,MergedR,'~/results/PWs/PLSc1_mergedNets.png')
 

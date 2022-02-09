@@ -4,6 +4,7 @@ import scipy.io as sio
 import numpy as np
 import time
 import random
+from sklearn import model_selection
 from sklearn import linear_model
 from sklearn import preprocessing
 from joblib import Parallel, delayed
@@ -18,8 +19,6 @@ from scipy.io import loadmat
 # load in PCA values
 Vec_Mat_Path='/cbica/projects/pinesParcels/results/PWs/FaceSpace_SubjVecsPCA.mat'
 SSP_Mat_Path='/cbica/projects/pinesParcels/results/PWs/FaceSpace_SubjTopogPCA.mat'
-
-# 388x150?
 data = sio.loadmat(SSP_Mat_Path)
 SSP_Matrix_str = data['SSP_PC_struct']
 data = sio.loadmat(Vec_Mat_Path)
@@ -29,15 +28,13 @@ Vec_Matrix_str = data['Vecs_PC_struct']
 SSP_Matrix=SSP_Matrix_str[0,0]['score']
 Vec_Matrix=Vec_Matrix_str[0,0]['score']
 
-# truncate: 150 so training subj # is half the number of features on either side
-numPCs=40
-SSP_Matrix=SSP_Matrix[:,0:numPCs]
-Vec_Matrix=Vec_Matrix[:,0:numPCs]
+# Optimize number of PCs to use 
+numPCs=np.arange(30,100)
 
 # start with conditions in ZC paper
 Fold_Quantity=2
 Components_Number=30
-CVRepeatTimes=101
+RepeatTimes=11
 
 # Get random splits of subjects for folds, save
 Subjects_Quantity = np.shape(SSP_Matrix)[0]
@@ -52,46 +49,70 @@ SFeatures_Quantity = np.shape(SSP_Matrix)[1]
 VFeatures_Quantity = np.shape(Vec_Matrix)[1]
 # initialize fold_corr
 Fold_Corr = np.zeros((Fold_Quantity, Components_Number))
-MeanCorrs = np.zeros((Fold_Quantity, Components_Number, CVRepeatTimes))
-# initialize feature loading vectors
-SSP_loadings=np.zeros((numPCs,Fold_Quantity,CVRepeatTimes))
-Vec_Loadings=np.zeros((numPCs,Fold_Quantity,CVRepeatTimes))
-# for each CV repeat
-for i in np.arange(CVRepeatTimes):
-	np.random.shuffle(RandIndex)
-	# for each fold
-	for j in np.arange(Fold_Quantity):
-		# get indices corresponding to this fold: note python iterator starts w/ 0
-		Fold_J_Index = RandIndex[EachFold_Size * j + np.arange(EachFold_Size)]
-		# extract ssp and vec train and test data
-		SSP_test = SSP_Matrix[Fold_J_Index, :]
-		SSP_train = np.delete(SSP_Matrix, Fold_J_Index, axis=0)	
-		Vec_test = Vec_Matrix[Fold_J_Index, :]
-		Vec_train = np.delete(Vec_Matrix, Fold_J_Index, axis=0)
-		# normalize all features
-		normalize = preprocessing.StandardScaler()
-		SSP_train = normalize.fit_transform(SSP_train)
-		SSP_test = normalize.fit_transform(SSP_test)
-		Vec_train = normalize.fit_transform(Vec_train)
-		Vec_test = normalize.fit_transform(Vec_test)
-		# create plsca object
-		plsca = PLSCanonical(n_components=Components_Number, algorithm='svd')
-		# fit it (train it)
-		plsca.fit(SSP_train, Vec_train)
-		SSP_test_ca, Vec_test_ca = plsca.transform(SSP_test, Vec_test)
-		# Correlation on training data
-		Fold_J_Corr_Training = []
-		for k in np.arange(Components_Number):
-			Fold_J_Corr_tmp = np.corrcoef(plsca.x_scores_[:,k], plsca.y_scores_[:,k])
-			Fold_J_Corr_tmp = Fold_J_Corr_tmp[0,1]
-			Fold_J_Corr_Training.append(Fold_J_Corr_tmp)
-		# Correlation on testing data
-		Fold_J_Corr = []
-		for k in np.arange(Components_Number):
-			Fold_J_Corr_tmp = np.corrcoef(SSP_test_ca[:,k], Vec_test_ca[:,k])
-			Fold_J_Corr_tmp = Fold_J_Corr_tmp[0,1]
-			Fold_J_Corr.append(Fold_J_Corr_tmp)	
+MeanCorrs = np.zeros((Fold_Quantity, Components_Number, RepeatTimes))
 
+# initialize feature loading vectors
+# actually do the thing you said you would do in the comment, adam
+
+# for each repeat
+for i in np.arange(RepeatTimes):
+	np.random.shuffle(RandIndex)
+	# for each repeat: split into 3rds
+	first2_3rds=RandIndex[0:258]
+	last3rd=RandIndex[259:388]
+	# initialize to select optimal PC number in inner loop 
+	numPCsCor=np.zeros((10,100,Components_Number))
+	# for each possible number of PCs
+	for p in numPCs:
+		SSP_Matrix_smol=SSP_Matrix[:,0:p]
+		Vec_Matrix_smol=Vec_Matrix[:,0:p]
+		# get your 10 folds, right here
+		Kf=model_selection.KFold(n_splits=10)
+		iterator=0
+		# 10 times: loop over possible numPCs in 1st 2 3rds: 1st is to get coefs for p PCs, 2nd to test p PCs
+		for train_index, test_index in Kf.split(first2_3rds):
+			innertrain_index=first2_3rds[train_index]
+			innertest_index=first2_3rds[test_index]
+			SSP_test = SSP_Matrix_smol[innertest_index, :]
+			SSP_train = SSP_Matrix_smol[innertrain_index, :]
+			Vec_test = Vec_Matrix_smol[innertest_index, :]
+			Vec_train = Vec_Matrix_smol[innertrain_index, :]
+			# normalize all features
+			normalize = preprocessing.StandardScaler()
+			SSP_train = normalize.fit_transform(SSP_train)
+			SSP_test = normalize.fit_transform(SSP_test)
+			Vec_train = normalize.fit_transform(Vec_train)
+			Vec_test = normalize.fit_transform(Vec_test)
+			# create plsca object
+			plsca = PLSCanonical(n_components=Components_Number, algorithm='svd')
+			# fit it (train it)
+			plsca.fit(SSP_train, Vec_train)
+			SSP_test_ca, Vec_test_ca = plsca.transform(SSP_test, Vec_test)
+			# Correlation on testing data
+			for k in np.arange(Components_Number):
+				Fold_J_Corr_tmp = np.corrcoef(SSP_test_ca[:,k], Vec_test_ca[:,k])
+				Fold_J_Corr_tmp = Fold_J_Corr_tmp[0,1]
+				numPCsCor[iterator,p,k]=Fold_J_Corr_tmp	
+			iterator=iterator+1
+	# select number of PCs corresponding to max in-fold pred.
+	comp1Pred=numPCsCor[:,:,0]
+	OptimalPCnum=np.where(np.mean(comp1Pred,axis=0)==np.amax(np.mean(comp1Pred,axis=0)))
+	# python feeling like matlab rn
+	OptimalPCnum=np.int(OptimalPCnum[0])
+	print(OptimalPCnum)
+	# now train model coeffs on this numba
+	SSP_test = SSP_Matrix[last3rd,0:OptimalPCnum]
+	SSP_train = SSP_Matrix[first2_3rds,0:OptimalPCnum]
+	Vec_test = Vec_Matrix[last3rd,0:OptimalPCnum]
+	Vec_train = Vec_Matrix[first2_3rds,0:OptimalPCnum]
+	plsca = PLSCanonical(n_components=Components_Number, algorithm='svd')
+	plsca.fit(SSP_train, Vec_train)
+	SSP_test_ca, Vec_test_ca = plsca.transform(SSP_test, Vec_test)
+	print(np.corrcoef(SSP_test_ca[:,0], Vec_test_ca[:,0]))
+
+# not adapted below this line
+# sig test
+# fit on all subjs to get weights
 		# save out weights
 		SSP_Weights = plsca.x_weights_
 		Vec_Weights = plsca.y_weights_

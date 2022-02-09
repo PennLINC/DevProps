@@ -36,7 +36,7 @@ for k=2:17
         % starting point for network k
         Kstart_f=Kend_f+1;
         % ending point for network k
-        Kend_f=Kstart_f+(5120*2);
+        Kend_f=Kstart_f+(5120*2)-1;
         % K-network indices stored in cell structure
         Kind_f{k}=Kstart_f:Kend_f;
 end

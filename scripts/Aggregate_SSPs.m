@@ -30,8 +30,8 @@ Kind_v{1}=Kstart_v:Kend_v;
 for k=2:17
 	% starting point for network k
 	Kstart_v=Kend_v+1;
-	% ending point for network k
-	Kend_v=Kstart_v+(2562*2);
+	% ending point for network k, -1 because indexing is inclusive
+	Kend_v=Kstart_v+(2562*2)-1;
 	% K-network indices stored in cell structure
 	Kind_v{k}=Kstart_v:Kend_v;
 end
@@ -46,7 +46,7 @@ for k=2:17
         % starting point for network k
         Kstart_f=Kend_f+1;
         % ending point for network k
-        Kend_f=Kstart_f+(5120*2);
+        Kend_f=Kstart_f+(5120*2)-1;
         % K-network indices stored in cell structure
         Kind_f{k}=Kstart_f:Kend_f;
 end
