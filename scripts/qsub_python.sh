@@ -1,1 +1,1 @@
-python JobSubmitta.py
+python PLSca_permut.py

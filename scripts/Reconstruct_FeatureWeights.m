@@ -10,27 +10,32 @@ SSP_PCA=SSP_PCAM.SSP_PC_struct;
 Vec_PCAM=load('/cbica/projects/pinesParcels/results/PWs/FaceSpace_SubjVecsPCA.mat');
 Vec_PCA=Vec_PCAM.Vecs_PC_struct;
 
+% adapt to number of final selected PCs
+numPCs=length(SSPWeights)
+
 % initialize feature weight matrix for SSPs and vectors
-SSP_featWeights=zeros(40,174080);
-Vec_featWeights=zeros(40,40960);
+SSP_featWeights=zeros(numPCs,174080);
+Vec_featWeights=zeros(numPCs,40960);
 
 % reconstruct into original feature space, by adding the absolute feature weight of each PC in accordance with its PC loading
 
+% PLS component number
+PLcN=1
 
 % for each principal component
-for P=1:40
+for P=1:numPCs
 	% extract PC weights from this PLS component
-	SSP_PCws=SSPWeights(P,:,:);
+	SSP_PCws=SSPWeights(P,PLcN);
 	% average over all iterations
-	av_SSP_PCws=mean(mean((SSP_PCws)));
+	%av_SSP_PCws=mean(mean((SSP_PCws)));
 	% same for vectors
-	Vec_PCws=VecWeights(P,:,:);
+	Vec_PCws=VecWeights(P,PLcN);
 	% average over all iterations
-	av_Vec_PCws=mean(mean((Vec_PCws)));
+	%av_Vec_PCws=mean(mean((Vec_PCws)));
 	% multiply by PC weights to get into feature space
 	% pc weights in abs.
-	SSP_featWeights(P,:)=(av_SSP_PCws*abs(SSP_PCA.coeff(:,P)));
-	Vec_featWeights(P,:)=(av_Vec_PCws*abs(Vec_PCA.coeff(:,P)));
+	SSP_featWeights(P,:)=(SSP_PCws*SSP_PCA.coeff(:,P));
+	Vec_featWeights(P,:)=(Vec_PCws*Vec_PCA.coeff(:,P));
 	P
 end
 
