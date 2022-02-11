@@ -20,7 +20,7 @@ Vec_featWeights=zeros(numPCs,40960);
 % reconstruct into original feature space, by adding the absolute feature weight of each PC in accordance with its PC loading
 
 % PLS component number
-PLcN=1
+PLcN=2
 
 % for each principal component
 for P=1:numPCs
@@ -34,8 +34,8 @@ for P=1:numPCs
 	%av_Vec_PCws=mean(mean((Vec_PCws)));
 	% multiply by PC weights to get into feature space
 	% pc weights in abs.
-	SSP_featWeights(P,:)=(SSP_PCws*SSP_PCA.coeff(:,P));
-	Vec_featWeights(P,:)=(Vec_PCws*Vec_PCA.coeff(:,P));
+	SSP_featWeights(P,:)=(abs(SSP_PCws)*abs(SSP_PCA.coeff(:,P)));
+	Vec_featWeights(P,:)=(abs(Vec_PCws)*abs(Vec_PCA.coeff(:,P)));
 	P
 end
 

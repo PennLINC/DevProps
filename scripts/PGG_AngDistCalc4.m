@@ -1,4 +1,4 @@
-p install --prefix {sys.prefix} nibabelfunction PGG_AngDistCalc4(subj)
+function PGG_AngDistCalc4(subj)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% load in optical flow data and calculate gradient gradient data, compare angular distance between them

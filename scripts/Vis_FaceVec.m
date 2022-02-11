@@ -119,12 +119,12 @@ data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 %mincol=-pi;
 %maxcol=pi;
 %custommap= vertcat(flipud(inferno),inferno);
-%custommap=colormap('inferno');
+custommap=colormap('inferno');
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
-mincol=-0.00012;
-maxcol=0.00012;
-custommap=colormap(b2r(mincol,maxcol));
+mincol=0;
+maxcol=.003;
+%custommap=colormap(b2r(mincol,maxcol));
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
