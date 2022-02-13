@@ -18,4 +18,4 @@ gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
 % replace cdata
 
-
+cifti_create_dscalar_from_template
