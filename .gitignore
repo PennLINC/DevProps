@@ -1,3 +1,4 @@
+*.png
 *.csv
 scripts/sub-*.sh
 hcpd_subj_list.txt

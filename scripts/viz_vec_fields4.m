@@ -105,6 +105,10 @@ PGx_R=PGg_R(:,1);
 PGy_R=PGg_R(:,2);
 PGz_R=PGg_R(:,3);
 
+%%% set colormap
+custommap=colormap('inferno'); %or whatever
+% reduce just a little bit on the close-to-white coloring
+custommap=custommap(1:240,:);
 
 % 1 - VECTOR FIELDS OVERLAID ONTO ORIGINAL TRS
 % vector field
@@ -128,13 +132,14 @@ view(200,200);
 % 2
 subplot(2,2,3)
 axis([-1, 1, -1, 1, 0, 1]);
-quiver3(P(:, 1), P(:, 2), P(:, 3), PGx_L, PGy_L, PGz_L, 4, 'k');
+quiver3(P(:, 1), P(:, 2), P(:, 3), PGx_L, PGy_L, PGz_L, 2, 'w');
 hold on
 trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), PG_LH, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
+colormap(custommap)
 colorbar
-view(200,200);
+view(225,215);
 
 % 3
 subplot(2,2,[2 4])
