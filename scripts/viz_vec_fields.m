@@ -81,12 +81,12 @@ P = TR.incenters;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% load in subject's PG %%%%%
-LPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_L_10k_rest.func.gii'];
+%%%% load in PG %%%%%
+LPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
 LPGf=gifti(LPGfp);
 PG_LH=LPGf.cdata(:,1);
 % right hemi
-RPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_R_10k_rest.func.gii'];
+RPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
 RPGf=gifti(RPGfp);
 PG_RH=RPGf.cdata(:,1);
 
@@ -135,6 +135,10 @@ axis equal
 daspect([1, 1, 1]);
 colorbar
 view(200,200);
+% medial
+view(250,200)
+% lateral?
+view(70,20);
 
 % 3
 subplot(2,2,[2 4])

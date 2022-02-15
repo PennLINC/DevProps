@@ -99,6 +99,9 @@ us=struct;
 disp('Computing optical flow...');
 
 % initialize TRP counter: for plopping u outputs into master struct w/o/r/t their segment
+% note trp = tr pair
+rmap(roybigbl_cm);
+
 TRPC=1;
 
 % for each continuous segment

@@ -65,7 +65,7 @@ for TRP=1:TR_n;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% load in fsaverage5 faces and vertices %%%
+% load in fsaverage4 faces and vertices %%%
 surfL = [SubjectsFolder '/surf/lh.sphere'];
 surfR = [SubjectsFolder '/surf/rh.sphere'];
 % surface topography
@@ -78,6 +78,9 @@ faces_r = faces_r + 1;
 % Get incenters of triangles.
 TR = TriRep(faces_l, vx_l);
 P = TR.incenters;
+TRr = TriRep(faces_r, vx_r);
+Pr = TRr.incenters;
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,14 +135,19 @@ view(200,200);
 % 2
 subplot(2,2,3)
 axis([-1, 1, -1, 1, 0, 1]);
-quiver3(P(:, 1), P(:, 2), P(:, 3), PGx_L, PGy_L, PGz_L, 2, 'w');
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R, 2, 'w');
 hold on
-trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), PG_LH, 'EdgeColor','none');
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
 colormap(custommap)
 colorbar
-view(225,215);
+% medial
+view(60,190)
+% this is going to be easier to just photoshop out the axes if needed - appears to remove quiver3 coloring
+%axis('off')
+% lateral?
+view(270,200);
 
 % 3
 subplot(2,2,[2 4])
@@ -162,4 +170,78 @@ video.FrameRate = 2;
 open(video)
 writeVideo(video, DirecsVecs);
 close(video);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% for high res, use this
+figure('units','pixels','position',[0 0 1000 1000])
+% roy-big-bl palette imitation, inferno is just template
+roybigbl_cm=inferno(16);
+roybigbl_cm(1,:)=[255, 255, 0 ];
+roybigbl_cm(2,:)=[255, 200, 0];
+roybigbl_cm(3,:)=[255, 120, 0];
+roybigbl_cm(4,:)=[255, 0, 0 ];
+roybigbl_cm(5,:)=[200, 0, 0 ];
+roybigbl_cm(6,:)=[150, 0, 0 ];
+roybigbl_cm(7,:)=[100, 0, 0 ];
+roybigbl_cm(8,:)=[60, 0, 0 ];
+roybigbl_cm(9,:)=[0, 0, 80 ];
+roybigbl_cm(10,:)=[0, 0, 170];
+roybigbl_cm(11,:)=[75, 0, 125];
+roybigbl_cm(12,:)=[125, 0, 160];
+roybigbl_cm(13,:)=[75, 125, 0];
+roybigbl_cm(14,:)=[0, 200, 0];
+roybigbl_cm(15,:)=[0, 255, 0];
+roybigbl_cm(16,:)=[0, 255, 255]; 
+% pulled from https://github.com/Washington-University/workbench/blob/master/src/Files/PaletteFile.cxx
+% scale to 1
+roybigbl_cm=roybigbl_cm.*(1/255);
+% interpolate color gradient
+interpsteps=[0 0.0666 0.1333 0.2 0.2666 0.3333 0.4 0.4666 0.5333 0.6 0.6666 0.7333 0.8 0.86666 0.9333 1];
+roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+% yellow as high
+roybigbl_cm=flipud(roybigbl_cm);
+% reduce just a little bit on the close-to-white coloring
+roybigbl_cm=roybigbl_cm(15:240,:);
+colormap(roybigbl_cm);
+print('yourfigure.png','-dpng')
+
+
+%%%%% create conversion vector: the aim is to go from included TRs to included TR pairs (valid adjacent frames).
+% the main discrep. comes from discontinuous segments: if frames 1:5 are really 1,2,4,5,6, (3 had motion)
+% then  pairs (1,2) (4,5) and (5,6) are analyzed. 
+% so pull out non-valid TR pairs (i.e., (2,3)) and setdiff to get index of OpFl estimations w/r/t retained TRs
+% the last TR of a continuous segments does not have an opfl vec field ascribed to it
+parentfp=['/cbica/projects/hcpd/data/motMasked_contSegs/'];
+CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
+CSI=readtable(CSIfp);
+% get index of last TR in cont seg
+lastInSegs=CSI{:,1}+CSI{:,2}-1;
+% set diff between these lastInSegs and sequence of 1:#trs (-1 because of inclusivity of second column)
+% go to motion masking scripts for more detail on that
+numTrs=CSI{end,1}+CSI{end,2}-1;
+% invalid TR pairs are those after the last TR in segments
+validTRs=setdiff([1:numTrs],lastInSegs);
+% now we should be able to index the desired TR based on the tr pair
+for i=1:1000
+OpFlVecofInt=i;
+TRofInt=validTRs(OpFlVecofInt)
+u=OpFl.vf_right{OpFlVecofInt};
+vATTR=fr.TRs{TRofInt};
+% z-score
+vATTR=zscore(vATTR);
+figure('units','pixels','position',[0 0 600 600])
+axis([-1, 1, -1, 1, 0, 1]);
+%quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
+hold on
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
+axis equal
+daspect([1, 1, 1]);
+caxis([-3,3;]);
+colormap(roybigbl_cm);
+colorbar
+view(270,200);
+fn=['yourfigure' num2str(i) '.png'];
+print(fn,'-dpng')
+end
 
