@@ -95,6 +95,7 @@ PG_RH=RPGf.cdata(:,1);
 
 % get sorting order of PG
 [outL,idxL] = sort(PG_LH);
+[outR, idxR] = sort(PG_RH);
 
 % calculate PG gradient on sphere
 PGg_L = grad(faces_l, vx_l, PG_LH);
@@ -116,22 +117,24 @@ custommap=custommap(1:240,:);
 % 1 - VECTOR FIELDS OVERLAID ONTO ORIGINAL TRS
 % vector field
 DirecsVecs=struct('cdata',[],'colormap',[]);
-for j=1:100
-j
-u=OpFl.vf_left{j};
-vATTR=fl.TRs{j};
-figure('units','pixels','position',[0 0 1000 1000])
+speshframes=[209:226];
+for i=1:17
+j=speshframes(i)
+u=OpFl.vf_right{j};
+vATTR=fr.TRs{j};
+vATTR=zscore(vATTR);
+%%%%%%
+figure('units','pixels','position',[0 0 1200 1200])
 subplot(2,2,1)
 axis([-1, 1, -1, 1, 0, 1]);
-quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 3, 'k');
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 3, 'w');
 hold on
-trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), vATTR, 'EdgeColor','none');
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
-caxis([-45,45]);
+caxis([-3,3]);
 colorbar
-view(200,200);
-
+view(270,200);
 % 2
 subplot(2,2,3)
 axis([-1, 1, -1, 1, 0, 1]);
@@ -140,31 +143,32 @@ hold on
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
-colormap(custommap)
+%%%colormap(custommap)
+colormap(roybigbl_cm);
+%%%%
 colorbar
 % medial
-view(60,190)
+%view(60,190)
 % this is going to be easier to just photoshop out the axes if needed - appears to remove quiver3 coloring
 %axis('off')
 % lateral?
 view(270,200);
-
 % 3
 subplot(2,2,[2 4])
 limz=[-100 100];
 % get time series org. by PG
-PGts=TRs_l(idxL,:);
+PGts=TRs_r(idxR,:);
+% extract segment of PGts
+PGts=PGts(:,200:231);
 imagesc(PGts,limz);
 hold on;
-line([j,j+2], [0,10000], 'Color', 'r');
-
-
-DirecsVecs(j)=getframe(gcf);
+line([i+9,i+9], [0,10000], 'Color', 'w');
+DirecsVecs(i)=getframe(gcf);
 end
 
 % create videowriter object
 video = VideoWriter([vizdir 'testDirecVecs_fs4.avi'],'Uncompressed AVI');
-video.FrameRate = 2;
+video.FrameRate = 1;
 
 % open it, plop Direcs in
 open(video)
@@ -223,7 +227,7 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=1:1000
+for i=992:999
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt)
 u=OpFl.vf_right{OpFlVecofInt};
@@ -232,7 +236,7 @@ vATTR=fr.TRs{TRofInt};
 vATTR=zscore(vATTR);
 figure('units','pixels','position',[0 0 600 600])
 axis([-1, 1, -1, 1, 0, 1]);
-%quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
 hold on
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
 axis equal
@@ -245,3 +249,15 @@ fn=['yourfigure' num2str(i) '.png'];
 print(fn,'-dpng')
 end
 
+
+%%% and carpet plots redo
+figure('units','pixels','position',[0 0 5600 2600])
+limz=[-100 100];
+% get time series org. by PG
+PGts=TRs_r(idxR,:);
+%PGts=zscore(PGts);
+imagesc(PGts,limz);
+colormap(roybigbl_cm);
+%hold on;
+%line([j,j+2], [0,10000], 'Color', 'r');
+print('carpet2.png','-dpng')
