@@ -100,7 +100,6 @@ disp('Computing optical flow...');
 
 % initialize TRP counter: for plopping u outputs into master struct w/o/r/t their segment
 % note trp = tr pair
-rmap(roybigbl_cm);
 
 TRPC=1;
 
@@ -128,6 +127,9 @@ for seg=1:SegNum;
 		toc;
 		% throw u into struct
 		us.vf_right{TRPC}=u;
+		% record difference in signal
+		%us.sigd_left{TRPC}=segTS_l{TRP}-segTS_l{TRP+1};
+		%us.sigd_right{TRPC}=segTS_r{TRP}-segTS_r{TRP+1};
 		% update TR pair counter, which should increase +1 across segments
 		TRPC=TRPC+1;
 	end

@@ -227,7 +227,7 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=992:999
+for i=1:1836
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt)
 u=OpFl.vf_right{OpFlVecofInt};
@@ -248,7 +248,6 @@ view(270,200);
 fn=['yourfigure' num2str(i) '.png'];
 print(fn,'-dpng')
 end
-
 
 %%% and carpet plots redo
 figure('units','pixels','position',[0 0 5600 2600])
