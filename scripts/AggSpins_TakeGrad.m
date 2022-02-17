@@ -48,9 +48,9 @@ for s=1:1000
 	% Extract spun elements
 	sp_gPG_LH=sp.bigrotl(s,:);
 	sp_gPG_RH=sp.bigrotr(s,:);
-	% medial wall to NaN
-	sp_gPG_LH(sp_gPG_LH==100)=NaN;
-	sp_gPG_RH(sp_gPG_RH==100)=NaN;
+	% medial wall to 0
+	sp_gPG_LH(sp_gPG_LH==100)=0;
+	sp_gPG_RH(sp_gPG_RH==100)=0;
 	% calculate spun group PG gradient on sphere
 	sp_gPGg_L = grad(F_L, V_L, sp_gPG_LH);
 	sp_gPGg_R = grad(F_R, V_R, sp_gPG_RH);
@@ -90,5 +90,5 @@ trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), sp_gPG_LH, 'EdgeColor','non
 axis equal
 daspect([1, 1, 1]);
 colorbar
-view(200,200);
+view(180,60);
 print('spunGPGG4_2.png','-dpng')

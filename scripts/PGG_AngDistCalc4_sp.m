@@ -1,4 +1,4 @@
-function PGG_AngDistCalc4(subj)
+function PGG_AngDistCalc4_sp(subj)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% load in optical flow data and calculate gradient gradient data, compare angular distance between them
@@ -38,55 +38,21 @@ TR_L = TriRep(F_L,V_L);
 P_L = TR_L.incenters;
 TR_R = TriRep(F_R,V_R);
 P_R = TR_R.incenters;
-
-% load in GROUP PG
-gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
-gLPGf=gifti(gLPGfp);
-gPG_LH=gLPGf.cdata(:,1);
-% right hemi
-gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
-gRPGf=gifti(gRPGfp);
-gPG_RH=gRPGf.cdata(:,1);
-
-% calculate group PG gradient on sphere
-gPGg_L = grad(F_L, V_L, gPG_LH);
-gPGg_R = grad(F_R, V_R, gPG_RH);
-
-% extract face-wise vector cartesian vector components
-gPGx_L=gPGg_L(:,1);
-gPGy_L=gPGg_L(:,2);
-gPGz_L=gPGg_L(:,3);
-gPGx_R=gPGg_R(:,1);
-gPGy_R=gPGg_R(:,2);
-gPGz_R=gPGg_R(:,3);
-
 % translate xyz spherical coordinates to az/el/r
 [az_L,el_L,r_L]=cart2sph(P_L(:,1),P_L(:,2),P_L(:,3));
 [az_R,el_R,r_R]=cart2sph(P_R(:,1),P_R(:,2),P_R(:,3));
-
 % convert from radians to degrees
 azd_L=rad2deg(az_L);
 eld_L=rad2deg(el_L);
 azd_R=rad2deg(az_R);
 eld_R=rad2deg(el_R);
 
-% translate xyz vector components at coordinates to az/el/r
-gazes_L=zeros(1,length(azd_L));
-gels_L=zeros(1,length(eld_L));
-for i=1:length(azd_L)
-    gvs_L=cart2sphvec(double([gPGx_L(i);gPGy_L(i);gPGz_L(i)]),azd_L(i),eld_L(i));
-    gazes_L(i)=gvs_L(1);
-    gels_L(i)=gvs_L(2);
-	% drop the third vector, as each point is equidistant from the center of the sphere
-end
-% right hemi
-gazes_R=zeros(1,length(azd_R));
-gels_R=zeros(1,length(eld_R));
-for i=1:length(azd_R)
-    gvs_R=cart2sphvec(double([gPGx_R(i);gPGy_R(i);gPGz_R(i)]),azd_R(i),eld_R(i));
-    gazes_R(i)=gvs_R(1);
-    gels_R(i)=gvs_R(2);
-end
+% load in spun PGGs
+sp_PGGs=load('/cbica/projects/pinesParcels/results/aggregated_data/PGGPermuts_fs4.mat');
+gazes_L_all=squeeze(sp_PGGs.spGPGGs(1,:,1:5120));
+gels_L_all=squeeze(sp_PGGs.spGPGGs(2,:,1:5120));
+gazes_R_all=squeeze(sp_PGGs.spGPGGs(1,:,5121:10240));
+gels_R_all=squeeze(sp_PGGs.spGPGGs(2,:,5121:10240));
 
 % get length of OpFl pairs
 lenOpFl=length(data.us.vf_left);
@@ -131,49 +97,53 @@ for i=1:length(azd_R)
 end
 
 % actually calculate Opflow vector vs PGG vector angular distance
-gangDist_L=zeros(lenOpFl,length(azd_L));
+gangDist_L=zeros(lenOpFl,length(azd_L),1000);
+gangDist_R=zeros(lenOpFl,length(azd_R),1000);
 
-% for each vertex
-for Vert=1:length(azd_L)
-    % note azimuth elevation ordering for atan2d
-    gPGvec_L=[gazes_L(Vert) gels_L(Vert)]; 
-    % PG GROUP LOAD IN
-    for fr=1:lenOpFl
-        OpFlVec_L=[azesOpf_L(Vert,fr) elsOpf_L(Vert,fr)];
-	% go with this top rec as primary https://stackoverflow.com/questions/40461268/calculate-angle-between-two-vectors-matlab
-	% note it returns same value as two alternative methods below
-	%dotUV = dot(PGvec_L,OpFlVec_L);
-	%normU = norm(PGvec_L);
-	%normV = norm(OpFlVec_L);
-	%a_alt = acosd(dotUV/(normU * normV));
-	%a_alt2 = atan2d(norm(cross([PGvec_L 0],[OpFlVec_L 0])),dot([PGvec_L 0],[OpFlVec_L 0]))
-    	ga = acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )));
-	gangDist_L(fr,Vert) = ga;	
-    end
+% for each spin
+for S=1:1000
+	tic
+	S
+	% this iterations gazels and gel
+	gazes_L=gazes_L_all(S,:);
+	gels_L=gels_L_all(S,:);
+	gazes_R=gazes_R_all(S,:);
+	gels_R=gels_R_all(S,:);
+	% for each vertex
+	for Vert=1:length(azd_L)
+	    % note azimuth elevation ordering for atan2d
+	    gPGvec_L=[gazes_L(Vert) gels_L(Vert)]; 
+	    % PG GROUP LOAD IN
+	    for fr=1:lenOpFl
+	        OpFlVec_L=[azesOpf_L(Vert,fr) elsOpf_L(Vert,fr)];
+    		ga = acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )));
+		gangDist_L(fr,Vert,S) = ga;	
+    	     end
+	end
+	toc
+	tic
+	% right hemi
+	% for each vertex
+	for Vert=1:length(azd_R)
+	    % note azimuth elevation ordering for atan2d
+	    gPGvec_R=[gazes_R(Vert) gels_R(Vert)];
+	    for fr=1:lenOpFl
+	        OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
+        	ga = acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )));
+        	gangDist_R(fr,Vert,S) = ga;
+    	    end
+	end
+	toc
 end
 
-% right hemi
-gangDist_R=zeros(lenOpFl,length(azd_R));
-
-% for each vertex
-for Vert=1:length(azd_R)
-    % note azimuth elevation ordering for atan2d
-    gPGvec_R=[gazes_R(Vert) gels_R(Vert)];
-    for fr=1:lenOpFl
-        OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
-        %dotUV = dot(PGvec_R,OpFlVec_R);
-        %normU = norm(PGvec_R);
-        %normV = norm(OpFlVec_R);
-        %a_alt = acosd(dotUV/(normU * normV));
-        %a_alt2 = atan2d(norm(cross([PGvec_R 0],[OpFlVec_R 0])),dot([PGvec_R 0],[OpFlVec_R 0]))
-        ga = acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )));
-        gangDist_R(fr,Vert) = ga;
-    end
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% this needs to be dip tested in matlab. 1500*5120*1000 output files will not jive well with storage constraints
+% which means it needs to be MASKED first
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % save it out
-AngDist=struct;
-AngDist.gLeft=gangDist_L;
-AngDist.gRight=gangDist_R;
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4.mat'];
-save(AngDistFP,'AngDist')
+%AngDist=struct;
+%AngDist.gLeft=gangDist_L;
+%AngDist.gRight=gangDist_R;
+%AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4_sp.mat'];
+%save(AngDistFP,'AngDist')

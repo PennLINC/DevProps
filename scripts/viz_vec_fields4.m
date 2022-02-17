@@ -227,7 +227,7 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=1:1836
+for i=1:1328
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt)
 u=OpFl.vf_right{OpFlVecofInt};
@@ -245,6 +245,7 @@ caxis([-3,3;]);
 colormap(roybigbl_cm);
 colorbar
 view(270,200);
+%view(60,190)
 fn=['yourfigure' num2str(i) '.png'];
 print(fn,'-dpng')
 end
