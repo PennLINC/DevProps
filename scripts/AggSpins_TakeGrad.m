@@ -1,4 +1,4 @@
-% load in spins, iteratively project to surface and take gradient, save all to .mat
+% load i spins, iteratively project to surface and take gradient, save all to .mat
 
 % Add OFD toolbox to path
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))

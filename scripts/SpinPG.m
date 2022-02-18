@@ -6,7 +6,7 @@ outdir='/cbica/projects/pinesParcels/results/aggregated_data/';
 
 % get gradient map
 pgl = gifti(['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii']);
-pgr = gifti(['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii']);
+pgr = gifti(['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii']);
 grad_lh = pgl.cdata(:,1);
 grad_rh = pgr.cdata(:,1);
 pg1=[grad_lh' grad_rh'];
