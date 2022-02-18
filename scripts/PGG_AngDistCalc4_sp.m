@@ -134,8 +134,6 @@ for i=1:1000
 	MW_combined_R=union(MW_combined_R,MW_f3_R);	
 	sp_mw_L.inds{i}=MW_combined_L;
 	sp_mw_R.inds{i}=MW_combined_R;	
-	%sp_faces_L(i,:)=sum(sp_gPG_LH(faces_l),2)./3;
-        %sp_faces_R(i,:)=sum(sp_gPG_RH(faces_r),2)./3;
 end
 
 % get length of OpFl pairs
