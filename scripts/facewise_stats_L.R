@@ -43,7 +43,47 @@ DeltaPEstVec<-function(x){
   anovaP2<-unlist(anovaP)
   return(anovaP2[2])  
 }
-# end functions - start actual script
+
+# difference in R2
+DeltaR2EstVec_s<-function(x){
+  # relevant df
+  testdf<-data.frame(cbind(as.numeric(df$sex),as.numeric(df$interview_age),df$FD,x))
+  colnames(testdf)<-c('Sex','Age','Motion','varofint')
+  # no-SEX model (segreg ~ sex + motion)
+  noAgeGam<-gam(varofint~Motion+s(Age,k=4),data=testdf)
+  noAgeSum<-summary(noAgeGam)
+  # age-included model for measuring difference
+  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=4),data=testdf)
+  AgeSum<-summary(AgeGam)
+  dif<-AgeSum$r.sq-noAgeSum$r.sq
+  # partial spearmans to extract age relation (for direction)
+  pspear=pcor(testdf,method='spearman')$estimate
+  corest<-pspear[4]
+  if(corest<0){
+    dif=dif*-1
+  }
+  return(dif)
+}
+
+# Next, to derive the statistical significance of observed age effects, we need to test if the two models (one with an age term, one without) are significantly different. We use an ANOVA for this procedure. These p-values will eventually be FDR-corrected.
+
+# chisq test sig. output
+DeltaPEstVec_s<-function(x){
+  # relevant df
+  testdf<-data.frame(cbind(as.numeric(df$sex),as.numeric(df$interview_age),df$FD,x))
+  colnames(testdf)<-c('Sex','Age','Motion','varofint')
+  # no-SEX model (segreg ~ sex + motion)
+  noAgeGam<-gam(varofint~Motion+s(Age,k=4),data=testdf)
+  # age-included model for measuring difference
+  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=4),data=testdf)
+  # test of dif with anova.gam
+  anovaRes<-anova.gam(noAgeGam,AgeGam,test='Chisq')
+  anovaP<-anovaRes$`Pr(>Chi)`
+  anovaP2<-unlist(anovaP)
+  return(anovaP2[2])
+}
+
+### end functions - start actual script ###
 
 # extract range of vertices to be covered in this run from VertBin
 Lfaces=4851
@@ -88,12 +128,14 @@ TD_L_adr2=rep(0,Lfaces)
 BU_L_adr2=rep(0,Lfaces)
 BuProp_adr2=rep(0,Lfaces)
 ThetasFromPG_adr2=rep(0,Lfaces)
+BuProp_sdr2=rep(0,Lfaces)
 
 # for fdr-correcting age associations
 TD_L_ap=rep(0,Lfaces)
 BU_L_ap=rep(0,Lfaces)
 BuProp_ap=rep(0,Lfaces)
 ThetasFromPG_ap=rep(0,Lfaces)
+BuProp_sp=rep(0,Lfaces)
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,remainingSubjs)
@@ -153,6 +195,9 @@ for (f in 1:4851){
         BuProp_ap[f]=DeltaPEstVec(df$FaceBuProp)
         # you already know doe
         ThetasFromPG_ap[f]=DeltaPEstVec(df$FaceThetaDist)
+	# sex effects
+	BuProp_sdr2[f]=DeltaR2EstVec_s(df$FaceBuProp)
+	BuProp_sp[f]=DeltaPEstVec_s(df$FaceBuProp)
 }
 
 # saveout means
@@ -166,9 +211,11 @@ saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_adr2.rds
 saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_adr2.rds'))
 saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_adr2.rds'))
 saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_adr2.rds'))
+saveRDS(BuProp_sdr2,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sdr2.rds')
 
 saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_p.rds'))
 saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_p.rds'))
 saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_p.rds'))
 saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_p.rds'))
+saveRDS(BuProp_sp,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sp.rds')
 
