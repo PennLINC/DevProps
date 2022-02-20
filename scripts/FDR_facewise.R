@@ -5,22 +5,26 @@ LBU_L_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/LBUL_adr2.rds')
 LTD_L_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/LTDL_adr2.rds')
 LBuProp_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/LBUProp_adr2.rds')
 LThetasFromPG_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_adr2.rds')
+LBP_s=readRDS('/cbica/projects/pinesParcels/results/PWs/LBUProp_sdr2.rds')
 
 LBU_L_p=readRDS('/cbica/projects/pinesParcels/results/PWs/LBUL_p.rds')
 LTD_L_p=readRDS('/cbica/projects/pinesParcels/results/PWs/LTDL_p.rds')
 LBuProp_p=readRDS('/cbica/projects/pinesParcels/results/PWs/LBUProp_p.rds')
 LThetasFromPG_p=readRDS('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_p.rds')
+LBP_sp=readRDS('/cbica/projects/pinesParcels/results/PWs/LBUProp_sp.rds')
 
 # and right hemi
 RBU_L_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/RBUL_adr2.rds')
 RTD_L_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/RTDL_adr2.rds')
 RBuProp_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/RBUProp_adr2.rds')
 RThetasFromPG_adr2=readRDS('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_adr2.rds')
+RBP_s=readRDS('/cbica/projects/pinesParcels/results/PWs/RBUProp_sdr2.rds')
 
 RBU_L_p=readRDS('/cbica/projects/pinesParcels/results/PWs/RBUL_p.rds')
 RTD_L_p=readRDS('/cbica/projects/pinesParcels/results/PWs/RTDL_p.rds')
 RBuProp_p=readRDS('/cbica/projects/pinesParcels/results/PWs/RBUProp_p.rds')
 RThetasFromPG_p=readRDS('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_p.rds')
+RBP_sp=readRDS('/cbica/projects/pinesParcels/results/PWs/RBUProp_sp.rds')
 
 # combine each
 BUdr2=c(LBU_L_adr2,RBU_L_adr2)
@@ -31,11 +35,16 @@ Propdr2=c(LBuProp_adr2,RBuProp_adr2)
 Propp=c(LBuProp_p,RBuProp_p)
 Thetasdr2=c(LThetasFromPG_adr2,RThetasFromPG_adr2)
 ThetasP=c(LThetasFromPG_p,RThetasFromPG_p)
+BUs=c(LBP_s,RBP_s[1:4842])
+BUsP=c(LBP_sp,RBP_sp[1:4842])
+
 # fdr each
 BUp_f=p.adjust(BUp,method='fdr')
 TDp_f=p.adjust(TDp,method='fdr')
 Propp_f=p.adjust(Propp,method='fdr')
 Thetasp_f=p.adjust(ThetasP,method='fdr')
+BUsP_f=p.adjust(BUsP,method='fdr')
+
 # mask dr2s accordingly
 BUdr2[BUp_f>0.05]=0
 TDdr2[TDp_f>0.05]=0

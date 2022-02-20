@@ -128,14 +128,14 @@ TD_L_adr2=rep(0,Rfaces)
 BU_L_adr2=rep(0,Rfaces)
 BuProp_adr2=rep(0,Rfaces)
 ThetasFromPG_adr2=rep(0,Rfaces)
-BuProp_sdr2=rep(0,Lfaces)
+BuProp_sdr2=rep(0,Rfaces)
 
 # for fdr-correcting age associations
 TD_L_ap=rep(0,Rfaces)
 BU_L_ap=rep(0,Rfaces)
 BuProp_ap=rep(0,Rfaces)
 ThetasFromPG_ap=rep(0,Rfaces)
-BuProp_sp=rep(0,Lfaces)
+BuProp_sp=rep(0,Rfaces)
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,remainingSubjs)
