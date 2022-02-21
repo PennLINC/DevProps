@@ -111,7 +111,7 @@ lenOpFl=NumTRs;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% Starting for the left hemisphere
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% note we are loopign over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
+% note we are looping over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
 for F=g_noMW_combined_L
 	% get angular distance from gPGG
 	PGGang_L=[gazes_L(F) gels_L(F)];
@@ -134,20 +134,63 @@ for F=g_noMW_combined_L
 		y1=Ang_L(1);
 		y2=Ang_L(2);
 		AngDist= atan2d(x1*y2-y1*x2,x1*x2+y1*y2);	
-		% correct for distanc stepping out of -pi to pi range
-		%if AngDist > pi
+		% flag distance stepping out of -pi to pi range
+		if AngDist > 180
+		disp ('dist > 180')
 		%	AngDist = AngDist - pi;
-		%end
-		%if AngDist < -pi
+		end
+		if AngDist < -180
 		%	AngDist = AngDist + pi;
-		%end
+		disp('dist <-180')
+		end
 		FAngles(fr)=AngDist;
 	end
 	% discretize
 	Disc_FAngles=histcounts(FAngles,Bins36);
-	OutDf=OutDf+Disc_FAngles
+	OutDf=OutDf+Disc_FAngles;
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% now the right hemisphere
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% note we are looping over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
+for F=g_noMW_combined_R
+        % get angular distance from gPGG
+        PGGang_R=[gazes_R(F) gels_R(F)];
+        % initialize vector for angle at every TR pair
+        FAngles=zeros(1,lenOpFl);
+        for fr=1:lenOpFl
+                % current vector field
+                relVf_R=vfr{fr};
+                % xyz components
+                xComp_R=relVf_R(F,1);
+                yComp_R=relVf_R(F,2);
+                zComp_R=relVf_R(F,3);
+                % convert to spherical coord system
+                vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(F),eld_R(F));
+                % extract OpFl angle
+                Ang_R=[vs_R(1) vs_R(2)];
+                %https://de.mathworks.com/matlabcentral/answers/180131-how-can-i-find-the-angle-between-two-vectors-including-directional-information
+                x1=PGGang_R(1);
+                x2=PGGang_R(2);
+                y1=Ang_R(1);
+                y2=Ang_R(2);
+                AngDist= atan2d(x1*y2-y1*x2,x1*x2+y1*y2);
+                % flag distance stepping out of -pi to pi range
+                if AngDist > 180
+                disp ('dist > 180')
+                %       AngDist = AngDist - pi;
+                end
+                if AngDist < -180
+                %       AngDist = AngDist + pi;
+                disp('dist <-180')
+		FAngles(fr)=AngDist;
+        end
+        % discretize
+        Disc_FAngles=histcounts(FAngles,Bins36);
+        OutDf=OutDf+Disc_FAngles;
+end
 
-
-
+% save outdf
+fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistHist.mat']
+save(fn,'OutDf')
