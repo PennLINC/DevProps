@@ -227,26 +227,30 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=1:1328
+for i=1057:1063
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt)
 u=OpFl.vf_right{OpFlVecofInt};
 vATTR=fr.TRs{TRofInt};
 % z-score
 vATTR=zscore(vATTR);
-figure('units','pixels','position',[0 0 600 600])
+figure('units','pixels','position',[0 0 800 800])
 axis([-1, 1, -1, 1, 0, 1]);
 quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
 hold on
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
+% for OpFl Vecs on PG
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
+% for OpFl Vecs on BOLD
+% trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
-caxis([-3,3;]);
-colormap(roybigbl_cm);
+caxis([-5.5,6.5;]);
+%colormap(roybigbl_cm);
 colorbar
 view(270,200);
 %view(60,190)
 fn=['yourfigure' num2str(i) '.png'];
+colormap(custommap);
 print(fn,'-dpng')
 end
 
