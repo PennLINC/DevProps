@@ -30,8 +30,8 @@ OpFl=OpFl.us;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% Load TS %%%%%%%%
 % load in TRs_l and TRs_r
-TRs_lfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_L_3k.mgh'];
-TRs_rfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_R_3k.mgh'];
+TRs_lfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_L_10k.mgh'];
+TRs_rfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_R_10k.mgh'];
 % filepaths to files
 TRs_lf=MRIread(TRs_lfp);
 TRs_rf=MRIread(TRs_rfp);
@@ -92,10 +92,22 @@ PG_LH=LPGf.cdata(:,1);
 RPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
 RPGf=gifti(RPGfp);
 PG_RH=RPGf.cdata(:,1);
+% and individual
+iLPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_L_10k_rest.func.gii'];
+iLPGf=gifti(iLPGfp);
+iPG_LH=iLPGf.cdata(:,1);
+% right hemi
+iRPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_R_10k_rest.func.gii'];
+iRPGf=gifti(iRPGfp);
+iPG_RH=iRPGf.cdata(:,1);
 
 % get sorting order of PG
-[outL,idxL] = sort(PG_LH);
-[outR, idxR] = sort(PG_RH);
+[outL,idxL] = sort(iPG_LH);
+[outR, idxR] = sort(iPG_RH);
+
+% mw index
+mwIndr=find(outR==0);
+goodIndr=setdiff([1:length(outR)],mwIndr);
 
 % calculate PG gradient on sphere
 PGg_L = grad(faces_l, vx_l, PG_LH);
@@ -124,7 +136,7 @@ u=OpFl.vf_right{j};
 vATTR=fr.TRs{j};
 vATTR=zscore(vATTR);
 %%%%%%
-figure('units','pixels','position',[0 0 1200 1200])
+figure('units','pixels','position',[0 0 600 1200])
 subplot(2,2,1)
 axis([-1, 1, -1, 1, 0, 1]);
 quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 3, 'w');
@@ -159,10 +171,11 @@ limz=[-100 100];
 % get time series org. by PG
 PGts=TRs_r(idxR,:);
 % extract segment of PGts
-PGts=PGts(:,200:231);
+PGts=PGts(goodIndr,180:230);
 imagesc(PGts,limz);
 hold on;
-line([i+9,i+9], [0,10000], 'Color', 'w');
+% add formal lookup with pair-TR correspondence established below
+line([224,224], [0,10000], 'Color', 'w');
 DirecsVecs(i)=getframe(gcf);
 end
 

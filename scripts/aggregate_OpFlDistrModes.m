@@ -1,29 +1,29 @@
 % load subjs list
 Subjs=readtable('~/PWs/hcpd_subj_list.txt')
 % initialize intermed array (to take another set of modes from)
-IntermedArray_L=zeros(20480,height(Subjs));
-IntermedArray_R=zeros(20480,height(Subjs));
+IntermedArray_L=zeros(5120,height(Subjs));
+IntermedArray_R=zeros(5120,height(Subjs));
 
 %initialize output array
-OutArray_L=zeros(20480,1);
-OutArray_R=zeros(20480,1);
+OutArray_L=zeros(5120,1);
+OutArray_R=zeros(5120,1);
 
 % edges to apply in discretize
-edges = 0:10:180 ;
+edges = 0:10:180;
 
 % loop over each subj
 for s = 1:height(Subjs)
 	Subj=table2array(Subjs(s,1));
 	fp=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:}];
 	% if file exists, then
-	if isfile([fp '/' Subj{:} '_AngDistMat.mat']);
+	if isfile([fp '/' Subj{:} '_AngDistMat4.mat']);
 		s
 		% load in subj's distr
-		Angs=load([fp '/' Subj{:} '_AngDistMat.mat']);
+		Angs=load([fp '/' Subj{:} '_AngDistMat4.mat']);
 		AngsL=Angs.AngDist.gLeft;
 		AngsR=Angs.AngDist.gRight;
 		%discretize each face's distribution
-		for f = 1:20480
+		for f = 1:5120
 			Angbins_L=discretize(AngsL(:,f),edges);
 			%get mode of distribution
 			IntermedArray_L(f,s)=mode(Angbins_L);
@@ -41,12 +41,49 @@ IntermedArray_L=IntermedArray_L(:,PopulatedColsL);
 IntermedArray_R=IntermedArray_R(:,PopulatedColsR);
 
 %get modes across subjs
-for f = 1:20480
+for f = 1:5120
 	OutArray_L(f,1)=mode(IntermedArray_L(f,:));
 	OutArray_R(f,1)=mode(IntermedArray_R(f,:));	
 end
 
 %save
-writetable(table(OutArray_L),'/cbica/projects/pinesParcels/results/PWs/ModeModes_L.csv');
-writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/ModeModes_R.csv');
+writetable(table(OutArray_L),'/cbica/projects/pinesParcels/results/PWs/ModeModes4_L.csv');
+writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/ModeModes4_R.csv');
+
+% for running on single subjs
+subj='';
+fp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
+sOutArray_L=zeros(5120,1);
+sOutArray_R=zeros(5120,1);
+% load in subj's distr
+Angs=load([fp '/' subj '_AngDistMat4.mat']);
+AngsL=Angs.AngDist.gLeft;
+AngsR=Angs.AngDist.gRight;
+%discretize each face's distribution
+for f = 1:5120
+	Angbins_L=discretize(AngsL(:,f),edges);
+	%get mode of distribution
+	sOutArray_L(f)=mode(Angbins_L);
+	% and for right
+	Angbins_R=discretize(AngsR(:,f),edges);
+	sOutArray_R(f)=mode(Angbins_R);
+end
+
+Vis_FaceVec_modes(sOutArray_L,sOutArray_R,'fn2.png')
+
+% and just include BUprop plotting so its all in the same place for single subj instances
+
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs.mat'];
+% load in L
+F_L=load(outFP_L);
+% load in R
+F_R=load(outFP_R);
+% printout columns 1 (BUProp), 6 (BU_resvec_R), 7 (TD_resvec_R), and 8 (whole-circle resvec theta)
+matL=cell2mat(F_L.OutDf_L);
+matR=cell2mat(F_R.OutDf_R);
+csv_L=table(matL(:,1));
+csv_R=table(matR(:,1));
+
+Vis_FaceVec_Bup(table2array(csv_L),table2array(csv_R),'fnbup.png')
 

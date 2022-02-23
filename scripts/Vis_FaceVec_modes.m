@@ -112,19 +112,31 @@ g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 
 
 data=zeros(1,5120);
-data(g_noMW_combined_L)=FaceVecL;
+data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
 % CIRCULAR
-mincol=-pi;
-maxcol=pi;
-custommap= vertcat(flipud(inferno),inferno);
-%custommap=colormap('inferno');
-%custommap=flipud(colormap('inferno'));
-% for red/blue 0-centered
-%mincol=-3;
-%maxcol=3;
-%custommap=colormap(b2r(mincol,maxcol));
+mincol=1;
+maxcol=18;
+
+% matches circular hist 
+roybigbl_cm=inferno(6);
+roybigbl_cm(1,:)=[0, 0, 255];
+roybigbl_cm(2,:)=[0, 255, 255];
+roybigbl_cm(3,:)=[116, 192, 68];
+roybigbl_cm(4,:)=[246, 235, 20];
+roybigbl_cm(5,:)=[255, 165, 0];
+roybigbl_cm(6,:)=[255, 0, 0];
+% scale to 1
+roybigbl_cm=roybigbl_cm.*(1/255);
+% interpolate color gradient
+interpsteps=[0 .2 .4 .6 .8 1];
+roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+% reduce just a little bit on the close-to-white coloring
+roybigbl_cm=roybigbl_cm(15:240,:);
+custommap=colormap(roybigbl_cm);
+
+
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
@@ -169,52 +181,52 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 
 %%% right hemisphere
-%data=zeros(1,5120);
-%data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
+data=zeros(1,5120);
+data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
-%[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
-%asub = subaxis(2,2,2, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0,'Holdaxis');
-%aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
-%view([90 0]);
-%rotate(aplot, [0 0 1], 180)
-%colormap(custommap)
-%caxis([mincol; maxcol]);
-%daspect([1 1 1]);
-%axis tight;
-%axis vis3d off;
-%lighting phong; %gouraud
-%material metal %shiny %metal;%shading flat;
-%shading flat;
-%camlight;
-% pos = get(asub, 'Position');
-% posnew = pos; posnew(1) = posnew(1) - 0.11; set(asub, 'Position', posnew);
-%alpha(1)
-
-
-%set(gca,'CLim',[mincol,maxcol]);
-%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-
-%asub = subaxis(2,2,3, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0);
-%aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
-%view([90 0]);
-%colormap(custommap)
-%caxis([mincol; maxcol]);
-%daspect([1 1 1]);
-%axis tight;
-%axis vis3d off;
-%lighting gouraud; %phong;
-%material metal %shiny %metal;
-%shading flat;
-%camlight;
-%alpha(1)
-% pos = get(asub, 'Position');
-% posnew = pos; posnew(2) = posnew(2) + 0.13; set(asub, 'Position', posnew);
-%set(gcf,'Color','w')
+asub = subaxis(2,2,2, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0,'Holdaxis');
+aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
+view([90 0]);
+rotate(aplot, [0 0 1], 180)
+colormap(custommap)
+caxis([mincol; maxcol]);
+daspect([1 1 1]);
+axis tight;
+axis vis3d off;
+lighting phong; %gouraud
+material metal %shiny %metal;%shading flat;
+shading flat;
+camlight;
+ pos = get(asub, 'Position');
+ posnew = pos; posnew(1) = posnew(1) - 0.11; set(asub, 'Position', posnew);
+alpha(1)
 
 
-%set(gca,'CLim',[mincol,maxcol]);
-%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+set(gca,'CLim',[mincol,maxcol]);
+set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+
+asub = subaxis(2,2,3, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0);
+aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
+view([90 0]);
+colormap(custommap)
+caxis([mincol; maxcol]);
+daspect([1 1 1]);
+axis tight;
+axis vis3d off;
+lighting gouraud; %phong;
+material metal %shiny %metal;
+shading flat;
+camlight;
+alpha(1)
+ pos = get(asub, 'Position');
+ posnew = pos; posnew(2) = posnew(2) + 0.13; set(asub, 'Position', posnew);
+set(gcf,'Color','w')
+
+
+set(gca,'CLim',[mincol,maxcol]);
+set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 colorbar
 
 
