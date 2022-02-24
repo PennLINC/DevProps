@@ -185,6 +185,7 @@ for F=g_noMW_combined_R
                 %       AngDist = AngDist + pi;
                 disp('dist <-180')
 		FAngles(fr)=AngDist;
+		end
         end
         % discretize
         Disc_FAngles=histcounts(FAngles,Bins36);
