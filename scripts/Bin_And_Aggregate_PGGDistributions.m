@@ -1,3 +1,4 @@
+function Bin_And_Aggregate_PGGDistributions(subj)
 % read in angular distance from PGG: we want circular and linear angular distances aggregated across subjs
 
 % to make this computationally feasible, read each subj and collapse across all TR across all faces into BINS
@@ -7,7 +8,7 @@ addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/
 
 % Load in fsav4 opflow calc
 OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
-data=load(OpFlFp)
+data=load(OpFlFp);
 % Load in surface data
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
 surfL = [SubjectsFolder '/surf/lh.sphere'];
@@ -130,8 +131,8 @@ for F=g_noMW_combined_L
 		Ang_L=[vs_L(1) vs_L(2)];
 		%https://de.mathworks.com/matlabcentral/answers/180131-how-can-i-find-the-angle-between-two-vectors-including-directional-information
 		x1=PGGang_L(1);
-		x2=PGGang_L(2);
-		y1=Ang_L(1);
+		y1=PGGang_L(2);
+		x2=Ang_L(1);
 		y2=Ang_L(2);
 		AngDist= atan2d(x1*y2-y1*x2,x1*x2+y1*y2);	
 		% flag distance stepping out of -pi to pi range
@@ -172,8 +173,8 @@ for F=g_noMW_combined_R
                 Ang_R=[vs_R(1) vs_R(2)];
                 %https://de.mathworks.com/matlabcentral/answers/180131-how-can-i-find-the-angle-between-two-vectors-including-directional-information
                 x1=PGGang_R(1);
-                x2=PGGang_R(2);
-                y1=Ang_R(1);
+                y1=PGGang_R(2);
+                x2=Ang_R(1);
                 y2=Ang_R(2);
                 AngDist= atan2d(x1*y2-y1*x2,x1*x2+y1*y2);
                 % flag distance stepping out of -pi to pi range
@@ -184,8 +185,8 @@ for F=g_noMW_combined_R
                 if AngDist < -180
                 %       AngDist = AngDist + pi;
                 disp('dist <-180')
-		FAngles(fr)=AngDist;
 		end
+		FAngles(fr)=AngDist;
         end
         % discretize
         Disc_FAngles=histcounts(FAngles,Bins36);

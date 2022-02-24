@@ -28,6 +28,7 @@ while len(subjects)>0:
       # submit job (if conditions are met)
       OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_SpunDips.csv'
       if not os.path.exists(OpFile):
+        print(newsub)
         subprocess.run(["qsub","-l","h_vmem=16G,s_vmem=15G","qsubMatlab.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
     elif que < 7:
@@ -35,4 +36,5 @@ while len(subjects)>0:
       OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_SpunDips.csv'
       if not os.path.exists(OpFile):
       # submit job (if conditions are met)
+        print(newsub)
         subprocess.run(["qsub","-l","h_vmem=16G,s_vmem=15G","qsubMatlab.sh",newsub])
