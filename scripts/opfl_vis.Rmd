@@ -1,0 +1,263 @@
+---
+title: "opfl_analyses"
+output: html_document
+---
+
+```{r}
+library(reshape2)
+library(diptest)
+
+## enter subj name in manually
+testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
+testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))
+
+```
+
+```{r}
+meltedL<-melt(testL4)
+meltedR<-melt(testR4)
+melted=c(meltedL,meltedR)
+hist(melted$value,main="Angular Distance b/w PGG and OpFl vectors over vertices over all TRs",xlab = "Distance (Degrees)")
+```
+```{r}
+library(ggplot2)
+disthist=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/disthist.csv'),header=F)
+plotdf<-data.frame(t(disthist))
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numberical parameter
+					y = round(as.numeric(X2)/800))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",
+		aes(fill=index)) + # define bar color
+
+# define the polar coordinate
+coord_polar(start = 3.1416)
+# plot
+p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+scale_y_continuous(breaks=seq(90,590,by=10))+ylim(-510,510)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))
+
+```
+
+```{r}
+# add noise
+#noise=c(abs(melted$value),rnorm(900000,90,sd=20))
+#lotsnoise=c(abs(melted$value),rnorm(10000,rnorm(1000,90,sd=12),sd=12))
+#hist(abs(melted$value))
+#hist(noise)
+#hist(lotsnoise)
+#dip.test(abs(melted$value))
+#dip.test(noise)
+#dip.test(lotsnoise)
+```
+
+```{r}
+#Vector<-NULL
+#VectorOld<-NULL
+## individual verts
+#for (i in 100:160){
+#  hist(testL[,i],breaks = 24)
+#  #hist(abs(testL[,i]),breaks = 24)
+#  #hist(abs(abs(testL[,i])-90),breaks = 24)
+#  #hist(testL_alt[,i],breaks=24)
+#  #VectorOld=c(VectorOld,testL[,i])
+#  #Vector=c(Vector,testL[,i])
+#  
+#}
+
+```
+
+```{r}
+#library(shapes)
+## within subject shape pca. 24 bins, x y coords, and 37k faces
+#binnedFaces<-array(0,dim=c(24,2,18520))
+## divisor for 24/360 possible degrees
+#divs=180/24
+## for each vert, fill in x and y coords.
+#for (i in 1:18520){
+#  print(i)
+#  # 2-24 as x-axis (24 bins representing angular distance from bottom up prop)
+#  binnedFaces[,1,i]<-seq(1,24)
+#  # extract Left hemi
+#  AngDist=testL[,i]
+#  # discr. to 24 bins to eval. which bin is best represented
+#  for (b in 1:24){
+#    range=c((((b-1)*divs)),((b*divs)))
+#    # set y coord to density of this bin
+#    binnedFaces[b,2,i]=length(AngDist[AngDist < range[2] & AngDist > range[1]])/2
+#  }
+#}
+#
+#binnedFaces_proc<-procGPA(binnedFaces)
+#shapepca(binnedFaces_proc)
+#plot(binnedFaces_proc$mshape)
+```
+
+```{r}
+
+#PCA1scores=sort(binnedFaces_proc$scores[,1],index.return=T)
+#PCA1scoresneg=sort(-binnedFaces_proc$scores[,1],index.return=T)
+#
+#for (i in 1:100){
+#  index=PCA1scores$ix[i]
+#  #plot(binnedFaces[,1,index],binnedFaces[,2,index])
+#  hist(testL[,index],breaks=24)
+#}
+#
+#for (i in 1:100){
+#  index=PCA1scoresneg$ix[i]
+##  plot(binnedFaces[,1,index],binnedFaces[,2,index])
+#  hist(testL[,index],breaks=24)
+#}
+#
+## ggplot vertices by where they are in PC space
+#
+#plotdf<-data.frame(binnedFaces_proc$scores)
+#ggplot(plotdf,aes(PC1,PC2))+geom_point(alpha=.1)+theme_classic()
+#plot3d(plotdf$PC1,plotdf$PC2,plotdf$PC3)
+#
+## pc2 loadings
+#PCA2scores=sort(binnedFaces_proc$scores[,2],index.return=T)
+#PCA2scoresneg=sort(-binnedFaces_proc$scores[,2],index.return=T)
+#
+#for (i in 1:100){
+#  index=PCA2scores$ix[i]
+# # plot(binnedFaces[,1,index],binnedFaces[,2,index])
+#  hist(testL[,index],breaks=24)
+#}
+#
+#for (i in 1:100){
+#  index=PCA2scoresneg$ix[i]
+#  #plot(binnedFaces[,1,index],binnedFaces[,2,index]) 
+#  hist(testL[,index],breaks=24)
+#}
+```
+
+```{r}
+# second subj
+testL42=read.csv(paste0('Y:/results/PWs/Proced/',subj2,'/',subj2,'_gAngDist_Masked4_L.csv'))
+testR42=read.csv(paste0('Y:/results/PWs/Proced/',subj2,'/',subj2,'_gAngDist_Masked4_R.csv'))
+
+```
+
+```{r}
+meltedL2<-melt(testL42)
+meltedR2<-melt(testR42)
+melted2=c(meltedL2,meltedR2)
+hist(melted2$value,main="Angular Distance b/w PGG and OpFl vectors over vertices over all TRs",xlab = "Distance (Degrees)")
+```
+
+```{r}
+# difference hists
+disthist2=read.csv(paste0('Y:/results/PWs/Proced/',subj2,'/disthist.csv'),header=F)
+plotdf2<-data.frame(t(disthist2))
+plotdf2$index<-seq(1:36)
+# normalize by number of TRs
+numTRs=dim(testL42)[2]
+# from subj 1
+numTRs1=dim(testL4)[2]
+
+plotdf2$X2<-as.numeric(plotdf2$X2)/numTRs
+plotdf$X2<-as.numeric(plotdf$X2)/numTRs1
+
+# Make the plot
+p <- ggplot(plotdf2, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter - this converts to percent of TRs observed in that direction
+
+					y = as.numeric(plotdf2$X2)*(1/sum(as.numeric(plotdf2$X2))))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",
+		aes(fill=index)) + # define bar color
+
+# define the polar coordinate
+coord_polar(start = 3.1416)
+# plot
+p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.01,.032)
+
+# dif hist
+plotdf$dif<-(as.numeric(plotdf$X2)*(1/sum(as.numeric(plotdf$X2))))-(as.numeric(plotdf2$X2)*(1/sum(as.numeric(plotdf2$X2))))
+
+p <- ggplot(plotdf, aes(x = as.factor(index),y = dif)) + geom_bar(stat = "identity",
+		aes(fill=index))+coord_polar(start = 3.1416)
+# plot
+p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.0015,.0015)
+
+
+```
+
+
+```{r}
+# for vis saveout
+library(infotheo)
+
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+# Red is up at 0, OJ at 36 degress, Yel at 72, G at 108, teal at 144, blue is down at 180
+colorpal=colorRampPalette(c('#FF0000','#FFA500','#FFFF00','#00FF00','#00FFFF','#0000FF'))
+sc<-scale_color_gradientn(colors=colorpal(180),limits=c(0,180))
+
+testdf<-data.frame(abs(testL[,1]),abs(testL[,2]))
+
+plot(testdf$abs.testL...2..,testdf$abs.testL...1..)
+cor.test(testdf$abs.testL...2..,testdf$abs.testL...1..)
+# interesting. directionality anticorrelated over time (vertices take turns traveling up and down hierarchy)
+# consider "grayplots" with color coding instead: x is time, y is vertices org. by PG, orientation is color-coded as above.
+
+# test if sc is working
+ggplot(testdf,aes(abs.testL...2..,abs.testL...1..,color=abs.testL...2..))+geom_point(size=4,alpha=.7)+sc+theme_classic()
+
+# assign hexadecimal color value to each vertex
+hexaLeft=rep(0,length(testL))
+modeLeft=rep(0,length(testL))
+
+# colors for every 24thile
+cols24<-colorpal(24)
+
+# mode of abs ang dist for each vert
+for (i in 1:length(testL)){
+  # get absolute angular distribution (dist from direct bottom-up prop.)
+  absAngDist=abs(testL[,i])
+  # discr. to 24 bins to eval. which bin is best represented
+  discretized_AAD=discretize(absAngDist,disc="equalwidth",nbins=24)
+  # find tallest bin
+  AAD_mode=getmode(discretized_AAD$X)
+  # assign corresponding color
+  hexaLeft[i]=cols24[AAD_mode]
+  modeLeft[i]=AAD_mode
+}
+
+# save to cluster
+write.csv(hexaLeft,paste0('Y:/results/PWs/Proced/',subj,'/test_left.csv'))
+write.csv(modeLeft,paste0('Y:/results/PWs/Proced/',subj,'/test_leftmode.csv'))
+write.csv(binnedFaces_proc$scores[,2],paste0('Y:/results/PWs/Proced/',subj,'/test_PC1.csv'))
+write.csv(binnedFaces_proc$scores[,3],paste0('Y:/results/PWs/Proced/',subj,'/test_PC2.csv'))
+
+```
+
+
+```{r}
+library(ggplot2)
+library(gganimate)
+plotdf<-data.frame(t(testL))
+longplotdf<-melt(plotdf)
+variableSub<-rep(seq(1,487),each=18544)
+longplotdf$variable<-variableSub
+x <- ggplot(longplotdf,aes(value))+geom_histogram()+xlim(c(0,180))+theme_minimal()
+y<-x + transition_states(variable,transition_length=1,state_length=1)+labs(title = "TR # {closest_state}")
+animate(y,nframes=2000)
+anim_save('AngDistOvertime.gif')
+```
+
+```{r}
+
+```
