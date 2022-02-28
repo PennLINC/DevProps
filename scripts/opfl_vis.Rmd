@@ -39,7 +39,7 @@ geom_bar(stat = "identity",
 # define the polar coordinate
 coord_polar(start = 3.1416)
 # plot
-p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+scale_y_continuous(breaks=seq(90,590,by=10))+ylim(-510,510)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))
+p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+scale_y_continuous(breaks=seq(90,590,by=10))+ylim(-510,650)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))
 
 ```
 
@@ -179,7 +179,7 @@ geom_bar(stat = "identity",
 # define the polar coordinate
 coord_polar(start = 3.1416)
 # plot
-p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.01,.032)
+p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.01,.036)
 
 # dif hist
 plotdf$dif<-(as.numeric(plotdf$X2)*(1/sum(as.numeric(plotdf$X2))))-(as.numeric(plotdf2$X2)*(1/sum(as.numeric(plotdf2$X2))))
@@ -187,7 +187,7 @@ plotdf$dif<-(as.numeric(plotdf$X2)*(1/sum(as.numeric(plotdf$X2))))-(as.numeric(p
 p <- ggplot(plotdf, aes(x = as.factor(index),y = dif)) + geom_bar(stat = "identity",
 		aes(fill=index))+coord_polar(start = 3.1416)
 # plot
-p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.0015,.0015)
+p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.0035,.0035)
 
 
 ```
