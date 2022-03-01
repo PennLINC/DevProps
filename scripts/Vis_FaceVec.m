@@ -115,16 +115,18 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-% CIRCULAR
-mincol=0;
-maxcol=1;
+mincol=-.01;
+maxcol=.01;
+% circular
 %custommap= vertcat(flipud(inferno),inferno);
-custommap=colormap('inferno');
+%custommap=colormap('inferno');
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
 %mincol=-3;
 %maxcol=3;
-%custommap=colormap(b2r(mincol,maxcol));
+custommap=colormap(b2r(mincol,maxcol));
+% abscense of color to gray to accom. lighting "none"
+custommap(126,:)=[.4 .4 .4];
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
@@ -136,7 +138,7 @@ colormap(custommap)
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting gouraud; %phong;
+lighting none; %phong;
 shading flat;
 camlight;
 alpha(1)
@@ -155,7 +157,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting gouraud; %phong;
+lighting none; %phong;
 material metal %shiny %metal;
 shading flat;
 camlight;
@@ -183,7 +185,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting phong; %gouraud
+lighting none; %gouraud
 material metal %shiny %metal;%shading flat;
 shading flat;
 camlight;
@@ -203,7 +205,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting gouraud; %phong;
+lighting none; %phong;
 material metal %shiny %metal;
 shading flat;
 camlight;

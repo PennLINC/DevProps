@@ -83,6 +83,104 @@ ThreshShapeMat<-shapeMat[,,inclusionVec]
 masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 
 ```
+```{r}
+# make list of old subjs vs younger
+low_tertile_age=quantile(masterdf$interview_age,.33)
+high_tertile_age=quantile(masterdf$interview_age,.66)
+
+# youngins
+youngins=masterdf$SubjID[masterdf$interview_age<low_tertile_age]
+write.table(youngins,'Y:/PWs/young_subs.csv')
+#geezers
+geezers=masterdf$SubjID[masterdf$interview_age>high_tertile_age]
+write.table(geezers,'Y:/PWs/old_subs.csv')
+```
+
+```{r}
+# read in discretized cross subj histograms (linear)
+o_disthist<-t(read.csv('Y:/results/PWs/old_subs_AngDistHist.csv'))
+y_disthist<-t(read.csv('Y:/results/PWs/young_subs_AngDistHist.csv'))
+
+# normalize to total numbers
+o_disthist<-o_disthist/sum(o_disthist)
+y_disthist<-y_disthist/sum(y_disthist)
+
+difHist=o_disthist-y_disthist
+
+barplot(t(o_disthist),ylim=c(0,0.07),main = 'Old r.s. OpFl Directionality',xlab='0-180')
+
+barplot(t(y_disthist),ylim=c(0,0.07),main = 'Young OpFl Directionality',xlab='0-180')
+
+barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+```
+
+
+```{r}
+### make subject lists for RS (388), RS w/ good _C, and good _C
+
+###### 388
+rs_subs<-masterdf$SubjID
+#print
+write.table(rs_subs,'Y:/PWs/rs_subs.csv')
+
+#### RS_C matched: rope in a bunch of goblyguk just for equivalence with facewise_t
+# load in FD
+FD_TRs=read.csv('Y:/PWs/Subj_FD_RemTRs.csv')
+colnames(FD_TRs)[1]<-'SubjID'
+colnames(FD_TRs)[2]<-'FD'
+colnames(FD_TRs)[3]<-'RemainingTRs'
+# FD for carit runs
+FD_TRs_c=read.csv('Y:/PWs/Subj_FD_RemTRs_c.csv')
+colnames(FD_TRs_c)[1]<-'SubjID'
+colnames(FD_TRs_c)[2]<-'FDc'
+colnames(FD_TRs_c)[3]<-'RemainingTRsc'
+# merge by subjID
+mergeddf<-merge(demo,FD_TRs,by='SubjID')
+mergeddf<-merge(mergeddf,FD_TRs_c,by='SubjID')
+# exclude subjects with less than 600 TRs remaining (in rest)
+inclusionVec<-mergeddf$RemainingTRs>600
+# include NAs in the exclusion
+inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
+# subset the master df accordingly
+mergeddf<-mergeddf[inclusionVec,]
+# get count of remaining subjects
+remainingSubjs=dim(mergeddf)[1]
+print(remainingSubjs)
+# exclude subjects with less than 300 TRs remaining (in carit)
+inclusionVec<-mergeddf$RemainingTRsc>300
+# include NAs in the exclusion
+inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
+# subset the master df accordingly
+df<-mergeddf[inclusionVec,]
+# get count of remaining subjects
+remainingSubjs=dim(df)[1]
+print(remainingSubjs)
+# extract subjs
+rs_cmatch_subjs<-df$SubjID
+# print
+write.table(rs_cmatch_subjs,'Y:/PWs/rs_cmatch_subs.csv')
+
+# _C: will need FP alteration in .m, but is from same subjects
+
+```
+
+```{r}
+# read in discretized cross subj histograms (linear)
+rs_disthist<-t(read.csv('Y:/results/PWs/RS_cmatch_subs_AngDistHist.csv'))
+c_disthist<-t(read.csv('Y:/results/PWs/c_cmatch_subs_AngDistHist.csv'))
+
+# normalize to total numbers
+rs_disthist<-rs_disthist/sum(rs_disthist)
+c_disthist<-c_disthist/sum(c_disthist)
+
+difHist=c_disthist-rs_disthist
+
+barplot(t(rs_disthist),ylim=c(0,0.07),main = 'Resting State OpFl Directionality',xlab='0-180')
+
+barplot(t(c_disthist),ylim=c(0,0.07),main = 'Carit OpFl Directionality',xlab='0-180')
+
+barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+```
 
 ```{r}
 
