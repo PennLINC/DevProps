@@ -119,23 +119,8 @@ data(g_noMW_combined_L)=FaceVecL;
 mincol=.4;
 maxcol=.6;
 
-% matches circular hist 
-roybigbl_cm=inferno(6);
-roybigbl_cm(1,:)=[0, 0, 255];
-roybigbl_cm(2,:)=[0, 255, 255];
-roybigbl_cm(3,:)=[116, 192, 68];
-roybigbl_cm(4,:)=[246, 235, 20];
-roybigbl_cm(5,:)=[255, 165, 0];
-roybigbl_cm(6,:)=[255, 0, 0];
-% scale to 1
-roybigbl_cm=roybigbl_cm.*(1/255);
-% interpolate color gradient
-interpsteps=[0 .2 .4 .6 .8 1];
-roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
-% reduce just a little bit on the close-to-white coloring
-roybigbl_cm=roybigbl_cm(15:240,:);
 %custommap=colormap(roybigbl_cm);
-custommap=colormap(flipud(inferno));
+custommap=colormap(inferno);
 
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
@@ -149,6 +134,7 @@ daspect([1 1 1]);
 axis tight;
 axis vis3d off;
 lighting gouraud; %phong;
+lighting none;
 shading flat;
 camlight;
 alpha(1)
@@ -168,6 +154,7 @@ daspect([1 1 1]);
 axis tight;
 axis vis3d off;
 lighting gouraud; %phong;
+lighting none;
 material metal %shiny %metal;
 shading flat;
 camlight;
@@ -196,6 +183,7 @@ daspect([1 1 1]);
 axis tight;
 axis vis3d off;
 lighting phong; %gouraud
+lighting none;
 material metal %shiny %metal;%shading flat;
 shading flat;
 camlight;
@@ -216,6 +204,7 @@ daspect([1 1 1]);
 axis tight;
 axis vis3d off;
 lighting gouraud; %phong;
+lighting none;
 material metal %shiny %metal;
 shading flat;
 camlight;

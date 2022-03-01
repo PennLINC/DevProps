@@ -9,7 +9,6 @@ library(ggplot2)
 library(mgcv)
 ```
 
-
 ```{r}
 # load in subj list
 subjList=read.delim('Y:/PWs/hcpd_subj_list.txt')
@@ -123,4 +122,29 @@ visreg(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
 ```
 ```{r}
 write.table(masterdf$SubjID,'~/G600_TRs.txt',quote = F,col.names = F,row.names = F)
+```
+
+```{r}
+```{r}
+# pgg magnitude distributions
+PGGmagL_s=read.csv('Y:/data/vsumL.csv')
+PGGmagR_s=read.csv('Y:/data/vsumR.csv')
+PGGmagL_h=read.csv('Y:/data/vHL.csv')
+PGGmagR_h=read.csv('Y:/data/vHR.csv')
+
+vecSumCombined=c(PGGmagL_s$vsumL,PGGmagR_s$vsumR)
+vecHypCombined=c(PGGmagL_h$vHL,PGGmagR_h$vHR)
+
+# bottom 1%
+b1p=quantile(vecHypCombined,.1)
+b1=vecHypCombined<b1p
+
+# sep. back out for plotting
+b1l=b1[1:4851]
+b1r=b1[4852:length(b1)]
+
+# writeout
+write.csv(as.numeric(b1l),'Y:/dropbox/b1maskL.csv')
+write.csv(as.numeric(b1r),'Y:/dropbox/b1maskR.csv')
+```
 ```

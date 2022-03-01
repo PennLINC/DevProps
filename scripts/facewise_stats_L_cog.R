@@ -208,13 +208,13 @@ for (f in 1:4851){
 }
 
 # saveout dr2s and ps - still needs to be merged with results from other hemi for MC correction
-saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_edr2.rds'))
-saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_edr2.rds'))
-saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_edr2.rds'))
-saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_edr2.rds'))
+saveRDS(TD_L_edr2,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_edr2.rds'))
+saveRDS(BU_L_edr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_edr2.rds'))
+saveRDS(BuProp_edr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_edr2.rds'))
+saveRDS(ThetasFromPG_edr2,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_edr2.rds'))
 
-saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_ep.rds'))
-saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_ep.rds'))
-saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_ep.rds'))
-saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_ep.rds'))
+saveRDS(TD_L_ep,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_ep.rds'))
+saveRDS(BU_L_ep,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_ep.rds'))
+saveRDS(BuProp_ep,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_ep.rds'))
+saveRDS(ThetasFromPG_ep,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_ep.rds'))
 
