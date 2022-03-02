@@ -183,6 +183,15 @@ write.table(rs_cmatch_subjs,'Y:/PWs/rs_cmatch_subs.csv')
 ```
 
 ```{r}
+# quick checkup on how BuProp from hists (and rs_subs.csv) maps onto bimodality
+BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp.csv'))
+Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
+BuPropdf<-data.frame(BuProp,Subjs)
+colnames(BuPropdf)<-c('BuProp','SubjID')
+BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
+```
+
+```{r}
 # read in discretized cross subj histograms (linear)
 disthist<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist.csv'))
 disthistModes<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist_modedOverTRs.csv'))
@@ -257,8 +266,11 @@ library(visreg)
 # dev analyses
 summary(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
 summary(gam(PC2score~s(interview_age,k=4)+FD+sex,data=masterdf))
-visreg(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
+summary(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
+visreg(gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
+summary(lm(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
 ```
+
 ```{r}
 write.table(masterdf$SubjID,'~/G600_TRs.txt',quote = F,col.names = F,row.names = F)
 ```

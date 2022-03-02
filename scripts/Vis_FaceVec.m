@@ -115,8 +115,8 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-mincol=-10;
-maxcol=10;
+mincol=-.01;
+maxcol=.01;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
 %custommap=colormap('inferno');
