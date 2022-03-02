@@ -142,7 +142,7 @@ sdD_R=rep(0,Rfaces)
 cogDR2_L=rep(0,Lfaces)
 cogDR2_R=rep(0,Rfaces)
 cogpval_L=rep(0,Lfaces)
-cpgpval_R=rep(0,Rfaces)
+cogpval_R=rep(0,Rfaces)
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,remainingSubjs)
@@ -201,12 +201,12 @@ for (f in 1:4842){
         cogpval_R[f]=EFDeltaPEstVec(df$Rdip)
 }
 # saveout cog DR2
-saveRDS(cogDR2_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_eDR2_',VertBin,'.rds'))
+saveRDS(cogDR2_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_eDR2.rds'))
 # saveout cog P
-saveRDS(cogpval_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_ep_',VertBin,'.rds'))
+saveRDS(cogpval_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_ep.rds'))
 # right
 # saveout age DR2
-saveRDS(cogDR2_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_eDR2_',VertBin,'.rds'))
+saveRDS(cogDR2_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_eDR2.rds'))
 # saveout age P
-saveRDS(cogpval_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_ep_',VertBin,'.rds'))
+saveRDS(cogpval_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_ep.rds'))
 

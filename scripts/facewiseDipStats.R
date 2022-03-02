@@ -143,19 +143,19 @@ for (f in 1:4842){
         agepval_R[f]=DeltaPEstVec(df$Rdip)
 }
 # saveout mean
-saveRDS(meanD_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_Mean_',VertBin,'.rds'))
+saveRDS(meanD_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_Mean.rds'))
 # saveout sd
-saveRDS(sdD_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_SD_',VertBin,'.rds'))
+saveRDS(sdD_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_SD.rds'))
 # saveout age DR2
-saveRDS(ageDR2_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_DR2_',VertBin,'.rds'))
+saveRDS(ageDR2_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_DR2.rds'))
 # saveout age P
-saveRDS(agepval_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_p_',VertBin,'.rds'))
+saveRDS(agepval_L,paste0('/cbica/projects/pinesParcels/results/PWs/LVerts_p.rds'))
 # right
-saveRDS(meanD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_Mean_',VertBin,'.rds'))
+saveRDS(meanD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_Mean.rds'))
 # saveout sd
-saveRDS(sdD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_SD_',VertBin,'.rds'))
+saveRDS(sdD_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_SD.rds'))
 # saveout age DR2
-saveRDS(ageDR2_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_DR2_',VertBin,'.rds'))
+saveRDS(ageDR2_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_DR2.rds'))
 # saveout age P
-saveRDS(agepval_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_p_',VertBin,'.rds'))
+saveRDS(agepval_R,paste0('/cbica/projects/pinesParcels/results/PWs/RVerts_p.rds'))
 

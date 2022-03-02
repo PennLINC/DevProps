@@ -114,6 +114,24 @@ barplot(t(y_disthist),ylim=c(0,0.07),main = 'Young OpFl Directionality',xlab='0-
 barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
 ```
 
+```{r}
+# read in discretized cross subj histograms (linear, modes)
+o_disthist<-t(read.csv('Y:/results/PWs/old_subs_AngDistHist_modedOverTRs.csv'))
+y_disthist<-t(read.csv('Y:/results/PWs/young_subs_AngDistHist_modedOverTRs.csv'))
+
+# normalize to total numbers
+o_disthist<-o_disthist/sum(o_disthist)
+y_disthist<-y_disthist/sum(y_disthist)
+
+difHist=o_disthist-y_disthist
+
+barplot(t(o_disthist),ylim=c(0,0.2),main = 'Old r.s. OpFl Directionality',xlab='0-180')
+
+barplot(t(y_disthist),ylim=c(0,0.2),main = 'Young OpFl Directionality',xlab='0-180')
+
+barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+```
+
 
 ```{r}
 ### make subject lists for RS (388), RS w/ good _C, and good _C
@@ -166,20 +184,43 @@ write.table(rs_cmatch_subjs,'Y:/PWs/rs_cmatch_subs.csv')
 
 ```{r}
 # read in discretized cross subj histograms (linear)
+disthist<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist.csv'))
+disthistModes<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist_modedOverTRs.csv'))
 rs_disthist<-t(read.csv('Y:/results/PWs/RS_cmatch_subs_AngDistHist.csv'))
 c_disthist<-t(read.csv('Y:/results/PWs/c_cmatch_subs_AngDistHist.csv'))
+rs_disthistModes<-t(read.csv('Y:/results/PWs/RS_cmatch_subs_AngDistHist_modedOverTRs.csv'))
+c_disthistModes<-t(read.csv('Y:/results/PWs/c_cmatch_subs_AngDistHist_modedOverTRs.csv'))
 
 # normalize to total numbers
 rs_disthist<-rs_disthist/sum(rs_disthist)
 c_disthist<-c_disthist/sum(c_disthist)
+disthist<-disthist/sum(disthist)
+disthistModes<-disthistModes/sum(disthistModes)
+rs_disthistModes<-rs_disthistModes/sum(rs_disthistModes)
+c_disthistModes<-c_disthistModes/sum(c_disthistModes)
 
 difHist=c_disthist-rs_disthist
+difHistModes=c_disthistModes-rs_disthistModes
+
+barplot(t(disthist),ylim=c(0,0.07),main = 'OpFl Directionality',xlab='0-180')
 
 barplot(t(rs_disthist),ylim=c(0,0.07),main = 'Resting State OpFl Directionality',xlab='0-180')
 
 barplot(t(c_disthist),ylim=c(0,0.07),main = 'Carit OpFl Directionality',xlab='0-180')
 
 barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+
+barplot(t(disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality',xlab='0-180')
+
+barplot(t(rs_disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality: rs',xlab='0-180')
+
+barplot(t(c_disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality: carit',xlab='0-180')
+
+
+barplot(t(difHistModes),main='Facial Modes Difference in OpFl Directionality',xlab='0-180')
+
+
+
 ```
 
 ```{r}
