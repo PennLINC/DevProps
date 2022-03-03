@@ -41,6 +41,12 @@ coord_polar(start = 3.1416)
 # plot
 p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+scale_y_continuous(breaks=seq(90,590,by=10))+ylim(-510,650)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))
 
+# with modes
+disthist_Modes_L=t(read.csv(paste0('Y:/results/PWs/Proced/',subj,'/', subj, '_AngDistFacial_360ModesL.csv'),header=F))
+disthist_Modes_R=t(read.csv(paste0('Y:/results/PWs/Proced/',subj,'/', subj, '_AngDistFacial_360ModesR.csv'),header=F))
+
+plotdf<-data.frame(t(disthist))
+plotdf$index<-seq(1:36)
 ```
 
 ```{r}

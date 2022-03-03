@@ -268,14 +268,16 @@ summary(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
 summary(gam(PC2score~s(interview_age,k=4)+FD+sex,data=masterdf))
 summary(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
 visreg(gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
-summary(lm(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
+summary(lm(BuProp~interview_age+FD+sex,data=BuMerge))
+model1<-gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge)
+model2<-gam(BuProp~FD+sex,data=BuMerge)
+a<-anova.gam(model1,model2)
 ```
 
 ```{r}
 write.table(masterdf$SubjID,'~/G600_TRs.txt',quote = F,col.names = F,row.names = F)
 ```
 
-```{r}
 ```{r}
 # pgg magnitude distributions
 PGGmagL_s=read.csv('Y:/data/vsumL.csv')

@@ -117,7 +117,7 @@ data(g_noMW_combined_L)=FaceVecL;
 % fixed colorscale
 % CIRCULAR
 mincol=1;
-maxcol=18;
+maxcol=36;
 
 % matches circular hist 
 roybigbl_cm=inferno(6);
@@ -133,8 +133,8 @@ roybigbl_cm=roybigbl_cm.*(1/255);
 interpsteps=[0 .2 .4 .6 .8 1];
 roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % reduce just a little bit on the close-to-white coloring
-roybigbl_cm=roybigbl_cm(15:240,:);
-custommap=colormap(roybigbl_cm);
+%roybigbl_cm=roybigbl_cm(15:240,:);
+custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 
 figure

@@ -101,8 +101,14 @@ AngDist=AngDist.AngDist;
 % initialize output (counts in angular bins: 37 for 0 - pi to-be circular hist, but to have distinct bars at 0 and pi)
 OutDf=zeros(1,36);
 Bins36=-180:10:180;
-% anything greater than 350 should go last respective bins
-% will make 0-180, non circular version post-hoc
+% initialize facewise vectors for 1-36 mode for 
+faceModesL=zeros(1,length(g_noMW_combined_L));
+faceModesR=zeros(1,length(g_noMW_combined_R));
+
+
+%%% WILL NEED SEP SCRIPT TO AGGREGATE ACROSS SUBJS, CALC DIF HISTS IN ACCORDANCE WITH RS VS TASK, OLD VS. YOUNG, ETC
+
+
 
 % count Number of TRs once rather than iteratively
 NumTRs=size(AngDist.gLeft);
@@ -149,7 +155,13 @@ for F=g_noMW_combined_L
 	% discretize
 	Disc_FAngles=histcounts(FAngles,Bins36);
 	OutDf=OutDf+Disc_FAngles;
+	% get modes for this face
+	[M,I]=max(Disc_FAngles);
+	faceModesL(F)=I;
 end
+
+% mask (face 5120 saved in as entry 5120 of facemodes, etc.)
+faceModesL=faceModesL(g_noMW_combined_L);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%% now the right hemisphere
@@ -191,8 +203,24 @@ for F=g_noMW_combined_R
         % discretize
         Disc_FAngles=histcounts(FAngles,Bins36);
         OutDf=OutDf+Disc_FAngles;
+        % get modes for this face
+        [M,I]=max(Disc_FAngles);
+        faceModesR(F)=I;
 end
 
+% mask (face 5120 saved in as entry 5120 of facemodes, etc.)
+faceModesR=faceModesR(g_noMW_combined_R);
+
 % save outdf
-fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistHist.mat']
+fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistHist.mat'];
 save(fn,'OutDf')
+
+fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_DistHist.csv'];
+writetable(table(OutDf),fn)
+
+
+% save facial modes
+fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistFacial_360ModesL.csv'];
+writetable(table(faceModesL),fn)
+fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistFacial_360ModesR.csv'];
+writetable(table(faceModesR),fn)
