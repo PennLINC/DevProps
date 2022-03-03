@@ -126,6 +126,56 @@ custommap=colormap('inferno'); %or whatever
 % reduce just a little bit on the close-to-white coloring
 custommap=custommap(1:240,:);
 
+%%%% Fig 1: PGG big
+figure('units','pixels','position',[0 0 1500 1500])
+axis([-1, 1, -1, 1, 0, 1]);
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R, 2, 'w','linewidth',2);
+hold on
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
+axis equal
+daspect([1, 1, 1]);
+colormap(custommap);
+colorbar
+view(280,185);
+print('pggBig.png','-dpng')
+
+%%% Fig 1: pial PG
+% load in fsaverage4 faces and vertices %%%
+surfL = [SubjectsFolder '/surf/lh.pial'];
+surfR = [SubjectsFolder '/surf/rh.pial'];
+% surface topography
+[vx_l, faces_l] = read_surf(surfL);
+[vx_r, faces_r] = read_surf(surfR);
+% +1 the faces: begins indexing at 0
+faces_l = faces_l + 1;
+faces_r = faces_r + 1;
+% Get incenters of triangles.
+TR = TriRep(faces_l, vx_l);
+P = TR.incenters;
+TRr = TriRep(faces_r, vx_r);
+Pr = TRr.incenters;
+figure('units','pixels','position',[0 0 1500 1500])
+axis([-1, 1, -1, 1, 0, 1]);
+hold on
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
+axis equal
+daspect([1, 1, 1]);
+colorbar
+colormap(custommap)
+view(280,185);
+print('pggPial.png','-dpng')
+
+%%% Fig 1: optical flow example TRs
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+
 % 1 - VECTOR FIELDS OVERLAID ONTO ORIGINAL TRS
 % vector field
 DirecsVecs=struct('cdata',[],'colormap',[]);
@@ -136,10 +186,10 @@ u=OpFl.vf_right{j};
 vATTR=fr.TRs{j};
 vATTR=zscore(vATTR);
 %%%%%%
-figure('units','pixels','position',[0 0 600 1200])
+figure('units','pixels','position',[0 0 1500 1500])
 subplot(2,2,1)
 axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 3, 'w');
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w','linewidth','3');
 hold on
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
 axis equal
@@ -150,13 +200,12 @@ view(270,200);
 % 2
 subplot(2,2,3)
 axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R, 2, 'w');
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R, 2, 'w','linewidth',2);
 hold on
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
 %%%colormap(custommap)
-colormap(roybigbl_cm);
 %%%%
 colorbar
 % medial
@@ -164,7 +213,7 @@ colorbar
 % this is going to be easier to just photoshop out the axes if needed - appears to remove quiver3 coloring
 %axis('off')
 % lateral?
-view(270,200);
+view(280,185);
 % 3
 subplot(2,2,[2 4])
 limz=[-100 100];

@@ -1,1 +1,1 @@
-Rscript facewiseDipStats.R
+Rscript facewise_stats_L_cogf.R

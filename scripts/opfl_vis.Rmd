@@ -14,11 +14,15 @@ testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4
 ```
 
 ```{r}
+library(ggplot2)
 meltedL<-melt(testL4)
 meltedR<-melt(testR4)
-melted=c(meltedL,meltedR)
-hist(melted$value,main="Angular Distance b/w PGG and OpFl vectors over vertices over all TRs",xlab = "Distance (Degrees)")
+melted=data.frame(c(meltedL,meltedR)$value)
+colnames(melted)<-"value"
+p<-ggplot(melted,aes(x=value))
+p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic()+scale_x_continuous(limits=(c(0,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance b/w PGG and OpFl vectors over vertices over all TRs")
 ```
+
 ```{r}
 library(ggplot2)
 disthist=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/disthist.csv'),header=F)
@@ -45,8 +49,27 @@ p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow",
 disthist_Modes_L=t(read.csv(paste0('Y:/results/PWs/Proced/',subj,'/', subj, '_AngDistFacial_360ModesL.csv'),header=F))
 disthist_Modes_R=t(read.csv(paste0('Y:/results/PWs/Proced/',subj,'/', subj, '_AngDistFacial_360ModesR.csv'),header=F))
 
-plotdf<-data.frame(t(disthist))
-plotdf$index<-seq(1:36)
+#combine hemispheres
+DistModes360=c(as.numeric(disthist_Modes_L[,2]),as.numeric(disthist_Modes_R[,2]))
+plotdf<-data.frame(table(DistModes360))
+plotdf$DistModes360<-as.integer(plotdf$DistModes360)
+
+p <- ggplot(plotdf, aes(x = as.factor(DistModes360), # x-axis factor label
+					
+					# y-axis numberical parameter
+					y = Freq)) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",
+		aes(fill=DistModes360)) + # define bar color
+
+# define the polar coordinate
+coord_polar(start = 3.1416)
+# plot
+p+theme_minimal()+scale_fill_gradientn("DistModes360",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+scale_y_continuous(breaks=seq(90,590,by=10))+ylim(-510,680)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))
+
+
 ```
 
 ```{r}

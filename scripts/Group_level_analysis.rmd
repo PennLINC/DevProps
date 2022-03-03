@@ -264,14 +264,7 @@ for (i in 1:30){
 ```{r}
 library(visreg)
 # dev analyses
-summary(gam(PC1score~s(interview_age,k=4)+FD+sex,data=masterdf))
-summary(gam(PC2score~s(interview_age,k=4)+FD+sex,data=masterdf))
-summary(gam(Ds~s(interview_age,k=4)+FD+sex,data=masterdf))
-visreg(gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
-summary(lm(BuProp~interview_age+FD+sex,data=BuMerge))
-model1<-gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge)
-model2<-gam(BuProp~FD+sex,data=BuMerge)
-a<-anova.gam(model1,model2)
+summary(gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
 ```
 
 ```{r}
