@@ -30,8 +30,8 @@ OpFl=OpFl.us;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% Load TS %%%%%%%%
 % load in TRs_l and TRs_r
-TRs_lfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_L_10k.mgh'];
-TRs_rfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_R_10k.mgh'];
+TRs_lfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_L_3k.mgh'];
+TRs_rfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_R_3k.mgh'];
 % filepaths to files
 TRs_lf=MRIread(TRs_lfp);
 TRs_rf=MRIread(TRs_rfp);
@@ -197,14 +197,6 @@ daspect([1, 1, 1]);
 caxis([-3,3]);
 colorbar
 view(270,200);
-% 2
-subplot(2,2,3)
-axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R, 2, 'w','linewidth',2);
-hold on
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
-axis equal
-daspect([1, 1, 1]);
 %%%colormap(custommap)
 %%%%
 colorbar
@@ -291,7 +283,7 @@ validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
 for i=1057:1063
 OpFlVecofInt=i;
-TRofInt=validTRs(OpFlVecofInt)
+TRofInt=validTRs(OpFlVecofInt);
 u=OpFl.vf_right{OpFlVecofInt};
 vATTR=fr.TRs{TRofInt};
 % z-score
@@ -303,16 +295,16 @@ hold on
 % for OpFl Vecs on PG
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
 % for OpFl Vecs on BOLD
-% trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
+%trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
 axis equal
 daspect([1, 1, 1]);
-caxis([-5.5,6.5;]);
+caxis([-5.5,6.5]);
 %colormap(roybigbl_cm);
+colormap(custommap);
 colorbar
-view(270,200);
+view(280,185);
 %view(60,190)
 fn=['yourfigure' num2str(i) '.png'];
-colormap(custommap);
 print(fn,'-dpng')
 end
 

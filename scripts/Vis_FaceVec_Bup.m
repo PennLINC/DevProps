@@ -138,7 +138,6 @@ lighting none;
 shading flat;
 camlight;
 alpha(1)
-
 length(faces)
 
 set(gca,'CLim',[mincol,maxcol]);
@@ -159,8 +158,8 @@ material metal %shiny %metal;
 shading flat;
 camlight;
 alpha(1)
- pos = get(asub, 'Position');
- posnew = pos; posnew(2) = posnew(2) + 0.13; posnew(1) = posnew(1) -.11; set(asub, 'Position', posnew);
+pos = get(asub, 'Position');
+posnew = pos; posnew(2) = posnew(2) + 0.13; posnew(1) = posnew(1) -.11; set(asub, 'Position', posnew);
 set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
@@ -187,8 +186,8 @@ lighting none;
 material metal %shiny %metal;%shading flat;
 shading flat;
 camlight;
- pos = get(asub, 'Position');
- posnew = pos; posnew(1) = posnew(1) - 0.11; set(asub, 'Position', posnew);
+pos = get(asub, 'Position');
+posnew = pos; posnew(1) = posnew(1) - 0.11; set(asub, 'Position', posnew);
 alpha(1)
 
 
@@ -209,15 +208,15 @@ material metal %shiny %metal;
 shading flat;
 camlight;
 alpha(1)
- pos = get(asub, 'Position');
- posnew = pos; posnew(2) = posnew(2) + 0.13; set(asub, 'Position', posnew);
+pos = get(asub, 'Position');
+posnew = pos; posnew(2) = posnew(2) + 0.13; set(asub, 'Position', posnew);
 set(gcf,'Color','w')
 
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-colorbar
-
-
+c=colorbar
+c.Location='southoutside'
+colormap(custommap);
 
 print(Fn,'-dpng')

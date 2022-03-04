@@ -1,5 +1,5 @@
 % load OFD for mask
-addpath(genpath('/cbicaiprojects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
+addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % load subjs list
 %%%%%%% MODULAR: WILL NEED RS, RS MATCHED FROM _C, and _C SUBJ LIST
@@ -50,6 +50,9 @@ g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 % and these are for group-level modes at each face
 OutDf_face_modesL=zeros(height(Subjs),length(g_noMW_combined_L));
 OutDf_face_modesR=zeros(height(Subjs),length(g_noMW_combined_R));
+% add partner DFs for mode relative prominence
+OutDf_face_modesL_Prom=zeros(height(Subjs),length(g_noMW_combined_L));
+OutDf_face_modesR_Prom=zeros(height(Subjs),length(g_noMW_combined_R));
 
 % loop over each subj
 for s = 1:height(Subjs)
@@ -70,17 +73,39 @@ for s = 1:height(Subjs)
 		% initialize facewise vectors for 1-18 mode for 
 		faceModesL=zeros(1,length(g_noMW_combined_L));
 		faceModesR=zeros(1,length(g_noMW_combined_R));
+		faceModesL_Prom=zeros(1,length(g_noMW_combined_L));
+		faceModesR_Prom=zeros(1,length(g_noMW_combined_R));
 		% for each face: get mode over TRs
 		for l=1:length(g_noMW_combined_L);
 			binnedFaceDirs=histcounts(AngsL(:,g_noMW_combined_L(l)),edges);
 			[M,I]=max(binnedFaceDirs);
 			faceModesL(l)=I;
+			%%% find prominence from non-adjacent modes
+			% make a temp. binnedFaceDirs vector with padding on sides: will allow for uniform neighbor removal
+			tmpBFDvec=zeros(1,22);
+			tmpBFDvec(3:20)=binnedFaceDirs;
+			% I and I+4 instead of I-2 I+2 because we added 2 0s to the start of the vector (-2 -> 0,+2 -> 4)
+			tmpBFDvec((I):(I+4))=[];
+			% get updated binnedFaceDirs: those non-adjacent
+			[M2,I2]=max(tmpBFDvec);
+			% get relative prominence of secondary peak
+			faceModesL_Prom(l)=1-(M2/M);
 		end
 		% for right
 		for r=1:length(g_noMW_combined_R);
                         binnedFaceDirs=histcounts(AngsR(:,g_noMW_combined_R(r)),edges);
                         [M,I]=max(binnedFaceDirs);
                         faceModesR(r)=I;
+			%%% find prominence from non-adjacent modes
+                        % make a temp. binnedFaceDirs vector with padding on sides: will allow for uniform neighbor removal
+                        tmpBFDvec=zeros(1,22);
+                        tmpBFDvec(3:20)=binnedFaceDirs;
+                        % I and I+4 instead of I-2 I+2 because we added 2 0s to the start of the vector (-2 -> 0,+2 -> 4)
+                        tmpBFDvec((I):(I+4))=[];
+                        % get updated binnedFaceDirs: those non-adjacent
+                        [M2,I2]=max(tmpBFDvec);
+                        % get relative prominence of secondary peak
+                        faceModesR_Prom(r)=1-(M2/M);
                 end
 		% get histcounts of vector of modes for each face (collapsed over TRs)	
 		Disc_modes_FAngles_L=histcounts(faceModesL,modeedges);
@@ -91,16 +116,24 @@ for s = 1:height(Subjs)
 		% get mode AT each face, to be once again moded for plotting group-level modes
 		OutDf_face_modesL(s,:)=faceModesL;
 		OutDf_face_modesR(s,:)=faceModesR;
+		% save mode prominence for this subj
+		OutDf_face_modesL_Prom(s,:)=faceModesL_Prom;
+		OutDf_face_modesR_Prom(s,:)=faceModesR_Prom;	
 	end
 end
 
 % take mode of modes for faces
 OutDf_face_modeL=mode(OutDf_face_modesL,1);
 OutDf_face_modeR=mode(OutDf_face_modesR,1);
+% get mean prominence
+OutDf_face_modeL_prom=mean(OutDf_face_modesL_Prom,1);
+OutDf_face_modeR_prom=mean(OutDf_face_modesR_Prom,1);
+
 fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_facewiseMode_L.csv'];
-writetable(table(OutDf_face_modeL),fn)
+writetable(table(OutDf_face_modeL,OutDf_face_modeL_prom),fn)
 fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_facewiseMode_R.csv'];
-writetable(table(OutDf_face_modeR),fn)
+writetable(table(OutDf_face_modeR,OutDf_face_modeR_prom),fn)
+
 
 % maybe write as csv: as table ya know
 fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_AngDistHist.csv'];
@@ -109,4 +142,4 @@ writetable(table(OutDf),fn)
 % write out modes sep.
 fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_AngDistHist_modedOverTRs.csv'];
 writetable(table(OutDf_modes),fn)
-
+OutDf_face_modesL_Prom(s,:)=faceModesL_Prom;

@@ -115,8 +115,8 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-mincol=-.01;
-maxcol=.01;
+mincol=0;
+maxcol=.28;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
 %custommap=colormap('inferno');
@@ -138,10 +138,10 @@ colormap(custommap)
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting phong;
+lighting none;
 shading flat;
 camlight;
-alpha(1)
+	alpha(1)
 
 length(faces)
 
@@ -157,7 +157,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting phong;
+lighting none;
 material metal %shiny %metal;
 shading flat;
 camlight;

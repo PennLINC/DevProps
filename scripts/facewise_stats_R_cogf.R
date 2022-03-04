@@ -187,23 +187,11 @@ for (f in 1:4842){
 		df$FaceThetaDist[s]=Res[f,4]
 	    }
 	}
-        # extract EF dr2
-        TD_R_edr2[f]=EFDeltaR2EstVec(df$FaceTd_rv)
-        # extract age dr2
-        BU_R_edr2[f]=EFDeltaR2EstVec(df$FaceBu_rv)
-        # extract age dr2
+        
+	# extract age dr2
         BuProp_edr2[f]=EFDeltaR2EstVec(df$FaceBuProp)
-        # you already know doe
-        ThetasFromPG_edr2[f]=EFDeltaR2EstVec(df$FaceThetaDist)
-	
-	# extract EF p
-        TD_R_ep[f]=EFDeltaPEstVec(df$FaceTd_rv)
         # extract age p
-        BU_R_ep[f]=EFDeltaPEstVec(df$FaceBu_rv)
-        # extract age p
-        BuProp_ep[f]=DeltaPEstVec(df$FaceBuProp)
-        # you already know doe
-        ThetasFromPG_ep[f]=EFDeltaPEstVec(df$FaceThetaDist)
+        BuProp_ep[f]=EFDeltaPEstVec(df$FaceBuProp)
 
 }
 

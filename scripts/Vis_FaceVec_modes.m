@@ -1,4 +1,4 @@
-function Vis_FaceVec(FaceVecL,FaceVecR,Fn) 
+function Vis_FaceVec_modes(FaceVecL,FaceVecR,Fn,PromVecL,PromVecR) 
 
 %angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
 %Angs=load(angDistFP);
@@ -110,14 +110,27 @@ g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 
 %%%%%%%%
 
-
+% dumb iterative thresholding for desaturation effect
+for dumb=1:7
+FN=strcat(Fn,num2str(dumb),'.png');
+FN
+%%%%%%%%%%%%%%%%%%%
 data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
+dataP=zeros(1,5120);
+dataP(g_noMW_combined_L)=PromVecL;
+
+data(dataP<(dumb*.03))=0;
+
+%%%%%%
 
 % fixed colorscale
-% CIRCULAR
-mincol=1;
-maxcol=36;
+% CICRULAR
+%mincol=1;
+%maxcol=36
+% NONCIRCULAR
+mincol=.5;
+maxcol=18;
 
 % matches circular hist 
 roybigbl_cm=inferno(6);
@@ -132,11 +145,13 @@ roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
 interpsteps=[0 .2 .4 .6 .8 1];
 roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
-% reduce just a little bit on the close-to-white coloring
-%roybigbl_cm=roybigbl_cm(15:240,:);
-custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+% add white layer for thresholded faces
+roybigbl_cm(1,:)=[.9 .9 .9];
 
-
+%CIRCULAR
+%custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+%NONCIRCULAR
+custommap=roybigbl_cm;
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
@@ -148,12 +163,9 @@ colormap(custommap)
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting gouraud; %phong;
+lighting none; %phong;
 shading flat;
 camlight;
-alpha(1)
-
-length(faces)
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
@@ -167,7 +179,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting gouraud; %phong;
+lighting none; %phong;
 material metal %shiny %metal;
 shading flat;
 camlight;
@@ -182,7 +194,11 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 %%% right hemisphere
 data=zeros(1,5120);
+dataP=zeros(1,5120);
 data(g_noMW_combined_R)=FaceVecR;
+dataP(g_noMW_combined_R)=PromVecR;
+
+data(dataP<(dumb*.03))=0;
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
@@ -195,7 +211,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting phong; %gouraud
+lighting none; %gouraud
 material metal %shiny %metal;%shading flat;
 shading flat;
 camlight;
@@ -215,7 +231,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting gouraud; %phong;
+lighting none; %phong;
 material metal %shiny %metal;
 shading flat;
 camlight;
@@ -231,4 +247,5 @@ colorbar
 
 
 
-print(Fn,'-dpng')
+print(FN,'-dpng')
+end
