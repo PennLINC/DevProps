@@ -229,6 +229,21 @@ barplot(t(c_disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality: 
 barplot(t(difHistModes),main='Facial Modes Difference in OpFl Directionality',xlab='0-180')
 
 
+###########
+plotdataf<-data.frame(seq(1,18),disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')
+
+# correct to be degrees rather than histogram bin index
+plotdataf<-data.frame(seq(10,170,10),disthistModes)
+# correct to be degrees rather than histogram bin index
+colnames(plotdataf)<-c('index','disthistModes')
+
+p<-ggplot(plotdataf,aes(x=index,y=disthistModes))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')
 
 ```
 

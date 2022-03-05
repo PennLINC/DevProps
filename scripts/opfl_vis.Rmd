@@ -82,15 +82,26 @@ p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orang
 ```
 
 ```{r}
-# add noise
-#noise=c(abs(melted$value),rnorm(900000,90,sd=20))
-#lotsnoise=c(abs(melted$value),rnorm(10000,rnorm(1000,90,sd=12),sd=12))
-#hist(abs(melted$value))
-#hist(noise)
-#hist(lotsnoise)
-#dip.test(abs(melted$value))
-#dip.test(noise)
-#dip.test(lotsnoise)
+# read in example subj
+FacewiseModesL=read.csv(paste0('Y:/results/PWs/Proced/',subj,'_facewiseMode_L.csv'))
+FacewiseModesR=read.csv(paste0('Y:/results/PWs/Proced/',subj,'_facewiseMode_R.csv'))
+
+ModeBinsL<-t(FacewiseModesL)[1:4851]
+PromBinsL<-t(FacewiseModesL)[4852:9702]
+
+ModeBinsR<-t(FacewiseModesR)[1:4842]
+PromBinsR<-t(FacewiseModesR)[4843:9684]
+
+meltedL<-melt(ModeBinsL)
+meltedR<-melt(ModeBinsR)
+melted=data.frame(c(meltedL,meltedR)$value)
+colnames(melted)<-"value"
+
+# scale value to reflect degrees rather than bin numbrer
+melted$value<-melted$value*10
+
+p<-ggplot(melted,aes(x=value))
+p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(1,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance: Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylim(c(0,1000))
 ```
 
 ```{r}
