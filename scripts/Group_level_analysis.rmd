@@ -112,6 +112,32 @@ barplot(t(o_disthist),ylim=c(0,0.07),main = 'Old r.s. OpFl Directionality',xlab=
 barplot(t(y_disthist),ylim=c(0,0.07),main = 'Young OpFl Directionality',xlab='0-180')
 
 barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+
+#### young fancy
+plotdataf<-data.frame(seq(1,18),y_disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=y_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: 8-14")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+
+#### old fancy
+plotdataf<-data.frame(seq(1,18),o_disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: 17-21")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+#difference fancy
+
+plotdataf<-data.frame(seq(1,18),o_disthist-y_disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
 ```
 
 ```{r}
@@ -130,6 +156,22 @@ barplot(t(o_disthist),ylim=c(0,0.2),main = 'Old r.s. OpFl Directionality',xlab='
 barplot(t(y_disthist),ylim=c(0,0.2),main = 'Young OpFl Directionality',xlab='0-180')
 
 barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+
+# correct to be degrees rather than histogram bin index
+plotdataf<-data.frame(seq(10,170,10),y_disthistModes)
+# correct to be degrees rather than histogram bin index
+colnames(plotdataf)<-c('index','rs_disthistModes')
+
+p<-ggplot(plotdataf,aes(x=index,y=rs_disthistModes))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: RS Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+# correct to be degrees rather than histogram bin index
+plotdataf<-data.frame(seq(10,170,10),c_disthistModes)
+# correct to be degrees rather than histogram bin index
+colnames(plotdataf)<-c('index','c_disthistModes')
+
+p<-ggplot(plotdataf,aes(x=index,y=c_disthistModes))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Carit Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
 ```
 
 
@@ -183,12 +225,17 @@ write.table(rs_cmatch_subjs,'Y:/PWs/rs_cmatch_subs.csv')
 ```
 
 ```{r}
+library(scales)
 # quick checkup on how BuProp from hists (and rs_subs.csv) maps onto bimodality
 BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp.csv'))
 Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
 BuPropdf<-data.frame(BuProp,Subjs)
 colnames(BuPropdf)<-c('BuProp','SubjID')
 BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
+
+#plotting
+BuDs<-ggplot(BuMerge,aes(x=Ds,y=1-BuProp))+geom_point(size=3,alpha=.5)+theme_classic(base_size=30)+geom_smooth(method='lm',color='black')
+BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent_format(accuracy = 1))
 ```
 
 ```{r}
@@ -212,6 +259,8 @@ difHist=c_disthist-rs_disthist
 difHistModes=c_disthistModes-rs_disthistModes
 
 barplot(t(disthist),ylim=c(0,0.07),main = 'OpFl Directionality',xlab='0-180')
+
+
 
 barplot(t(rs_disthist),ylim=c(0,0.07),main = 'Resting State OpFl Directionality',xlab='0-180')
 
@@ -245,6 +294,59 @@ colnames(plotdataf)<-c('index','disthistModes')
 p<-ggplot(plotdataf,aes(x=index,y=disthistModes))
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')
 
+#### resting state cmatched
+plotdataf<-data.frame(seq(1,18),rs_disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=rs_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: RS")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+# correct to be degrees rather than histogram bin index
+plotdataf<-data.frame(seq(10,170,10),rs_disthistModes)
+# correct to be degrees rather than histogram bin index
+colnames(plotdataf)<-c('index','rs_disthistModes')
+
+p<-ggplot(plotdataf,aes(x=index,y=rs_disthistModes))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: RS Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+#### carit
+plotdataf<-data.frame(seq(1,18),c_disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=c_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Carit")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+# correct to be degrees rather than histogram bin index
+plotdataf<-data.frame(seq(10,170,10),c_disthistModes)
+# correct to be degrees rather than histogram bin index
+colnames(plotdataf)<-c('index','c_disthistModes')
+
+p<-ggplot(plotdataf,aes(x=index,y=c_disthistModes))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Carit Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+
+```
+
+```{r}
+# difference hists
+plotdataf<-data.frame(seq(1,18),c_disthist-rs_disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+colnames(plotdataf)<-c('index','difdisthist')
+
+p<-ggplot(plotdataf,aes(x=index,y=difdisthist))
+
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("difdisthist",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Carit")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+
+plotdataf<-data.frame(seq(10,170,10),c_disthistModes-rs_disthistModes)
+# correct to be degrees rather than histogram bin index
+colnames(plotdataf)<-c('index','difdisthistmodes')
+
+p<-ggplot(plotdataf,aes(x=index,y=difdisthistmodes))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Modal Difference")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+scale_y_continuous(labels = percent_format(accuracy = 1))
 ```
 
 ```{r}
@@ -285,6 +387,68 @@ summary(gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
 ```{r}
 write.table(masterdf$SubjID,'~/G600_TRs.txt',quote = F,col.names = F,row.names = F)
 ```
+
+```{r}
+# mean direction by pg bins
+meanDirb1=t(read.csv('Y:/PWs/scripts/MeanDir_Bin1.csv'))
+plotdf<-data.frame(meanDirb1)
+ggplot(plotdf,aes(meanDirb1,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb2=t(read.csv('Y:/PWs/scripts/MeanDir_Bin2.csv'))
+
+plotdf<-data.frame(meanDirb2)
+ggplot(plotdf,aes(meanDirb2,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb3=t(read.csv('Y:/PWs/scripts/MeanDir_Bin3.csv'))
+
+plotdf<-data.frame(meanDirb3)
+ggplot(plotdf,aes(meanDirb3,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb4=t(read.csv('Y:/PWs/scripts/MeanDir_Bin4.csv'))
+
+plotdf<-data.frame(meanDirb4)
+ggplot(plotdf,aes(meanDirb4,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb5=t(read.csv('Y:/PWs/scripts/MeanDir_Bin5.csv'))
+
+plotdf<-data.frame(meanDirb5)
+ggplot(plotdf,aes(meanDirb5,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb6=t(read.csv('Y:/PWs/scripts/MeanDir_Bin6.csv'))
+
+plotdf<-data.frame(meanDirb6)
+ggplot(plotdf,aes(meanDirb6,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb7=t(read.csv('Y:/PWs/scripts/MeanDir_Bin7.csv'))
+
+plotdf<-data.frame(meanDirb7)
+ggplot(plotdf,aes(meanDirb7,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb8=t(read.csv('Y:/PWs/scripts/MeanDir_Bin8.csv'))
+
+plotdf<-data.frame(meanDirb8)
+ggplot(plotdf,aes(meanDirb8,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb9=t(read.csv('Y:/PWs/scripts/MeanDir_Bin9.csv'))
+
+plotdf<-data.frame(meanDirb9)
+ggplot(plotdf,aes(meanDirb9,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+
+
+meanDirb10=t(read.csv('Y:/PWs/scripts/MeanDir_Bin10.csv'))
+
+plotdf<-data.frame(meanDirb10)
+ggplot(plotdf,aes(meanDirb10,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
+```
+
 
 ```{r}
 # pgg magnitude distributions

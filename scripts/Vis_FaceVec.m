@@ -90,33 +90,14 @@ g_noMW_combined_L=setdiff([1:5120],gPGg_L0);
 g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 
 
-%%% PCA section
-%bothHemisHierAngTS=vertcat(AngsL(g_noMW_combined_L,:),AngsR(g_noMW_combined_R,:));
-%AngFC=corrcoef(bothHemisHierAngTS');
-%disp('Running PCA')
-% make matrix a lil sparser
-%smol=find(abs(AngFC)<0.1);
-%AngFC(smol)=0;
-% recover PCs of AngFC
-%[coeffs,scores,latent,explained]=fastpca(AngFC);
-
-% print out variances explained
-%scores(1:2)
-%latent(1:2)
-
-% assign to facevels
-%FaceVecL=coeffs(1:length(g_noMW_combined_L),2);
-%FaceVecR=coeffs((length(g_noMW_combined_L)+1:37066),2);
-
-%%%%%%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%
 
 data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-mincol=0;
-maxcol=.28;
+mincol=-pi;
+maxcol=pi;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
 %custommap=colormap('inferno');
@@ -127,6 +108,24 @@ maxcol=.28;
 custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 %custommap(126,:)=[.4 .4 .4];
+
+% matches circular hist
+roybigbl_cm=inferno(6);
+roybigbl_cm(1,:)=[0, 0, 255];
+roybigbl_cm(2,:)=[0, 255, 255];
+roybigbl_cm(3,:)=[116, 192, 68];
+roybigbl_cm(4,:)=[246, 235, 20];
+roybigbl_cm(5,:)=[255, 165, 0];
+roybigbl_cm(6,:)=[255, 0, 0];
+% scale to 1
+roybigbl_cm=roybigbl_cm.*(1/255);
+% interpolate color gradient
+interpsteps=[0 .2 .4 .6 .8 1];
+roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+% add white layer for thresholded faces
+custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+
+
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
@@ -185,7 +184,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting gouraud
+lighting none
 material metal %shiny %metal;%shading flat;
 shading flat;
 camlight;
@@ -205,7 +204,7 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting phong;
+lighting none;
 material metal %shiny %metal;
 shading flat;
 camlight;
@@ -217,8 +216,8 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-colorbar
-
-
+%c=colorbar
+%c.Location='southoutside'
+%colormap(custommap)
 
 print(Fn,'-dpng')

@@ -6,9 +6,6 @@ function Bin_And_Aggregate_PGGDistributions(subj)
 % load in gPPG ang dist: for thresholdingdd OFD toolbox to path
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
-% Load in fsav4 opflow calc
-OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
-data=load(OpFlFp);
 % Load in surface data
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
 surfL = [SubjectsFolder '/surf/lh.sphere'];
@@ -23,14 +20,10 @@ faces_r = faces_r + 1;
 F_L=faces_l;
 % vertices V
 V_L=vx_l;
-% vector fields
-vfl=data.us.vf_left;
 % faces_R
 F_R=faces_r;
 % vertices V
 V_R=vx_r;
-% vector fields
-vfr=data.us.vf_right;
 % get incenters of triangles
 TR_L = TriRep(F_L,V_L);
 P_L = TR_L.incenters;
@@ -92,9 +85,34 @@ for i=1:length(azd_R)
     gels_R(i)=gvs_R(2);
 end
 
+%%% WILL NEED SEP SCRIPT TO AGGREGATE ACROSS SUBJS, CALC DIF HISTS IN ACCORDANCE WITH RS VS TASK, OLD VS. YOUNG, ETC
+% but here we're going to loop over all subjs. Can pull outputs from subj dirs later.
 % load in gPGG angular distances for parsing into top-down and bottom-up in the loops
+
+
+Subjs=readtable('~/PWs/rs_subs.csv')
+
+
+% subj loop
+for s = 1:height(Subjs)
+tic
+Subj=table2array(Subjs(s,2))
+subj=Subj{:};
+
+
+% Load in fsav4 opflow calc
+OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
+data=load(OpFlFp);
+
+% vector fields
+vfl=data.us.vf_left;
+vfr=data.us.vf_right;
+
+
+fp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
 AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4.mat'];
 AngDist=load(AngDistFP);
+
 % just pretend this line doesn't exist
 AngDist=AngDist.AngDist;
 
@@ -104,11 +122,6 @@ Bins36=-180:10:180;
 % initialize facewise vectors for 1-36 mode for 
 faceModesL=zeros(1,length(g_noMW_combined_L));
 faceModesR=zeros(1,length(g_noMW_combined_R));
-
-
-%%% WILL NEED SEP SCRIPT TO AGGREGATE ACROSS SUBJS, CALC DIF HISTS IN ACCORDANCE WITH RS VS TASK, OLD VS. YOUNG, ETC
-
-
 
 % count Number of TRs once rather than iteratively
 NumTRs=size(AngDist.gLeft);
@@ -224,3 +237,6 @@ fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistFa
 writetable(table(faceModesL),fn)
 fn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistFacial_360ModesR.csv'];
 writetable(table(faceModesR),fn)
+% end subject-level loop
+toc
+end
