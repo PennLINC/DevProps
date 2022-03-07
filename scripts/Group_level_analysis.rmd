@@ -158,20 +158,29 @@ barplot(t(y_disthist),ylim=c(0,0.2),main = 'Young OpFl Directionality',xlab='0-1
 barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
 
 # correct to be degrees rather than histogram bin index
-plotdataf<-data.frame(seq(10,170,10),y_disthistModes)
+plotdataf<-data.frame(seq(10,170,10),y_disthist)
 # correct to be degrees rather than histogram bin index
-colnames(plotdataf)<-c('index','rs_disthistModes')
+colnames(plotdataf)<-c('index','y_disthist')
 
-p<-ggplot(plotdataf,aes(x=index,y=rs_disthistModes))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: RS Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+p<-ggplot(plotdataf,aes(x=index,y=y_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: 8-14 Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
 
 # correct to be degrees rather than histogram bin index
-plotdataf<-data.frame(seq(10,170,10),c_disthistModes)
+plotdataf<-data.frame(seq(10,170,10),o_disthist)
 # correct to be degrees rather than histogram bin index
-colnames(plotdataf)<-c('index','c_disthistModes')
+colnames(plotdataf)<-c('index','o_disthist')
 
-p<-ggplot(plotdataf,aes(x=index,y=c_disthistModes))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Carit Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+p<-ggplot(plotdataf,aes(x=index,y=o_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: 17-21 Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+# dif
+# correct to be degrees rather than histogram bin index
+plotdataf<-data.frame(seq(10,170,10),o_disthist-y_disthist)
+# correct to be degrees rather than histogram bin index
+colnames(plotdataf)<-c('index','dif_disthist')
+
+p<-ggplot(plotdataf,aes(x=index,y=dif_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Modal Difference")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+scale_y_continuous(labels = percent_format(accuracy = 1))
 ```
 
 
@@ -234,8 +243,8 @@ colnames(BuPropdf)<-c('BuProp','SubjID')
 BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
 
 #plotting
-BuDs<-ggplot(BuMerge,aes(x=Ds,y=1-BuProp))+geom_point(size=3,alpha=.5)+theme_classic(base_size=30)+geom_smooth(method='lm',color='black')
-BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent_format(accuracy = 1))
+BuDs<-ggplot(BuMerge,aes(x=Ds,y=1-BuProp))+geom_point(size=3,alpha=.5)+theme_classic(base_size=28)+geom_smooth(method='lm',color='black')
+BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent_format(accuracy = 1))+scale_x_continuous(breaks=c(.002,.006,.01))
 ```
 
 ```{r}
@@ -380,8 +389,18 @@ for (i in 1:30){
 
 ```{r}
 library(visreg)
+# convert to prop TD
+BuMerge$TDProp=1-BuMerge$BuProp
+
 # dev analyses
-summary(gam(BuProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
+summary(gam(TDProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
+
+# get residuals of model for plotting
+TDProp_lm<-lm(TDProp~FD+sex,data=BuMerge)
+BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
+
+ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('#4b5e72'), fill = "#7b98b7", alpha = .8) + geom_point(size=3,alpha=.6) + xlab("Age") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
+
 ```
 
 ```{r}
@@ -449,6 +468,170 @@ plotdf<-data.frame(meanDirb10)
 ggplot(plotdf,aes(meanDirb10,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
 ```
 
+
+```{r}
+# read in discretized cross subj histograms (circular)
+disthist<-t(read.csv('Y:/PWs/rs_subs_AngDistHist360.csv',header=F))
+disthistModes<-t(read.csv('Y:/PWs/rs_subs_AngDistHist360_modedOverTRs.csv',header=F))
+
+plotdf<-data.frame(disthist)
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = round(as.numeric(disthist)))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+
+
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-100000000,150000000))
+
+##### same for modes
+plotdf<-data.frame(disthistModes[1,])
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = round(as.numeric(disthistModes.1...)))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+
+
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-10000,223000))
+
+
+```
+
+```{r}
+# read in discretized cross subj histograms (circular) - Young/Old
+disthist<-t(read.csv('Y:/PWs/young_subs_AngDistHist360.csv',header=F))
+disthistModes<-t(read.csv('Y:/PWs/young_subs_AngDistHist360_modedOverTRs.csv',header=F))
+
+plotdf<-data.frame(disthist)
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = round(as.numeric(disthist)))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+
+
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-40000000,45000000))
+
+##### same for modes
+plotdf<-data.frame(disthistModes[1,])
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = round(as.numeric(disthistModes.1...)))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+
+
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-40000,74000))
+
+#####################
+#### and old folk
+#####################
+
+disthistO<-t(read.csv('Y:/PWs/old_subs_AngDistHist360.csv',header=F))
+disthistModesO<-t(read.csv('Y:/PWs/old_subs_AngDistHist360_modedOverTRs.csv',header=F))
+plotdf<-data.frame(disthistO)
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = round(as.numeric(disthistO)))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+
+
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-49000000,57000000))
+
+##### same for modes
+plotdf<-data.frame(disthistModesO[1,])
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = round(as.numeric(disthistModesO.1...)))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-40000,78000))
+
+
+# difference
+plotdf$dif<-disthist-disthistO
+plotdf$modedif<-disthistModes--disthistModesO
+
+```
+plotdf<-data.frame(dif)
+plotdf$index<-seq(1:36)
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = round(as.numeric(disthistModesO.1...)))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-40000,78000))
+
+```
 
 ```{r}
 # pgg magnitude distributions

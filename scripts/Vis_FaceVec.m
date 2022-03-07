@@ -96,8 +96,8 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-mincol=-pi;
-maxcol=pi;
+mincol=-10;
+maxcol=10;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
 %custommap=colormap('inferno');
@@ -107,7 +107,7 @@ maxcol=pi;
 %maxcol=3;
 custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
-%custommap(126,:)=[.4 .4 .4];
+custommap(126,:)=[.5 .5 .5];
 
 % matches circular hist
 roybigbl_cm=inferno(6);
@@ -123,7 +123,7 @@ roybigbl_cm=roybigbl_cm.*(1/255);
 interpsteps=[0 .2 .4 .6 .8 1];
 roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % add white layer for thresholded faces
-custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+%custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 
 figure
