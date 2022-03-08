@@ -138,9 +138,37 @@ plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist))
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+
+
+# load in permuted old young dif
+PermDif=read.csv('Y:/results/PWs/Old_v_young_AngDistDif_permuted.csv')
+permDf<-data.frame(PermDif)
+
+# make vectors of mean values of permuted at each bin
+meanVec=colMeans(permDf[1:1000,])
+# make vectors of 95 and 5th percentile of permuted at each bin
+topPercVec=unlist(lapply(permDf[1:1000,1:18],quantile,prob=.95,names=F))
+botPercVec=unlist(lapply(permDf[1:1000,1:18],quantile,prob=.05,names=F))
+
+plotdataf$meanVec=meanVec
+plotdataf$topPercVec=topPercVec
+plotdataf$botPercVec=botPercVec
+
+plotdf<-data.frame(meanVec,topPercVec,botPercVec,seq(1:18),t(PermDif[1001,]))
+
+
+# keller kode
+ggplot(plotdf)+geom_ribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80')+geom_step(aes(x=seq.1.18.*10,y=X1001*100),color='blue',size=2)+theme_classic(base_size = 30)+xlab("Angular Distance (degrees)")+ylab('Percentage Difference')
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec,ymax=topPercVec),fill='gray80',alpha=.5)
+
+### aaaaand permuted task vs rest dif
+
 ```
 
 ```{r}
+library(scales)
 # read in discretized cross subj histograms (linear, modes)
 o_disthist<-t(read.csv('Y:/results/PWs/old_subs_AngDistHist_modedOverTRs.csv'))
 y_disthist<-t(read.csv('Y:/results/PWs/young_subs_AngDistHist_modedOverTRs.csv'))
@@ -248,7 +276,7 @@ BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent
 ```
 
 ```{r}
-# read in discretized cross subj histograms (linear)
+# read in discritized cross subj histograms (linear)
 disthist<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist.csv'))
 disthistModes<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist_modedOverTRs.csv'))
 rs_disthist<-t(read.csv('Y:/results/PWs/RS_cmatch_subs_AngDistHist.csv'))
@@ -359,32 +387,25 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 ```
 
 ```{r}
+### aaaaand permuted task vs rest dif
+PermDif=read.csv('Y:/results/PWs/Task_v_rest_AngDistDif_permuted.csv')
+permDf<-data.frame(PermDif)
 
-# shape PCA
-ShapeOut<-procGPA(ThreshShapeMat,reflect = F,scale=F)
-shapepca(ShapeOut)
+# make vectors of mean values of permuted at each bin
+meanVec=colMeans(permDf[1:1000,])
+# make vectors of 95 and 5th percentile of permuted at each bin
+topPercVec=unlist(lapply(permDf[1:1000,1:18],quantile,prob=.95,names=F))
+botPercVec=unlist(lapply(permDf[1:1000,1:18],quantile,prob=.05,names=F))
 
-scoresdf<-data.frame(includedSubjsvec,ShapeOut$scores[,1],ShapeOut$scores[,2])
-colnames(scoresdf)<-c('SubjID','PC1score','PC2score')
+plotdf<-data.frame((c_disthist-rs_disthist),meanVec,topPercVec,botPercVec,seq(1:18),t(PermDif[1001,]))
 
-masterdf<-merge(masterdf,scoresdf,by='SubjID')
 
-# plot some high PC examples
-PCscores=sort(ShapeOut$scores[,1],index.return=T)
-PCscoresneg=sort(-ShapeOut$scores[,2],index.return=T)
+# keller kode
+ggplot(plotdf)+geom_ribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80')+geom_step(aes(x=seq.1.18.*10,y=X1001*100),color='blue',size=2)+theme_classic(base_size = 30)+xlab("Angular Distance (degrees)")+ylab('Percentage Difference')
 
-for (i in 1:30){
-  index=PCscores$ix[i]
-  #plot(binnedFaces[,1,index],binnedFaces[,2,index])
-  plot(ThreshShapeMat[,1,index],ThreshShapeMat[,2,index],main=PCscores$x[i])
-}
-
-for (i in 1:30){
-  index=PCscoresneg$ix[i]
-  #plot(binnedFaces[,1,index],binnedFaces[,2,index])
-  plot(ThreshShapeMat[,1,index],ThreshShapeMat[,2,index],main=PCscoresneg$x[i])
-}
-
+#
+p<-ggplot(plotdf,aes(x=seq.1.18.*10,y=X1001))
+p+geom_ribbon(aes(x=seq.1.18.*10,ymin=botPercVec,ymax=topPercVec),fill='gray80',alpha=1)+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10,alpha=.8)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
 ```
 
 ```{r}
@@ -393,7 +414,7 @@ library(visreg)
 BuMerge$TDProp=1-BuMerge$BuProp
 
 # dev analyses
-summary(gam(TDProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
+visreg(gam(TDProp~s(interview_age,k=4)+FD+sex,data=BuMerge))
 
 # get residuals of model for plotting
 TDProp_lm<-lm(TDProp~FD+sex,data=BuMerge)
@@ -401,6 +422,27 @@ BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
 
 ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('#4b5e72'), fill = "#7b98b7", alpha = .8) + geom_point(size=3,alpha=.6) + xlab("Age") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
 
+
+# aaaand combat chunk on it
+library(devtools)
+#install_github("jfortin1/neuroCombatData")
+#install_github("jfortin1/neuroCombat_Rpackage")
+
+library(neuroCombat)
+
+# get site info
+BuMerge$d_site<-droplevels(as.factor(BuMerge$site))
+batch <- BuMerge$d_site
+BuMerge.toharmonize <- BuMerge[,c("TDProp","FD")]
+mod <- model.matrix(~BuMerge$interview_age+BuMerge$sex)
+dat <- t(BuMerge.toharmonize)
+hcpd.data.combat <- neuroCombat(dat=dat,mod=mod,batch=batch,eb=FALSE)
+dat.harmonized<-data.frame(t(hcpd.data.combat$dat.combat))
+
+BuMerge$harmTDProp<-dat.harmonized$TDProp
+BuMerge$harmFD<-dat.harmonized$FD
+
+visreg(gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge))
 ```
 
 ```{r}
@@ -609,11 +651,55 @@ coord_polar(start = 3.1416)
 p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-40000,78000))
 
 
+# convert to proporitons for meaningful difference calculation
+disthistprop=disthist/sum(disthist)
+disthistpropO=disthistO/sum(disthist0)
+# same for modes
+disthistpropM=disthistModes/sum(disthistModes)
+disthistpropMO=disthistModesO/sum(disthistModes0)
+
 # difference
-plotdf$dif<-disthist-disthistO
-plotdf$modedif<-disthistModes--disthistModesO
+plotdf$dif<-disthistpropO-disthistprop
+plotdf$modedif<-disthistpropMO[1,]-disthistpropM[1,]
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = as.numeric(dif))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+
+
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-.0008,.0008))
+
+
+# Make the plot
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numerical parameter
+					y = as.numeric(modedif))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+# define the polar coordinate
+coord_polar(start = 3.1416)
+
+
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-.0002,.0002))
 
 ```
+
+```{r}
 plotdf<-data.frame(dif)
 plotdf$index<-seq(1:36)
 

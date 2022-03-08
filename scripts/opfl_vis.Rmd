@@ -34,6 +34,27 @@ ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = pl
 
 ```{r}
 library(ggplot2)
+# schematic data
+plotdf<-data.frame(t())
+p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
+					
+					# y-axis numberical parameter
+					y = round(as.numeric(X2)/800))) +	
+
+# the bar height will represent
+# the actual value of the data
+geom_bar(stat = "identity",color='black',
+		aes(fill=index)) + # define bar color
+
+# define the polar coordinate
+coord_polar(start = 3.1416)
+# plot
+p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+ylim(-400,650)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')
+
+
+```
+
+```{r}
 disthist=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/disthist.csv'),header=F)
 plotdf<-data.frame(t(disthist))
 plotdf$index<-seq(1:36)
