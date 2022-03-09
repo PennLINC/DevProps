@@ -11,8 +11,8 @@ surfR = [SubjectsFolder '/surf/rh.sphere'];
 [V_L, F_L] = read_surf(surfL);
 [V_R, F_R] = read_surf(surfR);
 % +1 the faces: begins indexing at 0
-faces_l = faces_l + 1;
-faces_r = faces_r + 1;
+F_L = F_L + 1;
+F_R = F_R + 1;
 % load in PG, PGG it for masking
 gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
 gLPGf=gifti(gLPGfp);
@@ -69,4 +69,4 @@ outFn=strcat('/cbica/projects/pinesParcels/results/aggregated_data/AgeEf_Permuts
 writetable(table(vertVecL),[outdir 'AgeEfs_fs4_L.csv'],'WriteVariableNames',0);
 writetable(table(vertVecR),[outdir 'AgeEfs_fs4_R.csv'],'WriteVariableNames',0);
 % create permutations, save out to outFn
-SpinPermuFS([outdir 'AgeEfs_fs4_L.csv'], [outdir 'AgeEfs_fs4_R.csv'], 1000, outFn);
+SpinPermuFS([outdir 'AgeEfs_fs4_L.csv'], [outdir 'AgeEfs_fs4_R.csv'], 1000, outFn,'_AgeEf_');

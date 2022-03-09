@@ -4,50 +4,6 @@
 #### Date: 3/9/2022
 
 
-####### function(s)
-get_parcel_mapping_yeo <- function(parcel_num){
-  #pre: input parcel #, either 7 or 17
-  #post: list lh and rh yeo networks that map onto code #s
-  #uses: easy way to translate the weird numerical maps in fsaverage 5 space into something we are more familiar with
-  #dependencies: Any R will do, I used 3.2.5
-
-  ## Set Yeo info
-  #### set # parcels in case I want to do 7 or 17 or something else in the future
-  parcel_type = "Yeo"
-  parcel_num = parcel_num
-  input_parcel_array_length = 2562
-
-  # read in yeo fsaverage4 vectors
-  parcelID <- read.csv(paste0(homedir, "/baller/processed_data/yeo_network_data/NetworkIDnumbers", parcel_type, parcel_num, ".csv"), header = F)
-  parcelName <- t(read.csv(paste0(homedir, "/baller/processed_data/yeo_network_data/NetworkNames", parcel_type, parcel_num, ".csv"), header = F))
-
-  lh_parcel_nums <- read.csv(paste0(homedir, "/baller/processed_data/yeo_network_data/lh_", input_parcel_array_length, "_vertex_nums_", parcel_type, parcel_num, ".csv"), header = F)
-  rh_parcel_nums <- read.csv(paste0(homedir, "/baller/processed_data/yeo_network_data/rh_", input_parcel_array_length, "_vertex_nums_", parcel_type, parcel_num, ".csv"), header = F)
-
-  # map Yeo numbers to parcels
-  #make a column of numbers for mapping
-  parcelID$network_num <- c(1:dim(parcelID)[1])
-
-  #add extra row to parcelID, not clear why this didn't come from Yeo labels, maybe cerebellum?... 8 will equal 65793
-  # comment this out if not using yeo
-  parcelID<- rbind(parcelID, c(65793, 8))
-
-  #make vector for lh and rh with mapping
-  lh_numerical_map <- lh_parcel_nums
-  rh_numerical_map <- rh_parcel_nums
-
-  #foreach vertex, which contains a bunch of numbers, match it to the appropriate column, and take the network num (i.e. yeo 2, which would correspond to Motor), associated with it
-  lh_numerical_map[] <- lapply(lh_parcel_nums, function(x) parcelID$network_num[match(x, parcelID$V1)])
-  rh_numerical_map[] <- lapply(rh_parcel_nums, function(x) parcelID$network_num[match(x, parcelID$V1)])
-
-  lh_and_rh_numerical_map_list <- list(lh_numerical_map$V1, rh_numerical_map$V1)
-  return(lh_and_rh_numerical_map_list)
-
-}
-
-# end function(s)
-
-
 ### Will Need Spins in FS4
 ### Will need conversion of yeo7 to faces
 
@@ -75,144 +31,93 @@ source(paste0(homedir, "/baller/scripts/imco_functions.R"))
 hemis <- c("lh", "rh")
 permNum <- 1000
 yeo_num <- 7
-models = c("gam_age", "t_carit")
 
-#set flag to 1 if you'd like to calculate a spin for a mean map. It uses the means rather than proportions so it is a little wee bit different
-mean_coupling = 1
-################
 ### Read in matrices 
-#{lh and rh}_gam_sex_t_fdr05 -> actual results
-lh_t_fdr05_results <- read.table("/cbica/projects/pinesParcels/results/PWs/FDRed_Prop_L.csv")
-rh_t_fdr05_results <- read.table("/cbica/projects/pinesParcels/results/PWs/FDRed_Prop_R.csv")
   
-#spins
-lh_spin <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/AgeEfs_fs4_L.csv'), sep = ","))
-rh_spin <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/AgeEfs_fs4_R.csv'), sep = ","))
-                                          
-#bring together, with original values as first column
-lh_act_results_and_spin <- cbind(lh_t_fdr05_results, lh_spin)
-rh_act_results_and_spin <- cbind(rh_t_fdr05_results, rh_spin)
-  
-#grab list of yeo 7 networks in fsaverage5 space
-yeo_networks <- get_parcel_mapping_yeo(yeo_num)
-  
-  #separate into right and left
-  lh_yeo_network <- yeo_networks[[1]]
-  rh_yeo_network <- yeo_networks[[2]]
-  
-  #count up number of vertices per network
-  lh_yeo_network_count_table <- table(lh_yeo_network)
-  rh_yeo_network_count_table <- table(rh_yeo_network)
-  
-  #multiply yeo network x spin test
-  lh_spinxyeo <- lh_act_results_and_spin*lh_yeo_network
-  rh_spinxyeo <- rh_act_results_and_spin*rh_yeo_network
-  
-  #proportions
-  #go through each hemisphere, go through each perm, and go through each network
-  
-  lh_hemi_spin_proportions <- data.frame(matrix(nrow = yeo_num, ncol = (permNum + 1)))
-  rh_hemi_spin_proportions <- data.frame(matrix(nrow = yeo_num, ncol = (permNum + 1)))
-  for (hemi in hemis){
+# real data
+lh_t_fdr05_results <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/AgeEfs_fs4_L.csv', sep = ","))
+rh_t_fdr05_results <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/AgeEfs_fs4_R.csv', sep = ","))
+ 
+# spins                                         
+lh_spin <-t(read.csv('~/data/lh_spin_test__AgeEf__output.csv',col.names=T))
+rh_spin <-t(read.csv('~/data/rh_spin_test__AgeEf__output.csv',col.names=T))
 
-    for (perm in 1:(permNum + 1)){
-      
-      for (network in 1:yeo_num){
-        
-        #to evaluate
+# intiialize permutation matrix
+permMat_L=matrix(0,2562,1000)
+permMat_R=matrix(0,2562,1000)
+
+# index out each of 1k permutations
+for (p in seq(1,1000)){
+	start=((p-1)*2562)+1
+	finish=(p*2562)
+	permMat_L[,p]=lh_spin[start:finish]
+	permMat_R[,p]=rh_spin[start:finish]
+}
+
+#bring together, with original values as first column
+lh_act_results_and_spin <- cbind(lh_t_fdr05_results, permMat_L)
+rh_act_results_and_spin <- cbind(rh_t_fdr05_results, permMat_R)
+
+# get ind of where 1000s are for setting to negative to match Erica's script later
+lh_1k_inds=which(lh_act_results_and_spin==1000,arr.ind=T)
+rh_1k_inds=which(rh_act_results_and_spin==1000,arr.ind=T)
+# set 1000s back to 0 (1000s from spin script)
+lh_act_results_and_spin[lh_act_results_and_spin==1000]=0
+rh_act_results_and_spin[rh_act_results_and_spin==1000]=0
+  
+#grab list of yeo 7 networks in fsaverage4 space
+lh_yeo_network <- read.csv('~/data/y7_R_3k.csv')[,1]
+rh_yeo_network <- read.csv('~/data/y7_L_3k.csv')[,1]
+  
+#count up number of vertices per network
+lh_yeo_network_count_table <- table(lh_yeo_network)
+rh_yeo_network_count_table <- table(rh_yeo_network)
+  
+#multiply yeo network x spin test
+# AP note: I think Erica made this a binarized "is there an effect here map" for it to work with yeo7 # multiplication
+lh_act_results_and_spinBool=sapply(as.data.frame(lh_act_results_and_spin),as.logical)
+rh_act_results_and_spinBool=sapply(as.data.frame(rh_act_results_and_spin),as.logical)
+
+# set 1000s to negative to match Erica's script
+lh_act_results_and_spinBool[lh_1k_inds]=-1
+rh_act_results_and_spinBool[rh_1k_inds]=-1
+
+# multiply them to turn boolean TRUE into network numbers
+lh_spinxyeo <- lh_act_results_and_spinBool*lh_yeo_network
+rh_spinxyeo <- rh_act_results_and_spinBool*rh_yeo_network
+
+#proportions
+#go through each hemisphere, go through each perm, and go through each network
+  
+lh_hemi_spin_proportions <- data.frame(matrix(nrow = yeo_num, ncol = (permNum + 1)))
+rh_hemi_spin_proportions <- data.frame(matrix(nrow = yeo_num, ncol = (permNum + 1)))
+
+for (hemi in hemis){
+  for (perm in 1:(permNum + 1)){
+    for (network in 1:yeo_num){
         
         #number of vertices within network that are fdr corrected
-        num_pos_to_parse<- paste0("length(which(", hemi, "_spinxyeo[", perm, "] == ", network, "))")
-        
+        num_pos_to_parse<- paste0("length(which(", hemi, "_spinxyeo[,", perm, "] == ", network, "))") 
         num_vertices_in_spin <- eval(parse(text = as.character(num_pos_to_parse)))
-        
-        
+         
         #number of vertices within network that are negative (i.e., medial wall)
-        num_neg_to_parse <- paste0("length(which(", hemi, "_spinxyeo[", perm, "] == -", network, "))")
-      
+        num_neg_to_parse <- paste0("length(which(", hemi, "_spinxyeo[,", perm, "] == -", network, "))")
         num_neg <- eval(parse(text = as.character(num_neg_to_parse)))
         
-        
-        #total number of vertices in normal network
-        total_possible_to_parse <- paste0(hemi, "_yeo_network_count_table[", network, "]")
- 
+        #total number of vertices in normal network : AP +1 because 0 hold first place in this table
+        total_possible_to_parse <- paste0(hemi, "_yeo_network_count_table[", network, "+1]")
         total_possible <- eval(parse(text = as.character(total_possible_to_parse)))
         
-       
         #proportion of vertices within network , with denominator being total possible by # in medial wall
         proportion_potential_vertices <- num_vertices_in_spin/(total_possible - num_neg)
-    
         
         #store in matrix
         storing_to_parse <- paste0(hemi, "_hemi_spin_proportions[", network, ",", perm, "] = ", proportion_potential_vertices)
-
         eval(parse(text = as.character(storing_to_parse)))
-      }
     }
   }
+}
   
-  write.table(lh_hemi_spin_proportions, file = paste0(homedir, "/baller/results/coupling_accuracy//spin_test_results/lh_spin_test_", model, "_proportions.csv"), sep = ",", col.names = F, row.names = F)
-  write.table(rh_hemi_spin_proportions, file = paste0(homedir, "/baller/results/coupling_accuracy//spin_test_results/rh_spin_test_", model, "_proportions.csv"), sep = ",", col.names = F, row.names = F)
+write.table(lh_hemi_spin_proportions,'~/data/lh_spin_test_AgeEf_proportions.csv', sep = ",", col.names = F, row.names = F)
+write.table(rh_hemi_spin_proportions,'~/data/rh_spin_test_AgeEf_proportions.csv', sep = ",", col.names = F, row.names = F)
 #then plot
-
-####################################
-### save mean coupling spin info ###
-####################################
-if (mean_coupling == 1) {
-  lh_t_results <- read.table(paste0(homedir, "/baller/results/lh_mean_coupling_med_wall_-1.csv"))
-  rh_t_results <- read.table(paste0(homedir, "/baller/results/rh_mean_coupling_med_wall_-1.csv"))
-
-  #spins
-  lh_spin <- t(read.table(paste0(homedir, "/baller/results/coupling_accuracy/spin_test_results/lh_spin_test_mean_coupling_results_med_wall_-1_output.csv"), sep = ","))
-  rh_spin <- t(read.table(paste0(homedir, "/baller/results/coupling_accuracy/spin_test_results/rh_spin_test_mean_coupling_results_med_wall_-1_output.csv"), sep = ","))
- 
-  #bring together, with original values as first column
-  lh_act_results_and_spin <- cbind(lh_t_results, lh_spin)
-  rh_act_results_and_spin <- cbind(rh_t_results, rh_spin)
-  
-  #grab list of yeo 7 networks in fsaverage4 space
-  yeo_networks <- get_parcel_mapping_yeo(yeo_num)
-  
-  #separate into right and left
-  lh_yeo_network <- yeo_networks[[1]]
-  rh_yeo_network <- yeo_networks[[2]]
-  
-  #proportions
-  #go through each hemisphere, go through each perm, and go through each network
-  
-  lh_hemi_spin_means <- data.frame(matrix(nrow = yeo_num, ncol = (permNum + 1)))
-  rh_hemi_spin_means <- data.frame(matrix(nrow = yeo_num, ncol = (permNum + 1)))
-  
-  for (hemi in hemis){
-    
-    for (perm in 1:(permNum + 1)){
-      
-      for (network in 1:yeo_num){
-        
-        #to evaluate
-        
-        #number of vertices within network that are not medial wall
-        
-        #first, grab all values in the network
-        all_ts_in_network_to_parse <- paste0(hemi, "_act_results_and_spin[which(", hemi,"_yeo_network == ", network, "),", perm, "]")
-        all_ts <- eval(parse(text = as.character(all_ts_in_network_to_parse)))    
-        
-        #remove -1s, i.e. medial wall
-        all_ts_remove_medial_wall <- all_ts[all_ts != -1]
-        
-        #take the mean of the remaining
-        mean_spin <- mean(all_ts_remove_medial_wall)
-        
-        #store in matrix
-        storing_to_parse <- paste0(hemi, "_hemi_spin_means[", network, ",", perm, "] = ", mean_spin)
-        
-        eval(parse(text = as.character(storing_to_parse)))
-      }
-    }
-  }
-  
-  write.table(lh_hemi_spin_means, file = paste0(homedir, "/baller/results/coupling_accuracy//spin_test_results/lh_spin_test_mean_coupling.csv"), sep = ",", col.names = F, row.names = F)
-  write.table(rh_hemi_spin_means, file = paste0(homedir, "/baller/results/coupling_accuracy//spin_test_results/rh_spin_test_mean_coupling.csv"), sep = ",", col.names = F, row.names = F)
-  #then plot
-
-} 
