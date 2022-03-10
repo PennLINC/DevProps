@@ -1,14 +1,15 @@
 ```{r}
 # network enrichment plotting
-lh_spin_df <- data.frame(read.table('Y:/data/lh_spin_test_AgeEf_proportions.csv', sep = ","))
-rh_spin_df <- data.frame(read.table('Y:/data/rh_spin_test_AgeEf_proportions.csv', sep = ","))
+lh_spin_df <- data.frame(read.table('Y:/data/lh_spin_test_TaskEf_proportions.csv', sep = ","))
+rh_spin_df <- data.frame(read.table('Y:/data/rh_spin_test_TaskEf_proportions.csv', sep = ","))
 ```
 
 ```{r}
 actual_results <- (lh_spin_df[,1] + rh_spin_df[,1])/2
 spin_without_target_col <- cbind(lh_spin_df[,2:1001],rh_spin_df[,2:1001])
+pvec=NULL
 for (i in 1:7){
     #store p values
-    print(length(which(spin_without_target_col[i,] > actual_results[i]))/2000)
+    pvec[i]=(length(which(spin_without_target_col[i,] > actual_results[i]))/2000)
 }
 ```

@@ -1,0 +1,69 @@
+---
+title: "DipTestAll"
+output: html_document
+---
+
+```{r}
+# load in subj list
+subjList=read.delim('Y:/PWs/hcpd_subj_list.txt')
+# load in ages
+demo=read.csv('Y:/PWs/hcpd_demographics.csv')
+# convert to used naming convention
+demo$SubjID<-gsub('HCD','sub-',demo$src_subject_id)
+# load in FD
+FD_TRs=read.csv('Y:/PWs/Subj_FD_RemTRs.csv')
+colnames(FD_TRs)[1]<-'SubjID'
+colnames(FD_TRs)[2]<-'FD'
+colnames(FD_TRs)[3]<-'RemainingTRs'
+# merge by subjID
+mergeddf<-merge(demo,FD_TRs,by='SubjID')
+
+# initialize remaining TRs
+remTRs=rep(0,dim(subjList)[1])
+
+# subjvec to run in parallel for even more confidence in merging
+Subjvec=rep(0,dim(subjList)[1])
+
+# load in D and shapes iteratively
+for (s in 1:dim(subjList)[1]){
+    subj=subjList[s,1]
+    # and to record same order of subj loading and prevent funny biz
+    Subjvec[s]=subj
+    print(s)
+    # and remaining TRs
+    remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
+}
+
+# merge populated vecs
+popDf=data.frame(Subjvec,remTRs)
+colnames(popDf)[1]<-'SubjID'
+
+# remaining TRs thresh
+inclusionVec<-popDf$remTRs>600
+includedSubjsvec<-popDf$SubjID[inclusionVec]
+popDfThresh=popDf[popDf$remTRs>600,]
+ThreshShapeMat<-shapeMat[,,inclusionVec]
+masterdf=merge(mergeddf,popDfThresh,by='SubjID')
+
+# now check out subject Ds and Ps for those that passed minimum TR number
+Ds=rep(0,dim(masterdf)[1])
+Ps=rep(0,dim(masterdf)[1])
+
+# load in D and shapes iteratively
+for (s in 1:dim(masterdf)[1]){
+    subj=masterdf$SubjID[s]
+    ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
+    # load in dip test
+    dipstat=readRDS(paste0(ResFp,subj,'_gDipTest.rds'))
+    Ds[s]=dipstat$statistic
+    SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips.csv'),header=F)
+    ObsDip<-as.numeric(SpunDips[2,1001])
+    SpunDips<-as.numeric(SpunDips[2,1:1000])
+    Ps[s]=sum(SpunDips>ObsDip)
+  }
+}
+
+masterdf$Ps<-Ps
+masterdf$Ds<-Ds
+
+```

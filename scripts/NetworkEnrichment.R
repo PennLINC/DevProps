@@ -20,12 +20,12 @@
 
 
 #library(bigmemory.sri)
-library(ggplot2)
-library(tidyr)
+#library(ggplot2)
+#ibrary(tidyr)
 
 #################
 ### set home directory
-source(paste0(homedir, "/baller/scripts/imco_functions.R"))
+#source(paste0(homedir, "/baller/scripts/imco_functions.R"))
 
 #initialize
 hemis <- c("lh", "rh")
@@ -35,12 +35,12 @@ yeo_num <- 7
 ### Read in matrices 
   
 # real data
-lh_t_fdr05_results <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/AgeEfs_fs4_L.csv', sep = ","))
-rh_t_fdr05_results <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/AgeEfs_fs4_R.csv', sep = ","))
- 
+lh_t_fdr05_results <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/TaskEfs_fs4_L.csv', sep = ","))
+rh_t_fdr05_results <- t(read.table('/cbica/projects/pinesParcels/results/aggregated_data/TaskEfs_fs4_R.csv', sep = ","))
+
 # spins                                         
-lh_spin <-t(read.csv('~/data/lh_spin_test__AgeEf__output.csv',col.names=T))
-rh_spin <-t(read.csv('~/data/rh_spin_test__AgeEf__output.csv',col.names=T))
+lh_spin <-t(read.csv('~/data/lh_spin_test_TaskEf_output.csv',col.names=T))
+rh_spin <-t(read.csv('~/data/rh_spin_test_TaskEf_output.csv',col.names=T))
 
 # intiialize permutation matrix
 permMat_L=matrix(0,2562,1000)
@@ -118,6 +118,6 @@ for (hemi in hemis){
   }
 }
   
-write.table(lh_hemi_spin_proportions,'~/data/lh_spin_test_AgeEf_proportions.csv', sep = ",", col.names = F, row.names = F)
-write.table(rh_hemi_spin_proportions,'~/data/rh_spin_test_AgeEf_proportions.csv', sep = ",", col.names = F, row.names = F)
+write.table(lh_hemi_spin_proportions,'~/data/lh_spin_test_TaskEf_proportions.csv', sep = ",", col.names = F, row.names = F)
+write.table(rh_hemi_spin_proportions,'~/data/rh_spin_test_TaskEf_proportions.csv', sep = ",", col.names = F, row.names = F)
 #then plot
