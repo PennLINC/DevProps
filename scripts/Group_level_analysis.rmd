@@ -156,12 +156,15 @@ plotdataf$botPercVec=botPercVec
 
 plotdf<-data.frame(meanVec,topPercVec,botPercVec,seq(1:18),t(PermDif[1001,]))
 
+library(RcmdrPlugin.KMggplot2)
 
 # keller kode
-ggplot(plotdf)+geom_ribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80')+geom_step(aes(x=seq.1.18.*10,y=X1001*100),color='blue',size=2)+theme_classic(base_size = 30)+xlab("Angular Distance (degrees)")+ylab('Percentage Difference')
+ggplot(plotdf)+geom_stepribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80')+geom_step(aes(x=seq.1.18.*10,y=X1001*100),color='blue',size=2)+theme_classic(base_size = 30)+xlab("Angular Distance (degrees)")+ylab('Percentage Difference')
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('% of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
+#p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('% of Propagations')+geom_stepribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),position = position_nudge(x=-5),fill='gray80',alpha=.5)
+
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('% of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
 
 ### aaaaand permuted task vs rest dif
 
