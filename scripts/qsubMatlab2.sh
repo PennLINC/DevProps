@@ -1,1 +1,1 @@
-matlab -nodisplay -r "Bin_PGGDistributions360"
+matlab -nodisplay -r "AggFC"

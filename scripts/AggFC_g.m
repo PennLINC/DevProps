@@ -16,7 +16,7 @@ for s=1:height(Subjs)
 	% isolate cortex
 	TSc=TS.cdata(1:59412,:);
 	% read in network partition
-	netPart=['/cbica/projects/hcpd/data/SSPs/SingleParcel_1by1_fslr/' subj '/IndividualParcel_Final_sbj1_comp17_alphaS21_1_alphaL300_vxInfo1_ard0_eta0/final_UV.mat']; 
+	netPart=['/cbica/projects/hcpd/data/SSPs/SingleParcel_1by1_fslr/' subj '/IndividualParcel_Final_sbj1_comp17_alphaS21_1_alphaL300_vxInfo1_ard0_eta0/init_UV.mat']; 
 	networks=load(netPart);
 	% conver to hard parcels
 	softParcel=networks.V{:};

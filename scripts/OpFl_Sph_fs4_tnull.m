@@ -49,7 +49,7 @@ numV=length(vx_l);
 vx_l(numV+1:end, :) = VecNormalize(vx_l(numV+1:end, :));
 % right
 numV=length(vx_r);
-vx_r(numV+1:end, :) = VecNormalize(vx_r(numV+1:end, :));
+vx_l(numV+1:end, :) = VecNormalize(vx_l(numV+1:end, :));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -63,19 +63,37 @@ TR_n=sizeInDl(2)
 sizeInDr(2)
 assert(sizeInDl(2) == sizeInDr(2), 'Unequal time series length between hemispheres')
 
+% make a shuffled vector for temporal null
+ShufVec=1:TR_n;
+% 100 shuffles for now
+numShufs=100;
+ShufMat=zeros(numShufs,TR_n);
+for i=1:numShufs
+	ShufMat(i,:)=ShufVec(randperm(TR_n));
+end
+
+
+% initialize TRP counter OUTSIDE OF SHUFFLE LOOP: for plopping u outputs into master struct w/o/r/t their segment
+TRPC=1;
+% note trp = tr pair
+
+%%%%%%%%%%%%%%%% for each shuffle
+for sh=1:numShufs
+
+shuffle=sh
+
+% reorg time series w/r/t shuffle
 % left hemi
-disp('converting left hemi to struct')
 fl=struct;
 % populate struct
 for TRP=1:TR_n;
-	fl.TRs{TRP}=TRs_l(:,TRP);
+	fl.TRs{TRP}=TRs_l(:,ShufMat(sh,TRP));
 end
 
 % r h 
-disp('converting right hemi to struct')
 fr=struct;
 for TRP=1:TR_n;
-	fr.TRs{TRP}=TRs_r(:,TRP);
+	fr.TRs{TRP}=TRs_r(:,ShufMat(sh,TRP));
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% load in continuous segment indices
@@ -98,11 +116,6 @@ end
 us=struct;
 disp('Computing optical flow...');
 
-% initialize TRP counter: for plopping u outputs into master struct w/o/r/t their segment
-% note trp = tr pair
-
-TRPC=1;
-
 % for each continuous segment
 for seg=1:SegNum;
 	% just to print out count of current segment
@@ -123,7 +136,7 @@ for seg=1:SegNum;
 		% throw u into struct
 		us.vf_left{TRPC}=u;
 		% now right hemi
-		u = of(N, faces_r, vx_r, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
+		u = of(N, faces_l, vx_l, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
 		toc;
 		% throw u into struct
 		us.vf_right{TRPC}=u;
@@ -134,94 +147,14 @@ for seg=1:SegNum;
 		TRPC=TRPC+1;
 	end
 end
+
+% plop it into big struct
+
+
+%end for each shuffle
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-save(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_v2.mat'],'us')
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Visualize
-% extract medial wall mask
-% LHmw=read_label([],'/cbica/software/external/freesurfer/centos7/5.3.0/subjects/fsaverage4/label/lh.Medial_wall');
-% LHmw_Inds=LHmw(:,1);
-% might be a +1 in indexing begins at 0 again
-% LHmw_Inds=LHmw_Inds+1;
-
-% Get incenters of triangles.
-% TR = TriRep(faces_l, vx_l);
-% P = TR.incenters;
-
-% vector field
-%DirecsVecs=struct('cdata',[],'colormap',[]);
-%for j=1:50
-%u=us.vf_left{j};
-%vATTR=fl.TRs{j};
-%figure;
-%axis([-1, 1, -1, 1, 0, 1]);
-%quiver3(P(:, 1), P(:, 2), P(:, 3), u(:, 1), u(:, 2), u(:, 3), 4, 'k');
-%hold on
-%trisurf(faces_l, vx_l(:, 1), vx_l(:, 2), vx_l(:, 3), vATTR, 'EdgeColor','none');
-%axis equal
-%daspect([1, 1, 1]);
-%caxis([-45,45]);
-%colorbar
-%view(115,315); %medial wall view
-%view(200,200);
-%DirecsVecs(j)=getframe(gcf);
-%end
-% create videowriter object
-%video = VideoWriter('testDirecVecs_rot.avi', 'Uncompressed AVI');
-%video.FrameRate = 4;
-% open it, plop Direcs in
-%open(video)
-%writeVideo(video, DirecsVecs);
-%close(video);
-
-% color instead of vecs for dir
-% compute color space scaling: scaled to last u
-%nmax = max(sqrt(sum(u.^2, 2)));
-% populate direcs with frames of directionality evolution on sphere
-%Direcs=struct('cdata',[],'colormap',[]);
-%for j=1:100
-% Compute color of projection.
-%u=us.vf_left{j};
-%c = double(squeeze(computeColour(u(:, 1)/nmax, u(:, 2)/nmax))) ./ 255;
-%figure;
-%axis([-1, 1, -1, 1, 0, 1]);
-%trisurf(F, V(:, 1), V(:, 2), V(:, 3), 'FaceColor', 'flat', 'FaceVertexCData', c, 'EdgeColor', 'none');
-%daspect([1, 1, 1]);
-%view(115,315);
-%Direcs(j)=getframe(gcf)
-%end
-% create videowriter object
-%video = VideoWriter('testDirec.avi', 'Uncompressed AVI');
-%video.FrameRate = 4;
-% open it, plop Direcs in
-%open(video)
-%writeVideo(video, Direcs);
-%close(video);
-
-% replicate for original time series
-
-%BOLD=struct('cdata',[],'colormap',[]);
-%for j=1:50
-%figure;
-%axis([-1, 1, -1, 1, 0, 1]);
-% verts at this TR
-%vATTR=fl.TRs{j};
-% apply mask
-%vATTR(LHmw_Inds)=-35;
-%trisurf(F, V(:, 1), V(:, 2), V(:, 3), 'FaceColor', 'flat', 'FaceVertexCData', vATTR, 'EdgeColor', 'none');
-%daspect([1, 1, 1]);
-%caxis([-45,45]);
-%colorbar
-% try rotating view
-%view(115,315)
-%BOLD(j)=getframe(gcf)
-%end
-% create videowriter object
-%video = VideoWriter('testBOLD_rot.avi', 'Uncompressed AVI');
-%video.FrameRate = 4;
-% open it, plop Direcs in
-%open(video)
-%writeVideo(video, BOLD);
-%close(video);
+save(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_t_shuf.mat'],'us')
 

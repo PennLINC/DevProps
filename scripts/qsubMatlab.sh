@@ -1,1 +1,1 @@
-matlab -nodisplay -r "PGG_AngDistCalc4_sp('${1}')"
+matlab -nodisplay -r "OpFl_Sph_fs4('${1}')"
