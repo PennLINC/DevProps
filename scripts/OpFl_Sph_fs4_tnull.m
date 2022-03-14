@@ -49,7 +49,7 @@ numV=length(vx_l);
 vx_l(numV+1:end, :) = VecNormalize(vx_l(numV+1:end, :));
 % right
 numV=length(vx_r);
-vx_l(numV+1:end, :) = VecNormalize(vx_l(numV+1:end, :));
+vx_r(numV+1:end, :) = VecNormalize(vx_r(numV+1:end, :));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -136,7 +136,7 @@ for seg=1:SegNum;
 		% throw u into struct
 		us.vf_left{TRPC}=u;
 		% now right hemi
-		u = of(N, faces_l, vx_l, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
+		u = of(N, faces_r, vx_r, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
 		toc;
 		% throw u into struct
 		us.vf_right{TRPC}=u;

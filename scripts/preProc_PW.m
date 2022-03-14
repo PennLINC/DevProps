@@ -28,10 +28,6 @@ system(dsCommand)
 %mkdirCommand=['mkdir ' direcString];
 %system(mkdirCommand)
 
-% derive personalized PG
-% derivePGcommand=['/cbica/projects/pinesParcels/miniconda3/envs/mv_preds/bin/python derive_pg.py ' subj];
-% system(derivePGcommand)
-
 %%%%%%%%%%%%%%%
 % don't mess about with OpFl if it's already been ran
 %OFfp=['/cbica/projects/pinesParcels/results/Proced/' subj '/' subj '_OpFl_fs5.mat'];

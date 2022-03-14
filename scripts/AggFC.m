@@ -89,4 +89,4 @@ for s=1:height(Subjs)
 	DMNseg(s,2)=num2cell(Dseg);	
 end
 % save out aggregate dmn 
-writetable(table(DMNseg),'~/Results/DMNseg.csv')
+writetable(table(DMNseg),'~/results/DMNseg.csv')
