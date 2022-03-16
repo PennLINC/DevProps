@@ -21,7 +21,7 @@ s = 1; % R(u), regularizing functional, scales Tikhonov regularization more rapi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% uptake surface data
 % load in fsaverage5 faces and vertices
-addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
+%addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
 
 %%%%%%%%% HARDCODE FILEPATH TO THESE 

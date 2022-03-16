@@ -1,1 +1,1 @@
-matlab -nodisplay -r "OpFl_Sph_fs4('${1}')"
+matlab -nodisplay -r "preProc_PW('${1}')"

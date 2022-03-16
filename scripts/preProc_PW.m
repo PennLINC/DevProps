@@ -20,8 +20,8 @@ apply_motion_mask(subj)
 
 %%% already ran on subjs
 % downsample aggregated TS 
-dsCommand=['~/PWs/scripts/downsample_TSfs4.sh ' subj];
-system(dsCommand)
+dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
+%system(dsCommand)
 
 % make a "Proced" dir
 %direcString=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
@@ -34,13 +34,20 @@ system(dsCommand)
 %if ~exist(OFfp)
 %%%%%%%%%%%%%%%
 
+%%% RUN 1
 %%% Run Spherical Optical flow
-OpFl_Sph_fs4(subj)
-%end
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl.sh']);
 
+% RUN 2
 %%% Calculate the calculus gradient of the principal gradient, calculate angular distance of OpFl directions
-PGG_AngDistCalc4(subj)
+%PGG_AngDistCalc4(subj)
+%system(['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
+%system(['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
 
+% RUN 3
 %%% mask medial wall and extract R-friendly face data
-mask_mw_faces_4(subj)
+%mask_mw_faces(subj)
 
