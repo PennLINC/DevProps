@@ -1,1 +1,1 @@
-Rscript facewise_stats_R_mot.R
+Rscript facewise_R_cdelta_perf.R

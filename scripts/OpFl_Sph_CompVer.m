@@ -76,26 +76,58 @@ for TRP=1:TR_n;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compute optical flow on every pair of sequential TRs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% load in continuous segment indices
+parentfp = '/cbica/projects/hcpd/data/motMasked_contSegs/';
+CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
+CSI = readtable(CSIfp);
+
+% assure that TR count is the same between time series and valid segments txt
+SegNum=height(CSI);
+% trailing -1 is because the count column (,2) is inclusive of the start TR (,1)
+numTRsVS=CSI{SegNum,1}+CSI{SegNum,2}-1;
+if numTRsVS ~= TR_n
+        disp('TRs from Valid Segments txt and cifti do not match. Fix it.')
+        return
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compute optical flow on every pair of sequential TRs within continuous segments
 % initialize output struct
 us=struct;
 disp('Computing optical flow...');
 
+% initialize TRP counter: for plopping u outputs into master struct w/o/r/t their segment
+% note trp = tr pair
+
+TRPC=1;
+
 % loop over each TR-Pair: 1 fewer pair than number of TRs
 
-for TRP=1:(TR_n-1);
-% Compute decomposition.
-tic;
-% pull out adjacent frames
-u = of(N, faces_l, vx_l, fl.TRs{TRP}, fl.TRs{TRP+1}, h, alpha, s);
-toc;
-% throw u into struct
-us.vf_left{TRP}=u;
-% now right hemi
-u = of(N, faces_r, vx_r, fr.TRs{TRP}, fr.TRs{TRP+1}, h, alpha, s);
-toc;
-% throw u into struct
-us.vf_right{TRP}=u;
+% for each continuous segment
+for seg=1:SegNum;
+	% just to print out count of current segment
+        seg
+        SegStart=CSI{seg,1};
+        SegSpan=CSI{seg,2};
+        % get corresponding TRs from aggregate time series
+        segTS_l=fl.TRs(SegStart:(SegStart+SegSpan-1));
+        segTS_r=fr.TRs(SegStart:(SegStart+SegSpan-1));
+	for TRP=1:(SegSpan-1);
+		% Compute decomposition.
+		tic;
+		% pull out adjacent frames
+		u = of(N, faces_l, vx_l, fl.TRs{TRP}, fl.TRs{TRP+1}, h, alpha, s);
+		toc;
+		% throw u into struct
+		us.vf_left{TRPC}=u;
+		% now right hemi
+		u = of(N, faces_r, vx_r, fr.TRs{TRP}, fr.TRs{TRP+1}, h, alpha, s);
+		toc;
+		% throw u into struct
+		us.vf_right{TRPC}=u;
+		% update TR pair counter, which should increase +1 across segments
+                TRPC=TRPC+1;
+	end
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

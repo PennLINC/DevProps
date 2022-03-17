@@ -45,19 +45,6 @@ for (s in 1:dim(subjList)[1]){
     ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
     # if output exists
     if (file.exists(paste0(ResFp,subj,'_gShapeMatrix.rds'))) {
-      # load in shapemat
-      shapemat=readRDS(paste0(ResFp,subj,'_gShapeMatrix.rds'))
-      # scale it
-      divisorPt2=24/(max(shapemat[,2])-min(shapemat[,2]))
-      shapeMat[,1,s]=shapemat[,1]
-      shapeMat[,2,s]=shapemat[,2]*divisorPt2
-      # load in shapemat abs
-      #shapematAbs=readRDS(paste0(ResFp,subj,'_AbsShapeMatrix.rds'))
-      # scale it
-      #divisorPt1a=max(shapematAbs[,2])
-      #divisorPt2a=20/divisorPt1a
-      #shapeMatAbs[,1,s]=shapematAbs[,1]
-      #shapeMatAbs[,2,s]=shapematAbs[,2]*divisorPt2a
       # load in dip test
       dipstat=readRDS(paste0(ResFp,subj,'_gDipTest.rds'))
       Ds[s]=dipstat$statistic

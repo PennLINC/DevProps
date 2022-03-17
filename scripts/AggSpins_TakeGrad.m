@@ -4,11 +4,11 @@
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % load in spins
-sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/PGPermuts_fs4.mat';
+sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/PGPermuts_fs5.mat';
 sp=load(sp_fp)
 
 % load in surface data
-SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
+SubjectsFolder = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage5';
 surfL = [SubjectsFolder '/surf/lh.sphere'];
 surfR = [SubjectsFolder '/surf/rh.sphere'];
 % surface topography
@@ -40,7 +40,7 @@ azd_R=rad2deg(az_R);
 eld_R=rad2deg(el_R);
 
 % initialize output file: elevation and azimuth directions, for each spin, for each face
-spGPGGs=zeros(2,1000,10240);
+spGPGGs=zeros(2,1000,40960);
 
 % for s in 1000
 for s=1:1000
@@ -72,14 +72,14 @@ for s=1:1000
 	    gels_R(i)=gvs_R(2);
 	end
 	% insert left
-	spGPGGs(1,s,1:5120)=gazes_L;
-	spGPGGs(2,s,1:5120)=gels_L;
+	spGPGGs(1,s,1:20480)=gazes_L;
+	spGPGGs(2,s,1:20480)=gels_L;
 	% insert left
-        spGPGGs(1,s,5121:10240)=gazes_R;
-        spGPGGs(2,s,5121:10240)=gels_R;
+        spGPGGs(1,s,20481:40960)=gazes_R;
+        spGPGGs(2,s,20481:40960)=gels_R;
 end
 % save output
-save('/cbica/projects/pinesParcels/results/aggregated_data/PGGPermuts_fs4.mat','spGPGGs')
+save('/cbica/projects/pinesParcels/results/aggregated_data/PGGPermuts_fs5.mat','spGPGGs')
 
 % plot to check
 figure('units','pixels','position',[0 0 1000 1000])
@@ -91,4 +91,4 @@ axis equal
 daspect([1, 1, 1]);
 colorbar
 view(180,60);
-print('spunGPGG4_2.png','-dpng')
+print('spunGPGG5_2.png','-dpng')

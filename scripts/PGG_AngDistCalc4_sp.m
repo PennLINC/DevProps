@@ -1,4 +1,4 @@
-function PGG_AngDistCalc4_sp(subj)
+p_PGGs=load('/cbica/projects/pinesParcels/results/aggregated_data/PGPermuts_fs5.mat');unction PGG_AngDistCalc4_sp(subj)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% load in optical flow data and calculate gradient gradient data, compare angular distance between them
