@@ -9,18 +9,11 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % apply motion masks and extract TR indcies of continuous segments
 %%% already ran on subjs - NOTE HCPD DIREC VERSION RUN, EXCLUDES NONCONTINUOUS SEGMENTS 
-apply_motion_mask(subj)
-
-%%%%%%%%%%%%%%%
-% don't mess about with this stuff if it's already been ran
-% fp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
-% PGfp=[fp '/' subj '_PG_LR_32k_rest.dscalar.nii'];
-%if ~exist(PGfp)
-%%%%%%%%%%%%%%%
+%apply_motion_mask(subj)
 
 %%% already ran on subjs
 % downsample aggregated TS 
-dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
+%dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
 %system(dsCommand)
 
 % make a "Proced" dir
@@ -36,13 +29,18 @@ dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
 
 %%% RUN 1
 %%% Run Spherical Optical flow
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl.sh']);
 
 % RUN 2
 %%% Calculate the calculus gradient of the principal gradient, calculate angular distance of OpFl directions
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD.sh']);
+
 %PGG_AngDistCalc4(subj)
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);

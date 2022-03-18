@@ -96,8 +96,8 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-mincol=-10;
-maxcol=10;
+mincol=-.03;
+maxcol=.03;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
 %custommap=colormap('inferno');
@@ -110,18 +110,18 @@ custommap=colormap(b2r(mincol,maxcol));
 custommap(126,:)=[.5 .5 .5];
 
 % matches circular hist
-roybigbl_cm=inferno(6);
-roybigbl_cm(1,:)=[0, 0, 255];
-roybigbl_cm(2,:)=[0, 255, 255];
-roybigbl_cm(3,:)=[116, 192, 68];
-roybigbl_cm(4,:)=[246, 235, 20];
-roybigbl_cm(5,:)=[255, 165, 0];
-roybigbl_cm(6,:)=[255, 0, 0];
+%roybigbl_cm=inferno(6);
+%roybigbl_cm(1,:)=[0, 0, 255];
+%roybigbl_cm(2,:)=[0, 255, 255];
+%roybigbl_cm(3,:)=[116, 192, 68];
+%roybigbl_cm(4,:)=[246, 235, 20];
+%roybigbl_cm(5,:)=[255, 165, 0];
+%roybigbl_cm(6,:)=[255, 0, 0];
 % scale to 1
-roybigbl_cm=roybigbl_cm.*(1/255);
+%roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
-interpsteps=[0 .2 .4 .6 .8 1];
-roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+%interpsteps=[0 .2 .4 .6 .8 1];
+%roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % add white layer for thresholded faces
 %custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 

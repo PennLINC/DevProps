@@ -48,14 +48,8 @@ gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/Gradients.rh.fsaverag
 gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
 
-% load in subject's PG
-LPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_L_10k_rest.func.gii'];
-LPGf=gifti(LPGfp);
-PG_LH=LPGf.cdata(:,1);
-% right hemi
-RPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_R_10k_rest.func.gii'];
-RPGf=gifti(RPGfp);
-PG_RH=RPGf.cdata(:,1);
+
+%%% USE THE MAT GIFTI! REMOVE THE INDVID GRADIENT STUFF! COMPARE TO FS4!
 
 % calculate PG gradient on sphere
 PGg_L = grad(F_L, V_L, PG_LH);

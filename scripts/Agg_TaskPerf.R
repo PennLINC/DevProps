@@ -15,6 +15,7 @@ colnames(taskperf)<-'SubjID'
 # convert to subj ids of directory structure
 taskperf$SubjID<-gsub('sub-','HCD',taskperf$SubjID)
 taskperf$perf<-rep(2,numsubjs)
+taskperf$rt<-rep(0,numsubjs)
 
 # for each subj
 for (s in 1:numsubjs){
@@ -26,6 +27,7 @@ for (s in 1:numsubjs){
     stats=read.csv(statsfp)
     # pull out Hit_Prop, plop into df
     taskperf$perf[s]<-stats$Hit_Prop
+    taskperf$rt[s]<-stats$Hit_RT
   }
 }
 
@@ -35,6 +37,13 @@ no2s <- subset(taskperf, perf != 2)
 # find instances of "na", where file DOES exist, but is populated with 'NA
 # appears to be redundant, but in for sanity check
 noNans <- subset(no2s, perf != 'NA')
+
+# convert accuracy to performance
+trueperf<-noNans$perf/noNans$rt
+
+cor.test(trueperf,noNans$perf)
+
+noNans$perf<-trueperf
 
 # z-score
 noNans$perf<-scale(noNans$perf)

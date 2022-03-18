@@ -409,7 +409,11 @@ library(visreg)
 BuMerge$TDProp=1-BuMerge$BuProp
 
 # dev analyses
-visreg(gam(TDProp~s(interview_age,k=4)+FD+sex+remainingTRs,data=BuMerge))
+devMod<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs,data=BuMerge)
+ndevMod<-gam(TDProp~FD+sex+RemainingTRs,data=BuMerge)
+anovaRes<-anova.gam(devMod,ndevMod,test='Chisq')
+anovaRes$`Pr(>Chi)`
+
 
 # get residuals of model for plotting
 TDProp_lm<-lm(TDProp~FD+sex,data=BuMerge)

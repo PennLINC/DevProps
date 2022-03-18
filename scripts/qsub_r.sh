@@ -1,1 +1,1 @@
-Rscript facewise_R_cdelta_perf.R
+Rscript facewise_L_cdelta_perf.R

@@ -17,6 +17,7 @@ ps_f=p.adjust(ps,method='fdr')
 
 # mask dr2s accordingly
 ts[ps_f>0.05]=0
+ts[is.na(ps_f)]=0
 
 # uncombine: seperate vecs for sep. hemis
 ts_L=ts[1:length(L_t)]

@@ -173,5 +173,5 @@ end
 AngDist=struct;
 AngDist.gLeft=gangDist_L;
 AngDist.gRight=gangDist_R;
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
+AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat5.mat'];
 save(AngDistFP,'AngDist')

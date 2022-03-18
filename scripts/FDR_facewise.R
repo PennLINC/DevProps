@@ -50,6 +50,7 @@ BUdr2[BUp_f>0.05]=0
 TDdr2[TDp_f>0.05]=0
 Propdr2[Propp_f>0.05]=0
 Thetasdr2[Thetasp_f>0.05]=0
+Propdr2[is.na(Propp_f)]=0
 
 # uncombine: seperate vecs for sep. hemis
 BU_L=BUdr2[1:length(LBU_L_adr2)]
