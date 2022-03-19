@@ -1,1 +1,1 @@
-matlab -nodisplay -r "AggFC"
+matlab -nodisplay -r "preProc_PW2('${1}')"
