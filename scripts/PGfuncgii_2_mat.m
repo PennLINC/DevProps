@@ -1,11 +1,11 @@
 % make a .mat version of smoothed PG1 because compiled matlablab code can't get "gifti" to work without an .xml error
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 % load in GROUP PG
-gLPGfp=['/cbica/projects/pinesParcels/data/hcpd_gradients_L_10k_10smooth.func.gii'];
+gLPGfp=['/cbica/projects/pinesParcels/data/hcpd_gradients_L_10k_15smooth.func.gii'];
 gLPGf=gifti(gLPGfp);
 gPG_LH=gLPGf.cdata(:,1);
 % right hemi
-gRPGfp=['/cbica/projects/pinesParcels/data/hcpd_gradients_R_10k_10smooth.func.gii'];
+gRPGfp=['/cbica/projects/pinesParcels/data/hcpd_gradients_R_10k_15smooth.func.gii'];
 gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
 % saveout

@@ -1,0 +1,1 @@
+mris_convert -c /cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.curv /cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.pial ~/data/rh_fs4.avg_curv.func.gii
