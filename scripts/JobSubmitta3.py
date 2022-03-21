@@ -17,7 +17,7 @@ while len(subjects)>0:
   que = len(qstat.split('\n'))-3
   # if we are using less than 7 job slots (one is occupied by this script)
   # ayyyy we done wit 7 jobs atta time we str8 flossin' out here at 35 now 
-  if que < 33:
+  if que < 7:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -27,15 +27,15 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
       # submit job (if conditions are met)
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_AngDistMat5_doesntexist.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_BUTD_L_resultantVecs_curv5.mat'
       if not os.path.exists(OpFile):
         print(newsub)
-        subprocess.run(["qsub","-l","h_vmem=16G,s_vmem=15G","qsubMatlab3.sh",newsub])
+        subprocess.run(["qsub","-l","h_vmem=14G,s_vmem=13G","qsubMatlab3.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
-    elif que < 33:
+    elif que < 7:
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_AngDistMat5_doesntexist.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_BUTD_L_resultantVecs_curv5..mat'
       if not os.path.exists(OpFile):
       # submit job (if conditions are met)
         print(newsub)
-        subprocess.run(["qsub","-l","h_vmem=16G,s_vmem=15G","qsubMatlab3.sh",newsub])
+        subprocess.run(["qsub","-l","h_vmem=14G,s_vmem=13G","qsubMatlab3.sh",newsub])
