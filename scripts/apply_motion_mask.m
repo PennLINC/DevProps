@@ -1,10 +1,10 @@
 function apply_motion_mask(subj)
-% this function motion masks the concatenated runs (filtered)
-% note that both validsegcell_full and validsegcell_trunc are saved out
+% this function motion masks the concatenated runs 
+% note that both validsegcell_full and validsegcell_trunc are saved out: only _Trunc used in this workflow
 % validsegcell_full refers to the TR and span of segment in the outlier FD masked images
 % validsegcell truncated refers to the TR and span of segment in the outlierFD masked AND short segment masked images
 % minproc and FD leave this script matching truncated, proc TS and GS leave this script matching full
-% (full for BandPass, Trunc for deriveWaveProps)
+% (full for BandPass, Trunc for OpFl)
 
 % load in subj
 topleveldir='/cbica/projects/hcpd/data/sub-*'
@@ -99,13 +99,18 @@ if exist(fp,'file')
                 ValidTRStarts=dInd(maskValAtChange);
 		% index out segments greater than TR thresh from UnThreshSegmentCellstruct
 		ValidSegCell=UTSegCell(OverThreshSegments,:);
+		
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%i Inert code - nothing to see here
 		% save out version for network basis time series: derived from all low Mot non-outlier volumes
-		segmentfnUt=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Unthr'];
-		writetable(cell2table(UTSegCell),segmentfnUt,'WriteVariableNames',0)
+		%%% segmentfnUt=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Unthr'];
+		%%% writetable(cell2table(UTSegCell),segmentfnUt,'WriteVariableNames',0)
 		% save out version for bandpassing - matches TRs of dtseries when it is at that point
-		segmentfnFu=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Full'];
-                writetable(cell2table(ValidSegCell),segmentfnFu,'WriteVariableNames',0)
+		%%% segmentfnFu=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Full'];
+                %%% writetable(cell2table(ValidSegCell),segmentfnFu,'WriteVariableNames',0)
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%		
+
 		% adjust ValidSegCell_Trunc to describe in terms of retained TRs only
+		% in other words, epoch start points should be one "TR" after 
 		ValidSegCell_Trunc=ValidSegCell;
 		ValidSegCell_Trunc(1,1)=num2cell(1);
 		for s=2:length(OverThreshSegments)
