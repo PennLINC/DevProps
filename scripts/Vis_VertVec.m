@@ -1,4 +1,4 @@
-function Vis_FaceVec(FaceVecL,FaceVecR,Fn) 
+function Vis_VertVec(FaceVecL,FaceVecR,Fn) 
 
 %angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
 %Angs=load(angDistFP);
@@ -71,12 +71,13 @@ gPG_LH=gLPGf.cdata(:,1);
 gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
 gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
-% calculate group PG gradient on sphere
-gPGg_L = grad(F_L, V_L, gPG_LH);
-gPGg_R = grad(F_R, V_R, gPG_RH);
 % get index of where they are 0 in all directions
-gPGg_L0=find(all(gPGg_L')==0);
-gPGg_R0=find(all(gPGg_R')==0);
+
+gPGg_L0=find(gPG_LH==0);
+gPGg_R0=find(gPG_RH==0);
+%gPGg_L0=[];
+%gPGg_R0=[];
+
 
 % continue to get unions
 %gro_MW_combined_L=union(MW_combined_L,gPGg_L0);
@@ -86,21 +87,21 @@ gPGg_R0=find(all(gPGg_R')==0);
 %g_noMW_combined_L=setdiff([1:5120],gro_MW_combined_L);
 %g_noMW_combined_R=setdiff([1:5120],gro_MW_combined_R);
 %%%%% version without MW mask explicitly
-g_noMW_combined_L=setdiff([1:5120],gPGg_L0);
-g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
+g_noMW_combined_L=setdiff([1:2562],gPGg_L0);
+g_noMW_combined_R=setdiff([1:2562],gPGg_R0);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 
-data=zeros(1,5120);
+data=zeros(1,2562);
 data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
-mincol=-pi;
-maxcol=pi;
+mincol=0;
+maxcol=2;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
-%custommap=colormap('inferno');
+custommap=colormap('inferno');
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
 %mincol=-3;
@@ -110,20 +111,20 @@ maxcol=pi;
 %custommap(126,:)=[.5 .5 .5];
 
 % matches circular hist
-roybigbl_cm=inferno(6);
-roybigbl_cm(1,:)=[0, 0, 255];
-roybigbl_cm(2,:)=[0, 255, 255];
-roybigbl_cm(3,:)=[116, 192, 68];
-roybigbl_cm(4,:)=[246, 235, 20];
-roybigbl_cm(5,:)=[255, 165, 0];
-roybigbl_cm(6,:)=[255, 0, 0];
+%roybigbl_cm=inferno(6);
+%roybigbl_cm(1,:)=[0, 0, 255];
+%roybigbl_cm(2,:)=[0, 255, 255];
+%roybigbl_cm(3,:)=[116, 192, 68];
+%roybigbl_cm(4,:)=[246, 235, 20];
+%roybigbl_cm(5,:)=[255, 165, 0];
+%roybigbl_cm(6,:)=[255, 0, 0];
 % scale to 1
-roybigbl_cm=roybigbl_cm.*(1/255);
+%roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
-interpsteps=[0 .2 .4 .6 .8 1];
-roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+%interpsteps=[0 .2 .4 .6 .8 1];
+%roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % add white layer for thresholded faces
-custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+%custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 
 figure
@@ -131,7 +132,7 @@ figure
 
 asub = subaxis(2,2,1, 'sh', 0, 'sv', 0, 'padding', 0, 'margin', 0);
 
-aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3))
+aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
 view([90 0]);
 colormap(custommap)
 daspect([1 1 1]);
@@ -142,13 +143,11 @@ shading flat;
 camlight;
 	alpha(1)
 
-length(faces)
-
 set(gca,'CLim',[mincol,maxcol]);
-set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 asub = subaxis(2,2,4, 'sh', 0.00, 'sv', 0.00, 'padding', 0, 'margin', 0);
-aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3))
+aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
 view([90 0]);
 rotate(aplot, [0 0 1], 180)
 colormap(custommap)
@@ -166,11 +165,11 @@ alpha(1)
 set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
-set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 
 %%% right hemisphere
-data=zeros(1,5120);
+data=zeros(1,2562);
 data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
@@ -194,7 +193,7 @@ alpha(1)
 
 
 set(gca,'CLim',[mincol,maxcol]);
-set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 asub = subaxis(2,2,3, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0);
 aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
@@ -215,7 +214,8 @@ set(gcf,'Color','w')
 
 
 set(gca,'CLim',[mincol,maxcol]);
-set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+colorbar
 %c=colorbar
 %c.Location='southoutside'
 %colormap(custommap)

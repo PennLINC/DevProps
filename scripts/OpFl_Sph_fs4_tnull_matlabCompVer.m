@@ -66,7 +66,8 @@ assert(sizeInDl(2) == sizeInDr(2), 'Unequal time series length between hemispher
 % make a shuffled vector for temporal null
 ShufVec=1:TR_n;
 % 100 shuffles for now
-numShufs=100;
+numShufs=1000;
+tic
 ShufMat=zeros(numShufs,TR_n);
 for i=1:numShufs
 	ShufMat(i,:)=ShufVec(randperm(TR_n));
@@ -128,16 +129,14 @@ for seg=1:SegNum;
 	% loop over each TR-Pair: 1 fewer pair than number of TRs
 	for TRP=1:(SegSpan-1);
 		% print TR pair iter
-		TRP
+		TRP;
 		% Compute decomposition.
-		tic;
 		% pull out adjacent frames
 		u = of(N, faces_l, vx_l, segTS_l{TRP}, segTS_l{TRP+1}, h, alpha, s);
 		% throw u into struct
 		us.vf_left{TRPC}=u;
 		% now right hemi
 		u = of(N, faces_r, vx_r, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
-		toc;
 		% throw u into struct
 		us.vf_right{TRPC}=u;
 		% record difference in signal
@@ -150,7 +149,7 @@ end
 
 % plop it into big struct
 
-
+toc
 %end for each shuffle
 end
 

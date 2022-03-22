@@ -1,9 +1,9 @@
-function mask_mw_faces(subj)
+function mask_mw_faces4curv(subj)
 % Add OFD toolbox to path
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 %%%% Load in angular distances
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4.mat'];
+AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_curvAngDistMat4.mat'];
 data=load(AngDistFP)
 
 %%% Load in surface data
@@ -82,6 +82,5 @@ gAngD_R_masked=gAngD_R(:,g_noMW_combined_R);
 
 
 % write in R-friendly format
-writetable(table(gAngD_L_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_gAngDist_Masked4_L.csv']);
-writetable(table(gAngD_R_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_gAngDist_Masked4_R.csv']);
-
+writetable(table(gAngD_L_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_curvAngDist_Masked4_L.csv']);
+writetable(table(gAngD_R_masked),['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_curvAngDist_Masked4_R.csv']);

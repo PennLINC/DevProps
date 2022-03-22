@@ -27,6 +27,11 @@ for s=1:numSubjs
 	% extract resvecs - 8th column
 	BUTDL=FileL.OutDf_L;
 	BUTDR=FileR.OutDf_R;
+	% replace empties with 0
+	emptyIndex = cellfun('isempty', BUTDL(:,8));     % Find indices of empty cells
+	BUTDL(emptyIndex,8) = {0};
+	emptyIndex = cellfun('isempty', BUTDR(:,8));     % Find indices of empty cells
+        BUTDR(emptyIndex,8) = {0};
 	% always a process with matlab
 	FaceMatL(s,:)=cell2mat(BUTDL(:,8));
 	FaceMatR(s,:)=cell2mat(BUTDR(:,8));
@@ -44,4 +49,4 @@ for f=1:20480;
 end
 
 % print into facewise
-Vis_FaceVec(FaceVecL,FaceVecR,'GrandMeanMapCurv.png')
+Vis_FaceVec5(FaceVecL,FaceVecR,'GrandMeanMapCurv.png')

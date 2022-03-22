@@ -81,8 +81,6 @@ P = TR.incenters;
 TRr = TriRep(faces_r, vx_r);
 Pr = TRr.incenters;
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% load in group PG %%%%%
 LPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
@@ -281,7 +279,7 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=1057:1063
+for i=1057:1062
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt);
 u=OpFl.vf_right{OpFlVecofInt};

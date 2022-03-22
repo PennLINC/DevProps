@@ -36,10 +36,10 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % RUN 2
 %%% Calculate the calculus gradient of the principal gradient, calculate angular distance of OpFl directions
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD.sh']);
 
 %PGG_AngDistCalc4(subj)
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
@@ -47,5 +47,5 @@ system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' 
 
 % RUN 3
 %%% mask medial wall and extract R-friendly face data
-%mask_mw_faces(subj)
-
+mask_mw_faces_4(subj)
+mask_mw_faces_4curv(subj)

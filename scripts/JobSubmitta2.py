@@ -10,6 +10,9 @@ content_list = content. split("\n")
 content_list.pop()
 # feed em' in as subjects
 subjects = content_list
+#print("red light")
+#time.sleep(36000) 
+#print("green light")
 # while there are more than 0 subjects left to run
 while len(subjects)>0:
   # grab qsub info, get number of jobs being run
@@ -27,14 +30,14 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
       # submit job (if conditions are met)
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_curvAngDistMat.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_curvAngDistMat4.mat'
       if not os.path.exists(OpFile):
         print(newsub)
         subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab2.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
     elif que < 34:
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_curvAngDistMat.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_curvAngDistMat4.mat'
       if not os.path.exists(OpFile):
       # submit job (if conditions are met)
         print(newsub)

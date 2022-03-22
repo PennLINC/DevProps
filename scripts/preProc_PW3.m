@@ -28,4 +28,4 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 %%%%%%%%%%%%%%%
 
 % extract BUTD
-Extract_BUTD_ResultantVecs_curv5(subj)
+Extract_BUTD_ResultantVecs_curv(subj)

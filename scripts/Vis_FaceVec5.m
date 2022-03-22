@@ -1,4 +1,4 @@
-function Vis_FaceVec(FaceVecL,FaceVecR,Fn) 
+function Vis_FaceVec5(FaceVecL,FaceVecR,Fn) 
 
 %angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
 %Angs=load(angDistFP);
@@ -22,7 +22,7 @@ function Vis_FaceVec(FaceVecL,FaceVecR,Fn)
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 %%% Load in surface data
-SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
+SubjectsFolder = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage5';
 surfL = [SubjectsFolder '/surf/lh.sphere'];
 surfR = [SubjectsFolder '/surf/rh.sphere'];
 % surface topography
@@ -64,11 +64,11 @@ V_R=vx_r;
 % further mask derivation
 % MASK WHERE PGG = 0: individ AND group
 % load in GROUP PG
-gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
+gLPGfp=['/cbica/projects/pinesParcels/data/hcp.gradients_L_10k.func.gii'];
 gLPGf=gifti(gLPGfp);
 gPG_LH=gLPGf.cdata(:,1);
 % right hemi
-gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
+gRPGfp=['/cbica/projects/pinesParcels/data/hcp.gradients_R_10k.func.gii'];
 gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
 % calculate group PG gradient on sphere
@@ -86,13 +86,13 @@ gPGg_R0=find(all(gPGg_R')==0);
 %g_noMW_combined_L=setdiff([1:5120],gro_MW_combined_L);
 %g_noMW_combined_R=setdiff([1:5120],gro_MW_combined_R);
 %%%%% version without MW mask explicitly
-g_noMW_combined_L=setdiff([1:5120],gPGg_L0);
-g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
+g_noMW_combined_L=setdiff([1:(5120*4)],gPGg_L0);
+g_noMW_combined_R=setdiff([1:(5120*4)],gPGg_R0);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 
-data=zeros(1,5120);
+data=zeros(1,(5120*4));
 data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
@@ -127,7 +127,7 @@ custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 
 figure
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage5/surf/lh.inflated');
 
 asub = subaxis(2,2,1, 'sh', 0, 'sv', 0, 'padding', 0, 'margin', 0);
 
@@ -170,10 +170,10 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 
 %%% right hemisphere
-data=zeros(1,5120);
+data=zeros(1,(5120*4));
 data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage5/surf/rh.inflated');
 
 asub = subaxis(2,2,2, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0,'Holdaxis');
 aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
@@ -216,6 +216,7 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+colorbar
 %c=colorbar
 %c.Location='southoutside'
 %colormap(custommap)

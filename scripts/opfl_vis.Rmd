@@ -8,8 +8,8 @@ library(reshape2)
 library(diptest)
 
 ## enter subj name in manually
-testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
-testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))
+testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_curvAngDist_Masked4_L.csv'))
+testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_curvAngDist_Masked4_R.csv'))
 
 ```
 

@@ -1,4 +1,4 @@
-function preProc_PWs(subj)
+function preProc_PW2(subj)
 
 % Apply motion and outlier masks, bandpass continuous segments, make PG from continuous segments, run optical flow
 % print subject being ran
