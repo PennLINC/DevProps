@@ -77,7 +77,7 @@ g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % do the same with the smoothed PG: but dont use the mask from it
 % load in GROUP PG
-gpg=load('~/data/gpg_fs4.mat');
+gpg=load('~/data/fs4curv.mat');
 gPG_LH=gpg.gpg.gPG_LH;
 gPG_RH=gpg.gpg.gPG_RH;
 % calculate group PG gradient on sphere
@@ -112,13 +112,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % load in spun PGG vectors
-sp_PGGs=load('/cbica/projects/pinesParcels/results/aggregated_data/PGGPermuts_fs4.mat');
+sp_PGGs=load('/cbica/projects/pinesParcels/results/aggregated_data/CGPermuts_fs4.mat');
 gazes_L_all=squeeze(sp_PGGs.spGPGGs(1,:,1:5120));
 gels_L_all=squeeze(sp_PGGs.spGPGGs(2,:,1:5120));
 gazes_R_all=squeeze(sp_PGGs.spGPGGs(1,:,5121:10240));
 gels_R_all=squeeze(sp_PGGs.spGPGGs(2,:,5121:10240));
-%load in spun PGG scalar data, for masking (note difference between PG permutations and PGG permutations)
-sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/PGPermuts_fs4.mat';
+%load in spun scalar data, for masking (note difference between PG permutations and PGG permutations)
+sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/CPermuts_fs4.mat';
 sp=load(sp_fp);
 % initialize facewise output structs to bear mask indices
 sp_mw_L=struct;
@@ -255,7 +255,7 @@ for S=1:1000
 	DTres(S)=dip;
 	% save out some example distributions
 	if (S<100)
-		SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_SpunDistr' num2str(i) '.csv'];
+		SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_cSpunDistr' num2str(i) '.csv'];
 		writetable(table(sp_AngDists),SpunAngDist_exFP)	
 	end
 end
@@ -291,5 +291,5 @@ Tr_AngDists=horzcat(True_gangDist_L(g_noMW_combined_L),True_gangDist_R(g_noMW_co
 DTres(1001)=dip;
 
 % save it out
-SpunAngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_SpunDips4.csv'];
+SpunAngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_CSpunDips4.csv'];
 writetable(table(DTres),SpunAngDistFP)

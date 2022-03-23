@@ -4,7 +4,7 @@
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % load in spins
-sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/PGPermuts_fs4.mat';
+sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/CGPermuts_fs4.mat';
 sp=load(sp_fp)
 
 % load in surface data
@@ -79,7 +79,7 @@ for s=1:1000
         spGPGGs(2,s,5121:10240)=gels_R;
 end
 % save output
-save('/cbica/projects/pinesParcels/results/aggregated_data/PGGPermuts_fs4.mat','spGPGGs')
+save('/cbica/projects/pinesParcels/results/aggregated_data/CGPermuts_fs4.mat','spGPGGs')
 
 % plot to check
 figure('units','pixels','position',[0 0 1000 1000])
@@ -91,4 +91,4 @@ axis equal
 daspect([1, 1, 1]);
 colorbar
 view(180,60);
-print('spunGPGG4.png','-dpng')
+print('spunCG4.png','-dpng')

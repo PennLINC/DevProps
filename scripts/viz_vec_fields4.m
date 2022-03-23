@@ -174,7 +174,7 @@ print('pggPial.png','-dpng')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
-% 1 - VECTOR FIELDS OVERLAID ONTO ORIGINAL TRS
+%%%% This chunk is for video: not needed for figs
 % vector field
 DirecsVecs=struct('cdata',[],'colormap',[]);
 speshframes=[209:226];
@@ -226,11 +226,8 @@ video.FrameRate = 1;
 open(video)
 writeVideo(video, DirecsVecs);
 close(video);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% for high res, use this
-figure('units','pixels','position',[0 0 1000 1000])
 % roy-big-bl palette imitation, inferno is just template
 roybigbl_cm=inferno(16);
 roybigbl_cm(1,:)=[255, 255, 0 ];
@@ -279,7 +276,7 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=1057:1062
+for i=444:452
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt);
 u=OpFl.vf_right{OpFlVecofInt};
@@ -291,15 +288,21 @@ axis([-1, 1, -1, 1, 0, 1]);
 quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
 hold on
 % for OpFl Vecs on PG
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
+%trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
+%caxis([-5.5,6.5]);
 % for OpFl Vecs on BOLD
-%trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
+caxis([-3,3])
 axis equal
 daspect([1, 1, 1]);
-caxis([-5.5,6.5]);
 %colormap(roybigbl_cm);
 colormap(custommap);
-colorbar
+c=colorbar
+c.FontSize=55
+c.LineWidth=3
+c.Ticks=[-3 -2 -1 0 1 2 3]
+c.Location='southoutside'
+c.FontName='Arial'
 view(280,185);
 %view(60,190)
 fn=['yourfigure' num2str(i) '.png'];
