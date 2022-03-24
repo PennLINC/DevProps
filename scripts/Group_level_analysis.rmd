@@ -74,6 +74,17 @@ DMNseg=read.csv('Y:/results/DMNseg.csv')
 colnames(DMNseg)<-c('SubjID','DMNseg')
 masterdf<-merge(masterdf,DMNseg,by='SubjID')
 ```
+```{r}
+# mode mode distributions
+PGGmodeL=read.csv('Y:/results/PWs/ModeModes4_L.csv')
+PGGmodeR=read.csv('Y:/results/PWs/ModeModes4_R.csv')
+CGmodeL=read.csv('Y:/results/PWs/curvModeModes4_L.csv')
+CGmodeR=read.csv('Y:/results/PWs/curvModeModes4_R.csv')
+hist(c(PGGmodeL$OutArray_L,PGGmodeR$OutArray_R))
+hist(c(CGmodeL$OutArray_L,CGmodeR$OutArray_R))
+
+```
+
 
 ```{r}
 # make list of old subjs vs younger

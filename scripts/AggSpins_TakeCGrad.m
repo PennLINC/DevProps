@@ -4,7 +4,7 @@
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % load in spins
-sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/CGPermuts_fs4.mat';
+sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/CPermuts_fs4.mat';
 sp=load(sp_fp)
 
 % load in surface data

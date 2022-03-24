@@ -8,8 +8,14 @@ library(reshape2)
 library(diptest)
 
 ## enter subj name in manually
-testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_curvAngDist_Masked4_L.csv'))
-testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_curvAngDist_Masked4_R.csv'))
+testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
+testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))
+
+```
+
+```{r}
+# spatial null examples
+test=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'))
 
 ```
 
@@ -24,7 +30,7 @@ p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (D
 ```
 
 ```{r}
-SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips.csv'),header=F)
+SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
 ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)

@@ -254,8 +254,8 @@ for S=1:1000
 	[dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(sp_AngDists);
 	DTres(S)=dip;
 	% save out some example distributions
-	if (S<100)
-		SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_cSpunDistr' num2str(i) '.csv'];
+	if (S<10)
+		SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_cSpunDistr' num2str(S) '.csv'];
 		writetable(table(sp_AngDists),SpunAngDist_exFP)	
 	end
 end
@@ -280,7 +280,7 @@ for Vert=1:length(azd_R)
     % PG GROUP LOAD IN
     for fr=1:lenOpFl
         OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
-        ga = acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )));
+        ga = acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )));
         True_gangDist_R(fr,Vert) = ga;
     end
 end

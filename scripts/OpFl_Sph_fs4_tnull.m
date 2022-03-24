@@ -68,8 +68,8 @@ ShufVec=1:TR_n;
 % including buzzwords just for github search
 % permutations
 % nulls
-% 1000 shuffles for now
-numShufs=1000;
+% 100 shuffles for now
+numShufs=100;
 ShufMat=zeros(numShufs,TR_n);
 for i=1:numShufs
 	ShufMat(i,:)=ShufVec(randperm(TR_n));
