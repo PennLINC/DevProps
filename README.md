@@ -7,12 +7,12 @@ items to validate in preProc_PW:
 
 #### [apply_motion_mask.m](https://github.com/PennLINC/PWs/blob/main/scripts/apply_motion_mask.m): txt files generated for continuous segments is accurate
 
-#### [OpFl_Sph_CompVer.m](https://github.com/PennLINC/PWs/blob/main/scripts/OpFl_Sph_CompVer.m): angular transformations are accurate
+#### [OpFl_Sph_fs4.m](https://github.com/PennLINC/PWs/blob/main/scripts/OpFl_Sph_fs4.m): angular transformations are accurate
 
-#### [PGG_AngDistCalc.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc.m): Angular distance calculated accurately
+#### [PGG_AngDistCalc4.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc4_CompVer.m): Angular distance calculated accurately
 
 ###### note 1: separate processing stream exists for carit data: should be exactly equivalent, but have "\_c\" after script names to differentiate
-###### note 2: OpFl_Sph and PGG_AngDistCalc are run as compiled progams (more specifically, from [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_OpFl_Sph_CompVer.sh) and [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_PGG_AngDistCalc_CompVer.sh), respectively.) They are compiled directly from the linked files, but note the scripts used for large SGE submissions are derived from those linked. Expect non-compiled versions to run 3-5 times slower.
+###### note 2: OpFl_Sph and PGG_AngDistCalc are run as compiled progams (more specifically, from [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_OpFl_Sph_CompVer.sh) and [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_PGG_AngDistCalc4_CompVer.sh), respectively.) They are compiled directly from the linked files, but note the scripts used for large SGE submissions are derived from those linked. Expect non-compiled versions to run 3-5 times slower.
  
 # 2. Reference map feature extraction
 The PGG needs to be derived from a smoothed PG, and 1000 null PGGs need to be derived from spun smoothed PGs. The PG is first downsampled ([downsample_gPG.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_gPG.sh)), then smoothed with a 1cm FWHM gaussian kernel using connectome workbench ([smooth_PG.sh](https://github.com/PennLINC/PWs/blob/main/scripts/smooth_PG.sh)). Next, the smoothed PG is converted from a gifti to .mat ([PGfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGfuncgii_2_mat.m)), as subsequent compiled matlab code cannot utilize the gifti() command properly without xml error.
