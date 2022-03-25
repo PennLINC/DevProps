@@ -46,6 +46,17 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
 
 % RUN 3
+% Spatial Nulls: PGG
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
+% CG
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
+
 %%% mask medial wall and extract R-friendly face data
-mask_mw_faces_4(subj)
-mask_mw_faces_4curv(subj)
+%mask_mw_faces_4(subj)
+%mask_mw_faces_4curv(subj)

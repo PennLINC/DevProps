@@ -10,10 +10,10 @@ tic
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % Load in fsav4 opflow calc
-OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
+OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs5.mat'];
 data=load(OpFlFp)
 % Load in surface data
-SubjectsFolder = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4';
+SubjectsFolder = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage5';
 surfL = [SubjectsFolder '/surf/lh.sphere'];
 surfR = [SubjectsFolder '/surf/rh.sphere'];
 % surface topography
@@ -40,43 +40,25 @@ P_L = TR_L.incenters;
 TR_R = TriRep(F_R,V_R);
 P_R = TR_R.incenters;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% use native freesurfer command for mw mask indices
-surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
-mwIndVec_l = read_medial_wall_label(surfML);
-surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
-mwIndVec_r = read_medial_wall_label(surfMR);
-% make binary "is medial wall" vector for vertices
-mw_L=zeros(1,2562);
-mw_L(mwIndVec_l)=1;
-mw_R=zeros(1,2562);
-mw_R(mwIndVec_r)=1;
-% convert to faces
-% convert to faces
-F_MW_L=sum(mw_L(faces_l),2)./3;
-F_MW_R=sum(mw_R(faces_r),2)./3;
-% convert "partial" medial wall to medial wall
-F_MW_L=ceil(F_MW_L);
-F_MW_R=ceil(F_MW_R);
-% face mask indices
-fmwIndVec_l=find(F_MW_L);
-fmwIndVec_r=find(F_MW_R);
-% make medial wall vector
-g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
-g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
-
 % load in GROUP PG
-gLPGfp=['/cbica/projects/pinesParcels/data/lh_fs4.avg_curv.func.gii'];
+gLPGfp=['/cbica/projects/pinesParcels/data/lh_fs5.avg_curv.func.gii'];
 gLPGf=gifti(gLPGfp);
 gPG_LH=gLPGf.cdata(:,1);
 % right hemi
-gRPGfp=['/cbica/projects/pinesParcels/data/rh_fs4.avg_curv.func.gii'];
+gRPGfp=['/cbica/projects/pinesParcels/data/rh_fs5.avg_curv.func.gii'];
 gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
 
+%%% For masking out the medial wall
 % calculate group PG gradient on sphere
 gPGg_L = grad(F_L, V_L, gPG_LH);
 gPGg_R = grad(F_R, V_R, gPG_RH);
+% get index of where they are 0 in all directions
+gPGg_L0=find(all(gPGg_L')==0);
+gPGg_R0=find(all(gPGg_R')==0);
+% get inverse for indexing : faces that ARE NOT touching mW verts
+g_noMW_combined_L=setdiff([1:(5120*4)],gPGg_L0);
+g_noMW_combined_R=setdiff([1:(5120*4)],gPGg_R0);
 
 % extract face-wise vector cartesian vector components
 gPGx_L=gPGg_L(:,1);
@@ -114,7 +96,7 @@ for i=1:length(azd_R)
 end
 
 % load in gPGG angular distances for parsing into top-down and bottom-up in the loops
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_curvAngDistMat4.mat'];
+AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_curvAngDistMat.mat'];
 AngDist=load(AngDistFP);
 % just pretend this line doesn't exist
 AngDist=AngDist.AngDist;
@@ -168,9 +150,6 @@ for F=g_noMW_combined_L
 
 % delineate this face's resultant vector angle
 L_CM=circ_mean(Thetas_L);
-% circular SD
-L_CSD=circ_std(Thetas_L);
-OutDf_L(F,9)=num2cell(L_CSD);
 
 % get angular distance from gPGG
 PGGang_L=cart2pol(gazes_L(F),gels_L(F));
@@ -266,9 +245,6 @@ for F=g_noMW_combined_R
 
 % delineate this face's resultant vector angle
 R_CM=circ_mean(Thetas_R);
-% circular SD
-R_CSD=circ_std(Thetas_R);
-OutDf_R(F,9)=num2cell(R_CSD);
 
 % get angular distance from gPGG
 PGGang_R=cart2pol(gazes_R(F),gels_R(F));
@@ -310,9 +286,9 @@ end
 end
 
 %%% save output df
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_curv4.mat'];
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_curv5.mat'];
 save(outFP_L,'OutDf_L')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_curv4.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_curv5.mat'];
 save(outFP_R,'OutDf_R')
 
 

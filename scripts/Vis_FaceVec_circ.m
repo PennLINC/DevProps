@@ -145,7 +145,7 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 %%% right hemisphere
 data=zeros(1,5120);
-data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
+data(g_noMW_combined_R)=FaceVecR;
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 

@@ -36,10 +36,14 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % RUN 2
 %%% Calculate the calculus gradient of the principal gradient, calculate angular distance of OpFl directions
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD4.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD4.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD4.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD4.sh']);
+
+%%% RUN 2.5
+Extract_BUTD_ResultantVecs(subj)
+Extract_BUTD_ResultantVecs_curv(subj)
 
 %PGG_AngDistCalc4(subj)
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);

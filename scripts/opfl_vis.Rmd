@@ -35,7 +35,23 @@ ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)
 
-ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics - PGG')+guides(y="none")
+
+nullDistrEx<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDistr1.csv'))
+nullM<-melt(nullDistrEx)
+hist(nullM$value)
+```
+```{r}
+SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'),header=F)
+ObsDip<-as.numeric(SpunDips[2,1001])
+SpunDips<-as.numeric(SpunDips[2,1:1000])
+plotdf<-data.frame(ObsDip,SpunDips)
+
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics - CG')+guides(y="none")
+
+nullDistrEx<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_cSpunDistr1.csv'))
+nullM<-melt(nullDistrEx)
+hist(nullM$value)
 ```
 
 ```{r}

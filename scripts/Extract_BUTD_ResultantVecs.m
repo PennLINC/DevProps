@@ -40,6 +40,32 @@ P_L = TR_L.incenters;
 TR_R = TriRep(F_R,V_R);
 P_R = TR_R.incenters;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% use native freesurfer command for mw mask indices
+surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+mwIndVec_l = read_medial_wall_label(surfML);
+surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+mwIndVec_r = read_medial_wall_label(surfMR);
+% make binary "is medial wall" vector for vertices
+mw_L=zeros(1,2562);
+mw_L(mwIndVec_l)=1;
+mw_R=zeros(1,2562);
+mw_R(mwIndVec_r)=1;
+% convert to faces
+% convert to faces
+F_MW_L=sum(mw_L(faces_l),2)./3;
+F_MW_R=sum(mw_R(faces_r),2)./3;
+% convert "partial" medial wall to medial wall
+F_MW_L=ceil(F_MW_L);
+F_MW_R=ceil(F_MW_R);
+% face mask indices
+fmwIndVec_l=find(F_MW_L);
+fmwIndVec_r=find(F_MW_R);
+% make medial wall vector
+g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
+g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
+
+
 % load in GROUP PG
 gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
 gLPGf=gifti(gLPGfp);
@@ -49,16 +75,9 @@ gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.fu
 gRPGf=gifti(gRPGfp);
 gPG_RH=gRPGf.cdata(:,1);
 
-%%% For masking out the medial wall
 % calculate group PG gradient on sphere
 gPGg_L = grad(F_L, V_L, gPG_LH);
 gPGg_R = grad(F_R, V_R, gPG_RH);
-% get index of where they are 0 in all directions
-gPGg_L0=find(all(gPGg_L')==0);
-gPGg_R0=find(all(gPGg_R')==0);
-% get inverse for indexing : faces that ARE NOT touching mW verts
-g_noMW_combined_L=setdiff([1:5120],gPGg_L0);
-g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
 
 % extract face-wise vector cartesian vector components
 gPGx_L=gPGg_L(:,1);
@@ -150,6 +169,11 @@ for F=g_noMW_combined_L
 
 % delineate this face's resultant vector angle
 L_CM=circ_mean(Thetas_L);
+% circular SD
+L_CSD=circ_std(Thetas_L);
+OutDf_L(F,9)=num2cell(L_CSD);
+% arbitrary but consistent circ_mean
+OutDf_L(F,10)=num2cell(L_CM);
 
 % get angular distance from gPGG
 PGGang_L=cart2pol(gazes_L(F),gels_L(F));
@@ -245,6 +269,11 @@ for F=g_noMW_combined_R
 
 % delineate this face's resultant vector angle
 R_CM=circ_mean(Thetas_R);
+% circular SD
+R_CSD=circ_std(Thetas_R);
+OutDf_R(F,9)=num2cell(R_CSD);
+% arbitrary but consistent circ_mean
+OutDf_R(F,10)=num2cell(R_CM);
 
 % get angular distance from gPGG
 PGGang_R=cart2pol(gazes_R(F),gels_R(F));

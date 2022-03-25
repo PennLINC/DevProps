@@ -101,7 +101,7 @@ custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 
 figure
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.sphere');
 
 asub = subaxis(2,2,1, 'sh', 0, 'sv', 0, 'padding', 0, 'margin', 0);
 
@@ -145,9 +145,9 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 %%% right hemisphere
 data=zeros(1,5120);
-data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
+data(g_noMW_combined_R)=FaceVecR;
 
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.sphere');
 
 asub = subaxis(2,2,2, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0,'Holdaxis');
 aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)

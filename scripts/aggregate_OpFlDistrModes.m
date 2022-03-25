@@ -133,8 +133,8 @@ Vis_FaceVec_modes(sOutArray_L,sOutArray_R,'fn2_4.png',faceModesL_Prom,faceModesR
 
 % and just include BUprop plotting so its all in the same place for single subj instances
 
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs4.mat'];
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs4.mat'];
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs.mat'];
 % load in L
 F_L=load(outFP_L);
 % load in R

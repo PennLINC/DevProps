@@ -3,7 +3,7 @@ import subprocess
 import time
 import datetime
 # grab subjects list
-my_file = open("/cbica/projects/pinesParcels/PWs/G600TRs.txt", "r")
+my_file = open("/cbica/projects/pinesParcels/PWs/G600TRs.txt","r")
 content = my_file.read()
 content_list = content. split("\n")
 # remove last line (blank)
@@ -20,7 +20,7 @@ while len(subjects)>0:
   que = len(qstat.split('\n'))-3
   # if we are using less than 7 job slots (one is occupied by this script)
   # ayyyy we done wit 7 jobs atta time we str8 flossin' out here at 35 now 
-  if que < 34:
+  if que < 24:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -30,14 +30,15 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
       # submit job (if conditions are met)
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_curvAngDistMat4.mat'
+      # there is no spoon
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_spoon.mat'
       if not os.path.exists(OpFile):
         print(newsub)
         subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab2.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
-    elif que < 34:
+    elif que < 24:
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_curvAngDistMat4.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_spoon.mat'
       if not os.path.exists(OpFile):
       # submit job (if conditions are met)
         print(newsub)

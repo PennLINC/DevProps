@@ -22,8 +22,8 @@ for s=1:numSubjs
 	subjcell=table2array(subjs(s,1));
         subj=subjcell{:}
 	% get resultant vecs for this subj
-	FP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs.mat'];
-	FP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs.mat'];
+	FP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_curv4.mat'];
+	FP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_curv4.mat'];
 	FileL=load(FP_L);
 	FileR=load(FP_R);
 	% extract resvecs - 8th column
@@ -63,8 +63,8 @@ writetable(table(FaceVecL,FaceVecR,stdFaceVecL,stdFaceVecR),'~/results/MeanSDs_M
 subj='';
 
 % same code as above
-FP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs.mat'];
-FP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs.mat'];
+FP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_curv4.mat'];
+FP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_curv4.mat'];
 FileL=load(FP_L);
 FileR=load(FP_R);
 % extract resvecs - 8th column
@@ -75,7 +75,5 @@ FaceVecL=cell2mat(BUTDL(:,8));
 FaceVecR=cell2mat(BUTDR(:,8));
 stdFaceVecL=cell2mat(BUTDL(:,9));
 stdFaceVecR=cell2mat(BUTDR(:,9));
-Vis_FaceVec_circ(FaceVecL,FaceVecR,'SubjMeanMap.png')
-Vis_FaceVec_lin(stdFaceVecL,stdFaceVecR,'SubjsdMap.png')
-% arbitrary dir circ faceplot
-Vis_FaceVec_circ(cell2mat(BUTDL(:,10)),cell2mat(BUTDR(:,10)),'SubjMeanMap_arbDInfl.png')
+Vis_FaceVec_circ(FaceVecL,FaceVecR,'SubjMeanMap_curv.png')
+Vis_FaceVec_lin(stdFaceVecL,stdFaceVecR,'SubjsdMap_curv.png')
