@@ -66,7 +66,7 @@ assert(sizeInDl(2) == sizeInDr(2), 'Unequal time series length between hemispher
 % make a shuffled vector for temporal null
 ShufVec=1:TR_n;
 % 100 shuffles for now
-numShufs=1000;
+numShufs=100;
 tic
 ShufMat=zeros(numShufs,TR_n);
 for i=1:numShufs

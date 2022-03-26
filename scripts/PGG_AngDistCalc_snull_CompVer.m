@@ -254,10 +254,10 @@ for S=1:1000
 	[dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(sp_AngDists);
 	DTres(S)=dip;
 	% save out some example distributions
-	if (S<10)
-		SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_SpunDistr' num2str(S) '.csv'];
-		writetable(table(sp_AngDists),SpunAngDist_exFP)	
-	end
+	%if (S<10)
+	%	SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_SpunDistr' num2str(S) '.csv'];
+	%	writetable(table(sp_AngDists),SpunAngDist_exFP)	
+	%end
 end
 
 % run once on actual PGG for comparison

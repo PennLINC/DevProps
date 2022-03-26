@@ -44,7 +44,7 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 %%% RUN 2.5
 Extract_BUTD_ResultantVecs(subj)
 Extract_BUTD_ResultantVecs_curv(subj)
-
+Extract_BUTD_ResultantVecs_c(subj)
 %PGG_AngDistCalc4(subj)
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);

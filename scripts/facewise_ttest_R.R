@@ -2,8 +2,8 @@
 #.libPaths('~/R_mgcv')
 
 # extract range of vertices to be covered in this run from VertBin
-Lfaces=4851
-Rfaces=4842
+Lfaces=4589
+Rfaces=4595
 
 # load in subj list
 subjList=read.delim('/cbica/projects/pinesParcels/PWs/hcpd_subj_list.txt')
