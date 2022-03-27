@@ -1,0 +1,81 @@
+---
+title: "NullPlotting"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(mgcv)
+
+# for each subj, get observed vs. null spatial distribution/value
+# load in subj list
+subjList=read.delim('Y:/PWs/hcpd_subj_list.txt')
+
+# load in ages
+demo=read.csv('Y:/PWs/hcpd_demographics.csv')
+# convert to used naming convention
+demo$SubjID<-gsub('HCD','sub-',demo$src_subject_id)
+
+# load in FD
+FD_TRs=read.csv('Y:/PWs/Subj_FD_RemTRs.csv')
+colnames(FD_TRs)[1]<-'SubjID'
+colnames(FD_TRs)[2]<-'FD'
+colnames(FD_TRs)[3]<-'RemainingTRs'
+
+# merge by subjID
+mergeddf<-merge(demo,FD_TRs,by='SubjID')
+
+# initialize Dip SD
+DipSDs=rep(0,dim(subjList)[1])
+
+# keep track of remaining TRs
+remTRs=rep(0,dim(subjList)[1])
+
+# subjvec to run in parallel for even more confidence in merging
+Subjvec=rep(0,dim(subjList)[1])
+
+# for plopping all null dips into one vector
+NullDips=matrix(ncol=1000,nrow=dim(subjList)[1])
+
+# load in D and shapes iteratively
+for (s in 1:dim(subjList)[1]){
+    subj=subjList[s,1]
+    ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
+    # if output exists
+    if (file.exists(paste0(ResFp,subj,'_SpunDips4.csv'))) {
+      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
+      ObsDip<-as.numeric(SpunDips[2,1001])
+      SpunDips<-as.numeric(SpunDips[2,1:1000])
+      SpunSD=sd(SpunDips)
+      SpunMean=mean(SpunDips)
+      # insert into df
+      NullDips[s,]=SpunDips
+      DipSDs[s]=(ObsDip-SpunMean)/SpunSD
+      remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
+      # and to record same order of subj loading and prevent funny biz
+      Subjvec[s]=subj
+    }
+}
+
+# merge populated vecs
+popDf=data.frame(Subjvec,DipSDs,remTRs)
+colnames(popDf)[1]<-'SubjID'
+
+# remaining TRs thresh
+inclusionVec<-popDf$remTRs>600
+includedSubjsvec<-popDf$SubjID[inclusionVec]
+popDfThresh=popDf[popDf$remTRs>600,]
+ThreshShapeMat<-shapeMat[,,inclusionVec]
+
+masterdf=merge(mergeddf,popDfThresh,by='SubjID')
+```
+
+```{r}
+# get group-wide null distribution
+NullDips
+```
+
+```{r}
+# plot each subj for how many SDs they were away from the mean in their own respective null distribution
+
+```

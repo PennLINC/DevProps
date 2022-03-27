@@ -20,7 +20,7 @@ while len(subjects)>0:
   que = len(qstat.split('\n'))-3
   # if we are using less than 7 job slots (one is occupied by this script)
   # ayyyy we done wit 7 jobs atta time we str8 flossin' out here at 35 now 
-  if que < 24:
+  if que < 10:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -36,7 +36,7 @@ while len(subjects)>0:
         print(newsub)
         subprocess.run(["qsub","-l","h_vmem=13G,s_vmem=12G","qsubMatlab2.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
-    elif que < 24:
+    elif que < 10:
       newsub = subjects.pop()
       OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_spoon.mat'
       if not os.path.exists(OpFile):

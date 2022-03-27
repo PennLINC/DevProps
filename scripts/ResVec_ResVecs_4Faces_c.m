@@ -10,10 +10,10 @@ addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/
 
 
 % initialize output dfs
-FaceMatL=zeros(height(subjs),4851);
-FaceMatR=zeros(height(subjs),4842);
-FaceVecL=zeros(1,4851);
-FaceVecR=zeros(1,4842);
+FaceMatL=zeros(height(subjs),4589);
+FaceMatR=zeros(height(subjs),4595);
+FaceVecL=zeros(1,4589);
+FaceVecR=zeros(1,4595);
 
 % for each subj
 numSubjs=height(subjs);
@@ -36,12 +36,12 @@ end
 
 % get mean resultant vector over subjs
 % for each face
-for f=1:4851;
+for f=1:4589;
 	FaceVecL(f)=circ_mean(FaceMatL(:,f));
 end
 
 % right hemi
-for f=1:4842;
+for f=1:4595;
 	FaceVecR(f)=circ_mean(FaceMatR(:,f));
 end
 

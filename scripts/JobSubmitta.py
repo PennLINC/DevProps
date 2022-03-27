@@ -6,6 +6,8 @@ import datetime
 my_file = open("/cbica/projects/pinesParcels/PWs/G600TRs.txt", "r")
 content = my_file.read()
 content_list = content. split("\n")
+# pause to let extract BUTD finish
+time.sleep(20000)
 # remove last line (blank)
 content_list.pop()
 # feed em' in as subjects

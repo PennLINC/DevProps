@@ -8,12 +8,12 @@ addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/
 subjs=readtable('/cbica/projects/pinesParcels/PWs/G600TRs.txt','ReadVariableNames',false);
 
 % initialize output dfs
-FaceMatL=zeros(height(subjs),5120);
-FaceMatR=zeros(height(subjs),5120);
-FaceVecL=zeros(1,5120);
-FaceVecR=zeros(1,5120);
-stdFaceVecL=zeros(1,5120);
-stdFaceVecR=zeros(1,5120);
+FaceMatL=zeros(height(subjs),4589);
+FaceMatR=zeros(height(subjs),4595);
+FaceVecL=zeros(1,4589);
+FaceVecR=zeros(1,4595);
+stdFaceVecL=zeros(1,4589);
+stdFaceVecR=zeros(1,4595);
 
 % for each subj
 numSubjs=height(subjs);
@@ -36,13 +36,13 @@ end
 
 % get mean resultant vector over subjs
 % for each face
-for f=1:5120;
+for f=1:4589;
 	FaceVecL(f)=circ_mean(FaceMatL(:,f));
 	stdFaceVecL(f)=circ_std(FaceMatL(:,f));	
 end
 
 % right hemi
-for f=1:5120;
+for f=1:4595;
 	FaceVecR(f)=circ_mean(FaceMatR(:,f));
 	stdFaceVecR(f)=circ_std(FaceMatR(:,f));	
 end
