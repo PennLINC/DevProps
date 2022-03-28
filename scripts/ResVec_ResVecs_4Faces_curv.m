@@ -10,7 +10,7 @@ subjs=readtable('/cbica/projects/pinesParcels/PWs/G600TRs.txt','ReadVariableName
 % initialize output dfs
 FaceMatL=zeros(height(subjs),4589);
 FaceMatR=zeros(height(subjs),4595);
-FaceVecL=zeros(1,4589);
+ub-0248440aceVecL=zeros(1,4589);
 FaceVecR=zeros(1,4595);
 stdFaceVecL=zeros(1,4589);
 stdFaceVecR=zeros(1,4595);
@@ -48,12 +48,12 @@ for f=1:4595;
 end
 
 % print into facewise
-Vis_FaceVec_circ(FaceVecL,FaceVecR,'GrandMeanMap.png')
-Vis_FaceVec_lin(stdFaceVecL,stdFaceVecR,'GrandsdMap.png')
+Vis_FaceVec_circ(FaceVecL,FaceVecR,'curv_GrandMeanMap.png')
+Vis_FaceVec_lin(stdFaceVecL,stdFaceVecR,'curv_GrandsdMap.png')
 % combine mean and SD's into a table
 
 % save out distributions
-writetable(table(FaceVecL,FaceVecR,stdFaceVecL,stdFaceVecR),'~/results/MeanSDs_MeanRelativeAngle_PGG_L.csv')
+writetable(table(FaceVecL,FaceVecR,stdFaceVecL,stdFaceVecR),'~/results/MeanSDs_MeanRelativeAngle_CG_L.csv')
 
 
 

@@ -79,3 +79,7 @@ NullDips
 # plot each subj for how many SDs they were away from the mean in their own respective null distribution
 
 ```
+
+```{r}
+# repeat for temporal
+```

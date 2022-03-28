@@ -68,10 +68,15 @@ g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 
 data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
+% setting MW to absurd value for easy color mapping
+data(fmwIndVec_l)=10;
 
 % fixed colorscale
+%mincol=-2*pi;
+%maxcol=(2*pi)+.05;
 mincol=-pi;
-maxcol=pi;
+maxcol=pi+.02;
+
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
 %custommap=colormap('inferno');
@@ -96,9 +101,12 @@ roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
 interpsteps=[0 .2 .4 .6 .8 1];
 roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
-% add white layer for thresholded faces
+% make circular (highest = lowest value)
 custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
-
+% for individual-level mean directions only
+%custommap=vertcat(roybigbl_cm,flipud(roybigbl_cm),roybigbl_cm,flipud(roybigbl_cm));
+% make 0 black - medial wall
+custommap(510,:)=[0,0,0];
 
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
@@ -146,6 +154,8 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 %%% right hemisphere
 data=zeros(1,5120);
 data(g_noMW_combined_R)=FaceVecR;
+% setting mw to absurd value for easy color mapping
+data(fmwIndVec_r)=10;
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
@@ -193,5 +203,5 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 %c=colorbar
 %c.Location='southoutside'
 %colormap(custommap)
-
+%colorbar
 print(Fn,'-dpng')
