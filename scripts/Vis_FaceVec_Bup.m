@@ -73,12 +73,14 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-% CIRCULAR
-mincol=.4;
-maxcol=.6;
+mincol=.34;
+maxcol=.66;
 
-%custommap=colormap(roybigbl_cm);
+% flip to make top-down bright
 custommap=flipud(colormap(inferno));
+
+% set mw to black
+custommap(1,:)=[0 0 0];
 
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
@@ -176,5 +178,4 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 %c=colorbar
 %c.Location='southoutside'
 %colormap(custommap);
-
 print(Fn,'-dpng')

@@ -67,7 +67,6 @@ assert(sizeInDl(2) == sizeInDr(2), 'Unequal time series length between hemispher
 ShufVec=1:TR_n;
 % 100 shuffles for now
 numShufs=100;
-tic
 ShufMat=zeros(numShufs,TR_n);
 for i=1:numShufs
 	ShufMat(i,:)=ShufVec(randperm(TR_n));
@@ -78,76 +77,68 @@ end
 TRPC=1;
 % note trp = tr pair
 
+% also initialize output struct outside of shuffle loop
+us=struct;
+
 %%%%%%%%%%%%%%%% for each shuffle
 for sh=1:numShufs
-
-shuffle=sh
-
-% reorg time series w/r/t shuffle
-% left hemi
-fl=struct;
-% populate struct
-for TRP=1:TR_n;
-	fl.TRs{TRP}=TRs_l(:,ShufMat(sh,TRP));
-end
-
-% r h 
-fr=struct;
-for TRP=1:TR_n;
-	fr.TRs{TRP}=TRs_r(:,ShufMat(sh,TRP));
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% load in continuous segment indices
-parentfp = '/cbica/projects/hcpd/data/motMasked_contSegs/';
-CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
-CSI = readtable(CSIfp);
-
-% assure that TR count is the same between time series and valid segments txt
-SegNum=height(CSI);
-% trailing -1 is because the count column (,2) is inclusive of the start TR (,1)
-numTRsVS=CSI{SegNum,1}+CSI{SegNum,2}-1;
-if numTRsVS ~= TR_n
-	disp('TRs from Valid Segments txt and cifti do not match. Fix it.')
-	return
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compute optical flow on every pair of sequential TRs
-% initialize output struct
-us=struct;
-disp('Computing optical flow...');
-
-% for each continuous segment
-for seg=1:SegNum;
-	% just to print out count of current segment
-	seg
-	SegStart=CSI{seg,1};
-	SegSpan=CSI{seg,2};
-	% get corresponding TRs from aggregate time series
-	segTS_l=fl.TRs(SegStart:(SegStart+SegSpan-1));
-	segTS_r=fr.TRs(SegStart:(SegStart+SegSpan-1));
-	% loop over each TR-Pair: 1 fewer pair than number of TRs
-	for TRP=1:(SegSpan-1);
-		% print TR pair iter
-		TRP;
-		% Compute decomposition.
-		% pull out adjacent frames
-		u = of(N, faces_l, vx_l, segTS_l{TRP}, segTS_l{TRP+1}, h, alpha, s);
-		% throw u into struct
-		us.vf_left{TRPC}=u;
-		% now right hemi
-		u = of(N, faces_r, vx_r, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
-		% throw u into struct
-		us.vf_right{TRPC}=u;
-		% record difference in signal
-		%us.sigd_left{TRPC}=segTS_l{TRP}-segTS_l{TRP+1};
-		%us.sigd_right{TRPC}=segTS_r{TRP}-segTS_r{TRP+1};
-		% update TR pair counter, which should increase +1 across segments
-		TRPC=TRPC+1;
+	tic
+	% print shuffle number
+	shuffle=sh	
+	% reorg time series w/r/t shuffle
+	% left hemi
+	fl=struct;
+	% populate struct
+	for TRP=1:TR_n;
+		fl.TRs{TRP}=TRs_l(:,ShufMat(sh,TRP));
 	end
-end
+	
+	% r h 
+	fr=struct;
+	for TRP=1:TR_n;
+		fr.TRs{TRP}=TRs_r(:,ShufMat(sh,TRP));
+	end
 
-% plop it into big struct
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% load in continuous segment indices
+	parentfp = '/cbica/projects/hcpd/data/motMasked_contSegs/';
+	CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
+	CSI = readtable(CSIfp);
+	% assure that TR count is the same between time series and valid segments txt
+	SegNum=height(CSI);
+	% trailing -1 is because the count column (,2) is inclusive of the start TR (,1)
+	numTRsVS=CSI{SegNum,1}+CSI{SegNum,2}-1;
+	if numTRsVS ~= TR_n
+		disp('TRs from Valid Segments txt and cifti do not match. Fix it.')
+		return
+	end
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compute optical flow on every pair of sequential TRs
+	disp('Computing optical flow...');
+	% for each continuous segment
+	for seg=1:SegNum;
+		% just to print out count of current segment
+		seg
+		SegStart=CSI{seg,1};
+		SegSpan=CSI{seg,2};
+		% get corresponding TRs from aggregate time series
+		segTS_l=fl.TRs(SegStart:(SegStart+SegSpan-1));
+		segTS_r=fr.TRs(SegStart:(SegStart+SegSpan-1));
+		% loop over each TR-Pair: 1 fewer pair than number of TRs
+		for TRP=1:(SegSpan-1);
+			% print TR pair iter
+			TRP;
+			% Compute decomposition.
+			% pull out adjacent frames
+			u = of(N, faces_l, vx_l, segTS_l{TRP}, segTS_l{TRP+1}, h, alpha, s);
+			% throw u into struct
+			us.vf_left{TRPC}=u;
+			% now right hemi
+			u = of(N, faces_r, vx_r, segTS_r{TRP}, segTS_r{TRP+1}, h, alpha, s);
+			% throw u into struct
+			us.vf_right{TRPC}=u;
+			% update TR pair counter, which should increase +1 across segments
+			TRPC=TRPC+1;
+		end
+	end
 
 toc
 %end for each shuffle

@@ -74,6 +74,7 @@ data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 dataP=zeros(1,5120);
 dataP(g_noMW_combined_L)=PromVecL(g_noMW_combined_L);
 
+% if modal prominence falls below the threshold for this iteration of 7, zero it
 data(dataP<(dumb*.03))=0;
 
 %%%%%%

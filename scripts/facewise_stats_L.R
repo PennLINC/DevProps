@@ -149,7 +149,7 @@ df$FaceThetaDist=rep(0,remainingSubjs)
 # that leaves a column for face value, one for age, one for FD, one for sex. Remaining TRs controlled for via exclusion
 
 # for each face in this run's range
-for (f in 1:4851){
+for (f in 1:Lfaces){
 	print(f)
 	# load in D and shapes iteratively
 	for (s in 1:remainingSubjs){

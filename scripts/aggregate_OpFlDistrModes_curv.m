@@ -81,10 +81,7 @@ writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/curvModeM
 
 Vis_FaceVec_modes(OutArray_L,OutArray_R,'GroupCGModes',GroPromArray_L,GroPromArray_R)
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 % for running on single subjs
 subj='';

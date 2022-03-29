@@ -11,6 +11,11 @@ ModesL_Prom=zeros(5120,height(Subjs));
 ModesR_Prom=zeros(5120,height(Subjs));
 GroPromArray_L=zeros(5120,1);
 GroPromtArray_R=zeros(5120,1);
+% and a top-down proportion vector for left and right
+TDP_mL=zeros(5120,height(Subjs));
+TDP_mR=zeros(5120,height(Subjs));
+TDP_vL=zeros(5120,1);
+TDP_vR=zeros(5120,1);
 
 % edges to discretize on 
 edges=0:10:180;
@@ -26,6 +31,15 @@ for s = 1:height(Subjs)
 		Angs=load([fp '/' Subj{:} '_AngDistMat4.mat']);
 		AngsL=Angs.AngDist.gLeft;
 		AngsR=Angs.AngDist.gRight;
+		% and BUTD vecs
+		outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:} '/' Subj{:} '_BUTD_L_resultantVecs.mat'];
+		outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:} '/' Subj{:} '_BUTD_R_resultantVecs.mat'];
+		% load in L
+		BUTD_L=load(outFP_L);
+		BUTD_L=cell2mat(BUTD_L.OutDf_L);
+		% load in R
+		BUTD_R=load(outFP_R);
+		BUTD_R=cell2mat(BUTD_R.OutDf_R);
 		%discretize each face's distribution
 		for f = 1:5120
 			binnedFaceDirs=histcounts(AngsL(:,f),edges);
@@ -55,6 +69,13 @@ for s = 1:height(Subjs)
         		[M2,I2]=max(tmpBFDvec);
         		% get relative prominence of secondary peak
         		ModesR_Prom(f,s)=1-(M2/M);
+			% insert prop. TDm note contingencies. BUTD file is already masked
+			if f < 4590;
+				TDP_mL(f,s)=BUTD_L(f,1);
+			end
+			if f < 4596
+				TDP_mR(f,s)=BUTD_R(f,1);
+			end
 		end	
 	end
 end
@@ -72,7 +93,14 @@ for f = 1:5120
 	OutArray_L(f,1)=mode(IntermedArray_L(f,:));
 	OutArray_R(f,1)=mode(IntermedArray_R(f,:));
 	GroPromArray_L(f,1)=mean(ModesL_Prom(f,:));
-	GroPromArray_R(f,1)=mean(ModesR_Prom(f,:));	
+	GroPromArray_R(f,1)=mean(ModesR_Prom(f,:));
+	% same contingencies as above
+	if f < 4590;
+		TDP_vL(f,1)=mean(TDP_mL(f,:));
+	end
+	if f < 4596
+		TDP_vR(f,1)=mean(TDP_mR(f,:));	
+	end
 end
 
 %save
@@ -81,6 +109,8 @@ writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/ModeModes
 
 Vis_FaceVec_modes(OutArray_L,OutArray_R,'GroupPGGModes',GroPromArray_L,GroPromArray_R)
 
+% filling in unmasked faces with unmasked BU Prop averages, which are the first 45xx
+Vis_FaceVec_Bup(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp.png')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,5 +175,5 @@ matR=cell2mat(F_R.OutDf_R);
 csv_L=table(matL(:,1));
 csv_R=table(matR(:,1));
 
-Vis_FaceVec_Bup(table2array(csv_L),table2array(csv_R),'fnbup_4.png')
+Vis_FaceVec_Bup(table2array(csv_L),table2array(csv_R),'ExampleSubjBup.png')
 
