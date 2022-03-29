@@ -1,4 +1,4 @@
-function PGG_AngDistCalc_tnull_CompVer(subj)
+function PGG_AngDistCalc_snull(subj)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% load in optical flow data and calculate gradient gradient data, compare angular distance between them
@@ -7,12 +7,13 @@ function PGG_AngDistCalc_tnull_CompVer(subj)
 % Add OFD toolbox to path
 %addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
-%%%% Load in fsav5 opflow calc
+%%%% Load in fsav4 opflow calc
 OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_t_shuf.mat'];
 data=load(OpFlFp)
 
-%%% Load in surface data
-SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Load in surface data %%%%%
+SubjectsFolder = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4';
 surfL = [SubjectsFolder '/surf/lh.sphere'];
 surfR = [SubjectsFolder '/surf/rh.sphere'];
 % surface topography
@@ -38,18 +39,51 @@ TR_L = TriRep(F_L,V_L);
 P_L = TR_L.incenters;
 TR_R = TriRep(F_R,V_R);
 P_R = TR_R.incenters;
+% translate xyz spherical coordinates to az/el/r
+[az_L,el_L,r_L]=cart2sph(P_L(:,1),P_L(:,2),P_L(:,3));
+[az_R,el_R,r_R]=cart2sph(P_R(:,1),P_R(:,2),P_R(:,3));
+% convert from radians to degrees
+azd_L=rad2deg(az_L);
+eld_L=rad2deg(el_L);
+azd_R=rad2deg(az_R);
+eld_R=rad2deg(el_R);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% use native freesurfer command for mw mask indices
+surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+mwIndVec_l = read_medial_wall_label(surfML);
+surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+mwIndVec_r = read_medial_wall_label(surfMR);
+% make binary "is medial wall" vector for vertices
+mw_L=zeros(1,2562);
+mw_L(mwIndVec_l)=1;
+mw_R=zeros(1,2562);
+mw_R(mwIndVec_r)=1;
+% convert to faces
+% convert to faces
+F_MW_L=sum(mw_L(faces_l),2)./3;
+F_MW_R=sum(mw_R(faces_r),2)./3;
+% convert "partial" medial wall to medial wall
+F_MW_L=ceil(F_MW_L);
+F_MW_R=ceil(F_MW_R);
+% face mask indices
+fmwIndVec_l=find(F_MW_L);
+fmwIndVec_r=find(F_MW_R);
+% make medial wall vector
+g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
+g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% do the same with the PG: but dont use the mask from it
 % load in GROUP PG
-gpg=load('~/data/gpg_fs5smoothed.mat');
+gpg=load('~/data/gpg_fs4.mat');
 gPG_LH=gpg.gpg.gPG_LH;
 gPG_RH=gpg.gpg.gPG_RH;
-
-% AND FOR GROUP
 % calculate group PG gradient on sphere
 gPGg_L = grad(F_L, V_L, gPG_LH);
 gPGg_R = grad(F_R, V_R, gPG_RH);
-
-% extract face-wise vector cartesian vector components
+% cartesian components
 gPGx_L=gPGg_L(:,1);
 gPGy_L=gPGg_L(:,2);
 gPGz_L=gPGg_L(:,3);
@@ -57,121 +91,170 @@ gPGx_R=gPGg_R(:,1);
 gPGy_R=gPGg_R(:,2);
 gPGz_R=gPGg_R(:,3);
 
-% translate xyz spherical coordinates to az/el/r
-[az_L,el_L,r_L]=cart2sph(P_L(:,1),P_L(:,2),P_L(:,3));
-[az_R,el_R,r_R]=cart2sph(P_R(:,1),P_R(:,2),P_R(:,3));
-
-% convert from radians to degrees
-azd_L=rad2deg(az_L);
-eld_L=rad2deg(el_L);
-azd_R=rad2deg(az_R);
-eld_R=rad2deg(el_R);
-
-% translate xyz vector components at coordinates to az/el/r
-gazes_L=zeros(1,length(azd_L));
-gels_L=zeros(1,length(eld_L));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+% true gazes and gels for comparison dip
+tgazes_L=zeros(1,length(azd_L));
+tgels_L=zeros(1,length(eld_L));
 for i=1:length(azd_L)
     gvs_L=cart2sphvec(double([gPGx_L(i);gPGy_L(i);gPGz_L(i)]),azd_L(i),eld_L(i));
-    gazes_L(i)=gvs_L(1);
-    gels_L(i)=gvs_L(2);
+    tgazes_L(i)=gvs_L(1);
+    tgels_L(i)=gvs_L(2);
 	% drop the third vector, as each point is equidistant from the center of the sphere
 end
 % right hemi
-gazes_R=zeros(1,length(azd_R));
-gels_R=zeros(1,length(eld_R));
+tgazes_R=zeros(1,length(azd_R));
+tgels_R=zeros(1,length(eld_R));
 for i=1:length(azd_R)
     gvs_R=cart2sphvec(double([gPGx_R(i);gPGy_R(i);gPGz_R(i)]),azd_R(i),eld_R(i));
-    gazes_R(i)=gvs_R(1);
-    gels_R(i)=gvs_R(2);
+    tgazes_R(i)=gvs_R(1);
+    tgels_R(i)=gvs_R(2);
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% pull in length of original time series for indexing into spins
+OG_TSfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
+OG_TS=load(OG_TSfp);
+% pull length of ts from struct dimensions
+LengthOf_OG_TS=length(OG_TS.us.vf_left);
+
+% initialize output vector for dip test results
+DTres=zeros(1,100);
+
+% for each temporal shuffle for this subject
+for t=1:100
+	tic
+	t
+	% use length of TS to extract indices of this temporal shuffle
+	tStart=((t-1)*LengthOf_OG_TS)+1;
+	tEnd=(t)*LengthOf_OG_TS;
+	tInds=tStart:tEnd;
+	%%%%%% translate xyz vector fields from shuffled opfl to az/el/r %%%%%%%%%%
+	azesOpf_L=zeros(length(azd_L),LengthOf_OG_TS);
+	elsOpf_L=zeros(length(azd_L),LengthOf_OG_TS);
+	for i=1:length(azd_L)
+	    for fr=1:LengthOf_OG_TS
+		% current temporal index in master struct
+		curShufInd=tInds(fr);
+		% current vector field
+	        relVf_L=data.us.vf_left{fr};
+		% xyz components
+	        xComp_L=relVf_L(i,1);
+	        yComp_L=relVf_L(i,2);
+	        zComp_L=relVf_L(i,3);
+		% convert to spherical coord system
+	        vs_L=cart2sphvec(double([xComp_L;yComp_L;zComp_L]),azd_L(i),eld_L(i));
+	        % store in output vector (r is redundant across all vecs)
+		azesOpf_L(i,fr)=vs_L(1);
+	        elsOpf_L(i,fr)=vs_L(2);
+	        rvec=vs_L(3);
+	    end
+	end
+	% right hemisphre
+	azesOpf_R=zeros(length(azd_R),LengthOf_OG_TS);
+	elsOpf_R=zeros(length(azd_R),LengthOf_OG_TS);
+	for i=1:length(azd_R)
+	    for fr=1:LengthOf_OG_TS
+		% current temporal index in master struct
+		curShufInd=tInds(fr);
+		% current vector field
+		relVf_R=data.us.vf_right{fr};
+		% xyz components
+	        xComp_R=relVf_R(i,1);
+	        yComp_R=relVf_R(i,2);
+	        zComp_R=relVf_R(i,3);
+		% convert to spherical coord system
+	        vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(i),eld_R(i));
+	        % store in output vector (r is redundant across all vecs)
+		azesOpf_R(i,fr)=vs_R(1);
+	        elsOpf_R(i,fr)=vs_R(2);
+	        rvec=vs_R(3);
+	    end
+	end
+	disp('done converting shuffled opfl vectors from cartesian')
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%%% calculate Opflow vector vs PGG vector angular distance, diptest %%%
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% initialize ang dist over all vectors vector
+	gangDistL=zeros(LengthOf_OG_TS,length(azd_L));
+	gangDistR=zeros(LengthOf_OG_TS,length(azd_R));
+	% for each vertex
+	for Vert=1:length(azd_L)
+	    % note azimuth elevation ordering for atan2d
+	    gPGvec_L=[tgazes_L(Vert) tgels_L(Vert)]; 
+	    % PG GROUP LOAD IN
+	    for fr=1:lenOpFl
+	        OpFlVec_L=[azesOpf_L(Vert,fr) elsOpf_L(Vert,fr)];
+    		ga = acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )));
+		gangDist_L(fr,Vert) = ga;	
+    	     end
+	end
+	% right hemi
+	% for each vertex
+	for Vert=1:length(azd_R)
+	    % note azimuth elevation ordering for atan2d
+	    gPGvec_R=[gazes_R(Vert) gels_R(Vert)];
+	    for fr=1:lenOpFl
+	        OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
+        	ga = acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )));
+        	gangDist_R(fr,Vert) = ga;
+    	    end
+	end
+	% get index of where they are 0 in all directions
+	sp_gPGg_L0=find(all(sp_gPG_LH')==0);
+	sp_gPGg_R0=find(all(sp_gPG_RH')==0);
+	% get union of two medial wall masks
+	MasterMaskL=union(sp_gPGg_L0,sp_mw_L.inds{S});
+	MasterMaskR=union(sp_gPGg_R0,sp_mw_R.inds{S});
+	% extract data outside of these masks	
+	OutOfMaskL=setdiff([1:5120],MasterMaskL);
+	OutOfMaskR=setdiff([1:5120],MasterMaskR);
+	% merge ang distances
+	sp_AngDists=horzcat(gangDist_L(:,OutOfMaskL),gangDist_R(:,OutOfMaskR));
+	% dip test
+	[dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(sp_AngDists);
+	DTres(S)=dip;
+	% save out some example distributions
+	%if (S<10)
+	%	SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_SpunDistr' num2str(S) '.csv'];
+	%	writetable(table(sp_AngDists),SpunAngDist_exFP)	
+	%end
+	toc
 end
 
-% get length of OpFl pairs
-lenOpFl=length(data.us.vf_left);
+% run once on actual PGG for comparison
+True_gangDist_L=zeros(lenOpFl,length(azd_L));
+True_gangDist_R=zeros(lenOpFl,length(azd_R));
 
-% translate xyz vector fields from opfl to az/el/r
-azesOpf_L=zeros(length(azd_L),lenOpFl);
-elsOpf_L=zeros(length(azd_L),lenOpFl);
-thetasOpf_L=zeros(length(azd_L),lenOpFl);
-for i=1:length(azd_L)
-    for fr=1:lenOpFl
-	% current vector field
-        relVf_L=vfl{fr};
-	% xyz components
-        xComp_L=relVf_L(i,1);
-        yComp_L=relVf_L(i,2);
-        zComp_L=relVf_L(i,3);
-	% convert to spherical coord system
-        vs_L=cart2sphvec(double([xComp_L;yComp_L;zComp_L]),azd_L(i),eld_L(i));
-        % store in output vector (r is redundant across all vecs)
-	azesOpf_L(i,fr)=vs_L(1);
-        elsOpf_L(i,fr)=vs_L(2);
-        rvec=vs_L(3);
-    end
-end
-% right hemisphre
-azesOpf_R=zeros(length(azd_R),lenOpFl);
-elsOpf_R=zeros(length(azd_R),lenOpFl);
-thetasOpf_R=zeros(length(azd_R),lenOpFl);
-for i=1:length(azd_R)
-    for fr=1:lenOpFl
-	% current vector field
-        relVf_R=vfr{fr};
-	% xyz components
-        xComp_R=relVf_R(i,1);
-        yComp_R=relVf_R(i,2);
-        zComp_R=relVf_R(i,3);
-	% convert to spherical coord system
-        vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(i),eld_R(i));
-        % store in output vector (r is redundant across all vecs)
-	azesOpf_R(i,fr)=vs_R(1);
-        elsOpf_R(i,fr)=vs_R(2);
-        rvec=vs_R(3);
-    end
-end
-
-% actually calculate Opflow vector vs PGG vector angular distance
-gangDist_L=zeros(lenOpFl,length(azd_L));
+%%%%%%%%%%%% EXTRACT OPFLOW VECTOR FROM REAL DATA PRIOR TO THIS RUN
 
 % for each vertex
 for Vert=1:length(azd_L)
     % note azimuth elevation ordering for atan2d
-    gPGvec_L=[gazes_L(Vert) gels_L(Vert)]; 
+    gPGvec_L=[tgazes_L(Vert) tgels_L(Vert)]; 
     % PG GROUP LOAD IN
     for fr=1:lenOpFl
         OpFlVec_L=[azesOpf_L(Vert,fr) elsOpf_L(Vert,fr)];
-	% go with this top rec as primary https://stackoverflow.com/questions/40461268/calculate-angle-between-two-vectors-matlab
-	% note it returns same value as two alternative methods below
-	%dotUV = dot(PGvec_L,OpFlVec_L);
-	%normU = norm(PGvec_L);
-	%normV = norm(OpFlVec_L);
-	%a_alt = acosd(dotUV/(normU * normV));
-	%a_alt2 = atan2d(norm(cross([PGvec_L 0],[OpFlVec_L 0])),dot([PGvec_L 0],[OpFlVec_L 0]))
     	ga = acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )));
-	gangDist_L(fr,Vert) = ga;	
+	True_gangDist_L(fr,Vert) = ga;	
     end
 end
-% same initialization for right hemi
-gangDist_R=zeros(lenOpFl,length(azd_R));
-
-% for each vertex
 for Vert=1:length(azd_R)
     % note azimuth elevation ordering for atan2d
-    gPGvec_R=[gazes_R(Vert) gels_R(Vert)];
+    gPGvec_R=[tgazes_R(Vert) tgels_R(Vert)];
     for fr=1:lenOpFl
+        % load optical flow angles
         OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
-        %dotUV = dot(PGvec_R,OpFlVec_R);
-        %normU = norm(PGvec_R);
-        %normV = norm(OpFlVec_R);
-        %a_alt = acosd(dotUV/(normU * normV));
-        %a_alt2 = atan2d(norm(cross([PGvec_R 0],[OpFlVec_R 0])),dot([PGvec_R 0],[OpFlVec_R 0]))
         ga = acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )));
-        gangDist_R(fr,Vert) = ga;
+        True_gangDist_R(fr,Vert) = ga;
     end
 end
 
+% make the last one "true" observed from masked data
+Tr_AngDists=horzcat(True_gangDist_L(g_noMW_combined_L),True_gangDist_R(g_noMW_combined_R));
+[dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(Tr_AngDists);
+DTres(101)=dip;
+
 % save it out
-AngDist=struct;
-AngDist.gLeft=gangDist_L;
-AngDist.gRight=gangDist_R;
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4_tnull.mat'];
-save(AngDistFP,'AngDist')
+SpunAngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_ShufDips4.csv'];
+writetable(table(DTres),SpunAngDistFP)

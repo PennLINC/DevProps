@@ -50,6 +50,7 @@ for (s in 1:dim(subjList)[1]){
       SpunMean=mean(SpunDips)
       # insert into df
       NullDips[s,]=SpunDips
+      print(SpunMean)
       DipSDs[s]=(ObsDip-SpunMean)/SpunSD
       remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
       # and to record same order of subj loading and prevent funny biz

@@ -127,7 +127,7 @@ sp_mw_R=struct;
 for i=1:1000
 	sp_gPG_LH=sp.bigrotl(i,:);
 	sp_gPG_RH=sp.bigrotr(i,:);
-	%%% find where verts are zero or 100: indicats medial wall location and displaced MW, respectively
+	%%% find where verts are zero or 100: indicates medial wall location and displaced MW, respectively
 	% use found verts to denote invalid faces: those that draw from one of the mw or displaced mw verts
 	mwInds_L=find(sp_gPG_LH==100);
 	mwInds_R=find(sp_gPG_RH==100);
@@ -245,6 +245,9 @@ for S=1:1000
 	% get union of two medial wall masks
 	MasterMaskL=union(sp_gPGg_L0,sp_mw_L.inds{S});
 	MasterMaskR=union(sp_gPGg_R0,sp_mw_R.inds{S});
+	% include OG MW mask to remove OpFl vectors there
+	MasterMaskL=union(fmwIndVec_l,MasterMaskL);
+        MasterMaskR=union(fmwIndVec_r,MasterMaskR);
 	% extract data outside of these masks	
 	OutOfMaskL=setdiff([1:5120],MasterMaskL);
 	OutOfMaskR=setdiff([1:5120],MasterMaskR);

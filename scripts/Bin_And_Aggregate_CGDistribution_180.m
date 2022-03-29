@@ -69,10 +69,10 @@ for s = 1:height(Subjs)
 	Subj=table2array(Subjs(s,2));
 	fp=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:}];
 	% if file exists, then
-	if isfile([fp '/' Subj{:} '_AngDistMat4.mat']);
+	if isfile([fp '/' Subj{:} '_curvAngDistMat4.mat']);
 		s
 		% load in subj's distr
-		Angs=load([fp '/' Subj{:} '_AngDistMat4.mat']);
+		Angs=load([fp '/' Subj{:} '_curvAngDistMat4.mat']);
 		AngsL=Angs.AngDist.gLeft;
 		AngsR=Angs.AngDist.gRight;
 		% discretize : get all TR pairs from non mw-indices
@@ -139,17 +139,16 @@ OutDf_face_modeR=mode(OutDf_face_modesR,1);
 OutDf_face_modeL_prom=mean(OutDf_face_modesL_Prom,1);
 OutDf_face_modeR_prom=mean(OutDf_face_modesR_Prom,1);
 
-fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_facewiseMode_L.csv'];
+fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_facewiseMode_curvL.csv'];
 writetable(table(OutDf_face_modeL,OutDf_face_modeL_prom),fn)
-fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_facewiseMode_R.csv'];
+fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_facewiseMode_curvR.csv'];
 writetable(table(OutDf_face_modeR,OutDf_face_modeR_prom),fn)
 
 
 % maybe write as csv: as table ya know
-fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_AngDistHist.csv'];
+fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_AngDistHist_curv.csv'];
 writetable(table(OutDf),fn)
 
 % write out modes sep.
-fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_AngDistHist_modedOverTRs.csv'];
+fn=['/cbica/projects/pinesParcels/results/PWs/rs_subs_AngDistHist_modedOverTRs_curv.csv'];
 writetable(table(OutDf_modes),fn)
-OutDf_face_modesL_Prom(s,:)=faceModesL_Prom;

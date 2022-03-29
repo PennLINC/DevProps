@@ -4,7 +4,6 @@ output: html_document
 ---
 
 ```{r}
-library(shapes)
 library(ggplot2)
 library(mgcv)
 ```
@@ -39,7 +38,7 @@ Subjvec=rep(0,dim(subjList)[1])
 shapeMat=array(dim=c(24,2,dim(subjList)[1]))
 shapeMatAbs=array(dim=c(24,2,dim(subjList)[1]))
 
-# load in D and shapes iteratively
+# load in D iteratively
 for (s in 1:dim(subjList)[1]){
     subj=subjList[s,1]
     ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
@@ -83,10 +82,21 @@ CGmodeR=read.csv('Y:/results/PWs/curvModeModes4_R.csv')
 hist(c(PGGmodeL$OutArray_L,PGGmodeR$OutArray_R))
 hist(c(CGmodeL$OutArray_L,CGmodeR$OutArray_R))
 
+# mean mean distributions
+meanMeans=read.csv('Y:/results/MeanSDs_MeanRelativeAngle_PGG.csv')
+PGGmeanL=unlist(meanMeans[1:4589])
+PGGmeanR=unlist(meanMeans[4590:9185])
+
+# convert range of -pi to pi to 0:180
+PGGmeanL=abs(PGGmeanL)*(180/pi)
+PGGmeanR=abs(PGGmeanR)*(180/pi)
+
 ```
 
 
 ```{r}
+####### This chunk is just for saving out subject lists corresponding to age tertiles for the cluster
+
 # make list of old subjs vs younger
 low_tertile_age=quantile(masterdf$interview_age,.33)
 high_tertile_age=quantile(masterdf$interview_age,.66)
@@ -97,6 +107,54 @@ write.table(youngins,'Y:/PWs/young_subs.csv')
 #geezers
 geezers=masterdf$SubjID[masterdf$interview_age>high_tertile_age]
 write.table(geezers,'Y:/PWs/old_subs.csv')
+
+
+
+##### make subject lists for RS w/ good _carit task runs ( > 300 TRs retained)
+
+###### 388
+rs_subs<-masterdf$SubjID
+#print
+write.table(rs_subs,'Y:/PWs/rs_subs.csv')
+
+#### RS_C matched: rope in a bunch of goblyguk just for equivalence with facewise_t
+# load in FD
+FD_TRs=read.csv('Y:/PWs/Subj_FD_RemTRs.csv')
+colnames(FD_TRs)[1]<-'SubjID'
+colnames(FD_TRs)[2]<-'FD'
+colnames(FD_TRs)[3]<-'RemainingTRs'
+# FD for carit runs
+FD_TRs_c=read.csv('Y:/PWs/Subj_FD_RemTRs_c.csv')
+colnames(FD_TRs_c)[1]<-'SubjID'
+colnames(FD_TRs_c)[2]<-'FDc'
+colnames(FD_TRs_c)[3]<-'RemainingTRsc'
+# merge by subjID
+mergeddf<-merge(demo,FD_TRs,by='SubjID')
+mergeddf<-merge(mergeddf,FD_TRs_c,by='SubjID')
+# exclude subjects with less than 600 TRs remaining (in rest)
+inclusionVec<-mergeddf$RemainingTRs>600
+# include NAs in the exclusion
+inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
+# subset the master df accordingly
+mergeddf<-mergeddf[inclusionVec,]
+# get count of remaining subjects
+remainingSubjs=dim(mergeddf)[1]
+print(remainingSubjs)
+# exclude subjects with less than 300 TRs remaining (in carit)
+inclusionVec<-mergeddf$RemainingTRsc>300
+# include NAs in the exclusion
+inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
+# subset the master df accordingly
+df<-mergeddf[inclusionVec,]
+# get count of remaining subjects
+remainingSubjs=dim(df)[1]
+print(remainingSubjs)
+# extract subjs
+rs_cmatch_subjs<-df$SubjID
+# print
+write.table(rs_cmatch_subjs,'Y:/PWs/rs_cmatch_subs.csv')
+
+# _C: will need FP alteration in .m, but is from same subjects
 ```
 
 ```{r}
@@ -217,56 +275,6 @@ p<-ggplot(plotdataf,aes(x=index,y=dif_disthist))
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Modal Difference")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+scale_y_continuous(labels = percent_format(accuracy = 1))
 ```
 
-
-```{r}
-### make subject lists for RS (388), RS w/ good _C, and good _C
-
-###### 388
-rs_subs<-masterdf$SubjID
-#print
-write.table(rs_subs,'Y:/PWs/rs_subs.csv')
-
-#### RS_C matched: rope in a bunch of goblyguk just for equivalence with facewise_t
-# load in FD
-FD_TRs=read.csv('Y:/PWs/Subj_FD_RemTRs.csv')
-colnames(FD_TRs)[1]<-'SubjID'
-colnames(FD_TRs)[2]<-'FD'
-colnames(FD_TRs)[3]<-'RemainingTRs'
-# FD for carit runs
-FD_TRs_c=read.csv('Y:/PWs/Subj_FD_RemTRs_c.csv')
-colnames(FD_TRs_c)[1]<-'SubjID'
-colnames(FD_TRs_c)[2]<-'FDc'
-colnames(FD_TRs_c)[3]<-'RemainingTRsc'
-# merge by subjID
-mergeddf<-merge(demo,FD_TRs,by='SubjID')
-mergeddf<-merge(mergeddf,FD_TRs_c,by='SubjID')
-# exclude subjects with less than 600 TRs remaining (in rest)
-inclusionVec<-mergeddf$RemainingTRs>600
-# include NAs in the exclusion
-inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
-# subset the master df accordingly
-mergeddf<-mergeddf[inclusionVec,]
-# get count of remaining subjects
-remainingSubjs=dim(mergeddf)[1]
-print(remainingSubjs)
-# exclude subjects with less than 300 TRs remaining (in carit)
-inclusionVec<-mergeddf$RemainingTRsc>300
-# include NAs in the exclusion
-inclusionVec[is.na(inclusionVec)==TRUE]=FALSE
-# subset the master df accordingly
-df<-mergeddf[inclusionVec,]
-# get count of remaining subjects
-remainingSubjs=dim(df)[1]
-print(remainingSubjs)
-# extract subjs
-rs_cmatch_subjs<-df$SubjID
-# print
-write.table(rs_cmatch_subjs,'Y:/PWs/rs_cmatch_subs.csv')
-
-# _C: will need FP alteration in .m, but is from same subjects
-
-```
-
 ```{r}
 library(scales)
 # quick checkup on how BuProp from hists (and rs_subs.csv) maps onto bimodality
@@ -282,9 +290,15 @@ BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent
 ```
 
 ```{r}
-# read in discritized cross subj histograms (linear)
+#### read in discritized cross subj histograms (linear)
+# PGG
 disthist<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist.csv'))
 disthistModes<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist_modedOverTRs.csv'))
+
+# CG
+curv_disthist<-t(read.csv('Y:/results/PWs/rs_subs_AngDistHist_curv.csv'))
+
+# PGG in cmatched rs, PGG in carit
 rs_disthist<-t(read.csv('Y:/results/PWs/RS_cmatch_subs_AngDistHist.csv'))
 c_disthist<-t(read.csv('Y:/results/PWs/c_cmatch_subs_AngDistHist.csv'))
 rs_disthistModes<-t(read.csv('Y:/results/PWs/RS_cmatch_subs_AngDistHist_modedOverTRs.csv'))
@@ -295,40 +309,60 @@ rs_disthist<-rs_disthist/sum(rs_disthist)
 c_disthist<-c_disthist/sum(c_disthist)
 disthist<-disthist/sum(disthist)
 disthistModes<-disthistModes/sum(disthistModes)
+curv_disthist<-curv_disthist/sum(curv_disthist)
 rs_disthistModes<-rs_disthistModes/sum(rs_disthistModes)
 c_disthistModes<-c_disthistModes/sum(c_disthistModes)
 
 difHist=c_disthist-rs_disthist
 difHistModes=c_disthistModes-rs_disthistModes
 
-barplot(t(disthist),ylim=c(0,0.07),main = 'OpFl Directionality',xlab='0-180')
+# uncorrected plot of PGG directionality: percentage of OpFl vectors that occupy each angular distance bin across time and subjects (0-18 bins)
 
+barplot(t(disthist),ylim=c(0,0.07),main = 'OpFl Directionality - PGG',xlab='0-180')
 
+# uncorrected plot of CG directionality: percentage of OpFl vectors that occupy each angular distance bin across time and subjects (0-18 bins) for the curvature gradient
 
-barplot(t(rs_disthist),ylim=c(0,0.07),main = 'Resting State OpFl Directionality',xlab='0-180')
+barplot(t(curv_disthist),ylim=c(0.05,0.06),main = 'OpFl Directionality - CG',xlab='0-180')
+
+# 
+barplot(t(rs_disthist),ylim=c(0,0.07),main = 'Resting State OpFl Directionality - PGG/subs w/ adequate Carit TRs',xlab='0-180')
 
 barplot(t(c_disthist),ylim=c(0,0.07),main = 'Carit OpFl Directionality',xlab='0-180')
 
-barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+### letting these 4 go inert for now - dif hist and modes
+#barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
+#barplot(t(disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality',xlab='0-180')
+#barplot(t(rs_disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality: rs',xlab='0-180')
+#barplot(t(c_disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality: carit',xlab='0-180')
+#barplot(t(difHistModes),main='Facial Modes Difference in OpFl Directionality',xlab='0-180')
 
-barplot(t(disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality',xlab='0-180')
+# just cutting it here for a break, next chunk continues w/ same code
+```
 
-barplot(t(rs_disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality: rs',xlab='0-180')
+```{r}
 
-barplot(t(c_disthistModes),ylim=c(0,.2),main='Facial Modes OpFl Directionality: carit',xlab='0-180')
-
-
-barplot(t(difHistModes),main='Facial Modes Difference in OpFl Directionality',xlab='0-180')
-
-
-###########
+########### PGG Angular Distance over All TRs/Subjs - in bins
 plotdataf<-data.frame(seq(1,18),disthist)
 # correct to be degrees rather than histogram bin index
 plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=disthist*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs'))+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')
 
+# saved out at 750x750
+```
+
+```{r}
+########## CG Angular Distance over all TRs/Subjs
+plotdataf<-data.frame(seq(1,18),curv_disthist)
+# correct to be degrees rather than histogram bin index
+plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.,y=curv_disthist*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207Curv. Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'),plot.title = element_text(size=25))+ylab('count')+ylab('% of Propagations')
+```
+
+```{r}
 # correct to be degrees rather than histogram bin index
 plotdataf<-data.frame(seq(10,170,10),disthistModes)
 # correct to be degrees rather than histogram bin index
