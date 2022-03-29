@@ -14,26 +14,28 @@ items to validate in preProc_PW:
 ###### note 1: separate processing stream exists for carit data: should be exactly equivalent, but have "\_c\" after script names to differentiate
 ###### note 2: OpFl_Sph and PGG_AngDistCalc are run as compiled progams (more specifically, from [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_OpFl_Sph_CompVer.sh) and [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_PGG_AngDistCalc4_CompVer.sh), respectively.) They are compiled directly from the linked files, but note the scripts used for large SGE submissions are derived from those linked. Expect non-compiled versions to run 3-5 times slower.
  
-# 2. Reference map feature extraction
+# 2.1 Reference map feature extraction
 The PGG needs to be derived from a downsampled PG, and 1000 null PGGs need to be derived from spun PGs. The PG is first downsampled to fsaverage4 ([downsample_gPG4.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_gPG4.sh)). Next, the downsampled PG is converted from a gifti to .mat ([PGfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGfuncgii_2_mat.m)), as subsequent compiled matlab code cannot utilize the gifti() command properly without xml error. The equivalent script is run for the curvature map in [Cfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/Cfuncgii_2_mat.m)
 
-items to validate in section 2:
+items to validate in section 2.1:
 
 #### No L/R mislabels
 
-# 3. Reference map spinning + feature extraction: spatial null
-To create null maps, the [spin test](https://github.com/spin-test/spin-test) is adapted: maps are spun and then gradients are calculated on spun maps to obtain spun vector fields. See [SpinPG.m](https://github.com/PennLINC/PWs/blob/main/scripts/spin_pg.m) for implementaiton of spins, and [AggSpins_TakeGrad.m](https://github.com/PennLINC/PWs/blob/main/scripts/AggSpins_TakeGrad.m) for conversion of spun PGs to spun PGGs.
+# 2.2 Reference map spinning + feature extraction: spatial null
+To create null maps, the [spin test](https://github.com/spin-test/spin-test) is adapted: maps are spun and then gradients are calculated on spun maps to obtain spun vector fields. See [SpinPG.m](https://github.com/PennLINC/PWs/blob/main/scripts/SpinPG.m) for implementaiton of spins, and [AggSpins_TakeGrad.m](https://github.com/PennLINC/PWs/blob/main/scripts/AggSpins_TakeGrad.m) for conversion of spun PGs to spun PGGs.
 
-# 4. Extract Directional info from OpFlow output
+#### No medial wall mis-indexing
+
+# 3. Extract Directional info from OpFlow output
 [Extract_BUTD_ResultantVecs.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs.m) will calculate the TRs for which signal is hierarchically ascending vs. descending, and saveout subj metrics. [BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat.m) will convert these values to .csv files for R to leverage.
 
-# 5. Group-level directionality
+# 4. Group-level directionality
 
 [Bin_And_Aggregate_PGGDistribution_180.m](https://github.com/PennLINC/PWs/blob/main/scripts/Bin_And_Aggregate_BuProp_180.m) segments subject-level angular distributions into 18 angular distance bins. This reduction is used to aggregate a group-level angular distance histogram. Further, this script saves out normative, binned directionality for each cortical face.
 
 [Bin_PGGDistributions360.m](https://github.com/PennLINC/PWs/blob/main/scripts/Bin_PGGDistributions360.m) segments subject-level angular distributions into 36 angular distance bins. This reduction is used to aggregate a group-level angular distance histogram in [Aggregate_PGGDistributions360.m](https://github.com/PennLINC/PWs/blob/main/scripts/Aggregate_PGGDistributions360.m). The second script also saves out normative, binned directionality for each cortical face.
 
-# 6. Task effects
+# 5. Task effects
 
 facewise_ttest_([L](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_ttest_L.R)/[R](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_ttest_R.R)).R: this will conduct mass univariate tests on the extracted top-down proportion metrics. Follow it up with [FDR_facewise_t.R](https://github.com/PennLINC/PWs/blob/main/scripts/FDR_facewise_t.R) to correct for multiple comparisons
 
