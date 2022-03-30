@@ -28,22 +28,43 @@ items to validate in 2.2:
 
 #### No medial wall mis-indexing
 
-# 3. Extract Directional info from OpFlow output
-[Extract_BUTD_ResultantVecs.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs.m) will calculate the TRs for which signal is hierarchically ascending vs. descending, and saveout subj metrics. [BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat.m) will convert these values to .csv files for R to leverage.
+# 3.1 Extract Directional info from OpFlow output
+[Extract_BUTD_ResultantVecs.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs.m) will calculate the TRs for which signal is hierarchically ascending vs. descending, and saveout subj metrics. Task data can be processed the same way with an equivalent script, [Extract_BUTD_ResultantVecs_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_c.m). *Curvature* data can also be processed the same way, also with an equivalent script [Extract_BUTD_ResultantVecs_curv.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_curv.m). 
+
+For replicating the subject data depicted in the schematic figure, we can use [viz_vec_fields.m](https://github.com/PennLINC/PWs/blob/main/scripts/viz_vec_fields4.m).
+
+items to validate in 3.1:
+
+#### No L/R mislabels
+
+# 3.2 Extract Directional info for dip test, compare to null models
+
+Here we need to compute the dip statistic (Hartigan's Dip Statistic, see [This scipt](https://github.com/diazlab/chance/blob/master/hartigansdiptest.m), which is a matlab implementation of [this paper](https://www.jstor.org/stable/2347485?seq=1)). Because the angular distributions over each face over each TR over each subject and over spun reference angles is too much to store in one data frame, we will run the dip test in matlab iteratively as it runs over each spin. The "true" dip statistic is recorded last. 
+
+[PGG_AngDistCalc_snull_CompVer.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc_snull_CompVer.m) runs on individual participants. You can call an altered form of [preProc_PW.m](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW2.m) through an altered [JobSubmitta.py](https://github.com/PennLINC/PWs/blob/main/scripts/JobSubmitta.py) to qsub individual null-vs.-true dip 
+Equivalent script for curvature: [CG_AngDistCalc_snull_CompVer.m](https://github.com/PennLINC/PWs/blob/main/scripts/CG_AngDistCalc_snull_CompVer.m)
+
+Finally, this can be visualized with a few [gglines of code](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.md) in R
 
 # 4. Group-level directionality
 
-[Bin_And_Aggregate_PGGDistribution_180.m](https://github.com/PennLINC/PWs/blob/main/scripts/Bin_And_Aggregate_BuProp_180.m) segments subject-level angular distributions into 18 angular distance bins. This reduction is used to aggregate a group-level angular distance histogram. Further, this script saves out normative, binned directionality for each cortical face.
+[aggregate_OpFlDistrModes.m](https://github.com/PennLINC/PWs/blob/main/scripts/aggregate_OpFlDistrModes.m) segments subject-level angular distributions into 18 angular distance bins. This reduction is needed to reduce subject-level angular distance data to a granularity feasible for aggregation into a single group-level distribution (across faces, TRs, and subjects). This script also captures the cross-subject mode of these out directionality bins for each cortical face, allowing for projection of these data onto the cortex. Note that for the modal plot, prominence of the top mode (height relative to non-neighboring modes) is also fed into [Vis_FaceVec_modes.m](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec_modes.m). Finally, the mean proportion of propagations that are top-down vs. bottom-up at each face are fed into [Vis_FaceVec_Bup.m)](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec_Bup.m)
 
-[Bin_PGGDistributions360.m](https://github.com/PennLINC/PWs/blob/main/scripts/Bin_PGGDistributions360.m) segments subject-level angular distributions into 36 angular distance bins. This reduction is used to aggregate a group-level angular distance histogram in [Aggregate_PGGDistributions360.m](https://github.com/PennLINC/PWs/blob/main/scripts/Aggregate_PGGDistributions360.m). The second script also saves out normative, binned directionality for each cortical face.
+The above script also supports setting "subject" as a variable (character string), and running these visualization scripts on individual-level data for modes and proportions.
 
 # 5. Task effects
+
+[BUTD_to_Rformat_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat_c.m)
 
 facewise_ttest_([L](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_ttest_L.R)/[R](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_ttest_R.R)).R: this will conduct mass univariate tests on the extracted top-down proportion metrics. Follow it up with [FDR_facewise_t.R](https://github.com/PennLINC/PWs/blob/main/scripts/FDR_facewise_t.R) to correct for multiple comparisons
 
 - taskEffects.md - from .rmd
 
 # 6. Age effects
+
+[Bin_And_Aggregate_BuProp_180.m](https://github.com/PennLINC/PWs/blob/e9dafb2118b3814b971d74d9cab4c35c51916aa2/scripts/Bin_And_Aggregate_BuProp_180.m) will derive individual-level whole-cortex metrics for proportion bottom-up (or top-down). 
+
+[BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat.m) will convert these values to .csv files for R to leverage
 
 facewise_stats_([L](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_L.R)/[R](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_R.R)).R: this will conduct mass univariate tests on the extracted top-down proportion metrics. Follow it up with [FDR_facewise.R](https://github.com/PennLINC/PWs/blob/main/scripts/FDR_facewise.R) to correct for multiple comparisons
  
