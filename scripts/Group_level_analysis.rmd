@@ -175,21 +175,24 @@ barplot(t(y_disthist),ylim=c(0,0.07),main = 'Young OpFl Directionality',xlab='0-
 barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
 
 #### young fancy
-plotdataf<-data.frame(seq(1,18),y_disthist)
+plotdatafy<-data.frame(seq(1,18),y_disthist)
 # correct to be degrees rather than histogram bin index
-plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+plotdatafy$seq.1..18.<-plotdatafy$seq.1..18.*10
 
-p<-ggplot(plotdataf,aes(x=seq.1..18.,y=y_disthist))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: 8-14")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+p<-ggplot(plotdatafy,aes(x=seq.1..18.,y=disthist*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Distance: 8-14'))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.07,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')+ylab('% of Propagations')
+# saved out at 650x650
 
 
 #### old fancy
-plotdataf<-data.frame(seq(1,18),o_disthist)
+plotdatafo<-data.frame(seq(1,18),o_disthist)
 # correct to be degrees rather than histogram bin index
-plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
+plotdatafo$seq.1..18.<-plotdatafo$seq.1..18.*10
 
-p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: 17-21")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+p<-ggplot(plotdatafo,aes(x=seq.1..18.,y=disthist*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Distance: 17-21'))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.07,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')+ylab('% of Propagations')
+
+# saved out at 650x650
 
 #difference fancy
 
@@ -198,7 +201,7 @@ plotdataf<-data.frame(seq(1,18),o_disthist-y_disthist)
 plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold"),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.07,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1.3, unit='cm'))+ylab('count')
 
 
 # load in permuted old young dif
@@ -223,9 +226,9 @@ library(RcmdrPlugin.KMggplot2)
 ggplot(plotdf)+geom_stepribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80')+geom_step(aes(x=seq.1.18.*10,y=X1001*100),color='blue',size=2)+theme_classic(base_size = 30)+xlab("Angular Distance (degrees)")+ylab('Percentage Difference')
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist*100))
-#p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('% of Propagations')+geom_stepribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),position = position_nudge(x=-5),fill='gray80',alpha=.5)
 
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('% of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207PG Distance: Difference")+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
+# saved out at 650x650
 
 ### aaaaand permuted task vs rest dif
 
@@ -463,10 +466,10 @@ anovaRes$`Pr(>Chi)`
 
 
 # get residuals of model for plotting
-TDProp_lm<-lm(TDProp~FD+sex,data=BuMerge)
+TDProp_lm<-lm(TDProp~FD+sex+RemainingTRs,data=BuMerge)
 BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
 
-ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('#4b5e72'), fill = "#7b98b7", alpha = .8) + geom_point(size=3,alpha=.6) + xlab("Age") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
+ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .8) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
 
 
 # aaaand combat chunk on it

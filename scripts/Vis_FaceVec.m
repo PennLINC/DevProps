@@ -65,7 +65,6 @@ g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
 g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 
 %%%%%%%%%%%%%%%%%%%%%%%%
-
 data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
@@ -77,8 +76,8 @@ data(g_noMW_combined_L)=FaceVecL;
 
 
 %%% for red/blue 0-centered
-mincol=-20;
-maxcol=20;
+mincol=-.16;
+maxcol=.16;
 custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 custommap(126,:)=[.5 .5 .5];
