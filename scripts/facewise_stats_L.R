@@ -118,23 +118,13 @@ print(remainingSubjs)
 
 # initialize face-level vectors: keeping 0s in the slots untouched by this run to verify allocation later
 # for plotting means
-TD_L=rep(0,Lfaces)
-BU_L=rep(0,Lfaces)
 BuProp=rep(0,Lfaces)
-ThetasFromPG=rep(0,Lfaces)
 
 # for plotting age effect sizes
-TD_L_adr2=rep(0,Lfaces)
-BU_L_adr2=rep(0,Lfaces)
 BuProp_adr2=rep(0,Lfaces)
-ThetasFromPG_adr2=rep(0,Lfaces)
-BuProp_sdr2=rep(0,Lfaces)
 
 # for fdr-correcting age associations
-TD_L_ap=rep(0,Lfaces)
-BU_L_ap=rep(0,Lfaces)
 BuProp_ap=rep(0,Lfaces)
-ThetasFromPG_ap=rep(0,Lfaces)
 BuProp_sp=rep(0,Lfaces)
 
 # subjvec to run in parallel for even more confidence in merging
@@ -170,52 +160,25 @@ for (f in 1:Lfaces){
 	    }
 	}
 	# extract mean
-	TD_L[f]=mean(df$FaceTd_rv)
-	# extract mean
-	BU_L[f]=mean(df$FaceBu_rv)
-	# extract mean
 	BuProp[f]=mean(df$FaceBuProp)
-	# you already know doe
-	ThetasFromPG[f]=mean(df$FaceThetaDist)
 	
-        # extract age dr2
-        TD_L_adr2[f]=DeltaR2EstVec(df$FaceTd_rv)
-        # extract age dr2
-        BU_L_adr2[f]=DeltaR2EstVec(df$FaceBu_rv)
         # extract age dr2
         BuProp_adr2[f]=DeltaR2EstVec(df$FaceBuProp)
-        # you already know doe
-        ThetasFromPG_adr2[f]=DeltaR2EstVec(df$FaceThetaDist)
 	
-	# extract age p
-        TD_L_ap[f]=DeltaPEstVec(df$FaceTd_rv)
-        # extract age p
-        BU_L_ap[f]=DeltaPEstVec(df$FaceBu_rv)
         # extract age p
         BuProp_ap[f]=DeltaPEstVec(df$FaceBuProp)
-        # you already know doe
-        ThetasFromPG_ap[f]=DeltaPEstVec(df$FaceThetaDist)
 	# sex effects
 	BuProp_sdr2[f]=DeltaR2EstVec_s(df$FaceBuProp)
 	BuProp_sp[f]=DeltaPEstVec_s(df$FaceBuProp)
 }
 
 # saveout means
-write.csv(TD_L,'~/results/PWs/MeanTDresLen_L.csv',col.names=F,row.names=F,quote=F)
-write.csv(BU_L,'~/results/PWs/MeanBUresLen_L.csv',col.names=F,row.names=F,quote=F)
 write.csv(BuProp,'~/results/PWs/MeanPropBU_L.csv',col.names=F,row.names=F,quote=F)
-write.csv(ThetasFromPG,'~/results/PWs/MeanThetafromPGG_L.csv',col.names=F,row.names=F,quote=F)
 
 # saveout dr2s and ps - still needs to be merged with results from other hemi for MC correction
-saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_adr2.rds'))
-saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_adr2.rds'))
 saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_adr2.rds'))
-saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_adr2.rds'))
 saveRDS(BuProp_sdr2,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sdr2.rds')
 
-saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LTDL_p.rds'))
-saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUL_p.rds'))
 saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_p.rds'))
-saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LThetasFromPG_p.rds'))
 saveRDS(BuProp_sp,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sp.rds')
 

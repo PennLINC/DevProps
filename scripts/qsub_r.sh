@@ -1,1 +1,1 @@
-Rscript facewise_ttest_R.R
+Rscript facewise_ttest_L.R

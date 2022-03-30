@@ -142,9 +142,6 @@ Subjvec=rep(0,remainingSubjs)
 
 # initialize iterable face value column - to avoid storing this data for multiple faces over this upcoming loop
 df$FaceBuProp=rep(0,remainingSubjs)
-df$FaceBu_rv=rep(0,remainingSubjs)
-df$FaceTd_rv=rep(0,remainingSubjs)
-df$FaceThetaDist=rep(0,remainingSubjs)
 
 # that leaves a column for face value, one for age, one for FD, one for sex. Remaining TRs controlled for via exclusion
 
@@ -161,60 +158,27 @@ for (f in 1:Rfaces){
 	      Res=read.csv(ResFP_R)
 		# extract TD resvec length
 		df$FaceBuProp[s]=Res[f,1]	
-		# extract BU resvec length
-		df$FaceBu_rv[s]=Res[f,2]
-		# extract prop of BU TRs
-		df$FaceTd_rv[s]=Res[f,3]
-		# extract global resvec theta from gPGG
-		df$FaceThetaDist[s]=Res[f,4]
 	    }
 	}
 	# extract mean
-	TD_L[f]=mean(df$FaceTd_rv)
-	# extract mean
-	BU_L[f]=mean(df$FaceBu_rv)
-	# extract mean
 	BuProp[f]=mean(df$FaceBuProp)
-	# you already know doe
-	ThetasFromPG[f]=mean(df$FaceThetaDist)
 	
-        # extract age dr2
-        TD_L_adr2[f]=DeltaR2EstVec(df$FaceTd_rv)
-        # extract age dr2
-        BU_L_adr2[f]=DeltaR2EstVec(df$FaceBu_rv)
         # extract age dr2
         BuProp_adr2[f]=DeltaR2EstVec(df$FaceBuProp)
-        # you already know doe
-        ThetasFromPG_adr2[f]=DeltaR2EstVec(df$FaceThetaDist)
 	
-	# extract age p
-        TD_L_ap[f]=DeltaPEstVec(df$FaceTd_rv)
-        # extract age p
-        BU_L_ap[f]=DeltaPEstVec(df$FaceBu_rv)
         # extract age p
         BuProp_ap[f]=DeltaPEstVec(df$FaceBuProp)
-        # you already know doe
-        ThetasFromPG_ap[f]=DeltaPEstVec(df$FaceThetaDist)
 	# sex effects
 	BuProp_sdr2[f]=DeltaR2EstVec_s(df$FaceBuProp)
 	BuProp_sp[f]=DeltaPEstVec_s(df$FaceBuProp)
 }
 
 # saveout means
-write.csv(TD_L,'~/results/PWs/MeanTDresLen_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(BU_L,'~/results/PWs/MeanBUresLen_R.csv',col.names=F,row.names=F,quote=F)
 write.csv(BuProp,'~/results/PWs/MeanPropBU_R.csv',col.names=F,row.names=F,quote=F)
-write.csv(ThetasFromPG,'~/results/PWs/MeanThetafromPGG_R.csv',col.names=F,row.names=F,quote=F)
 
 # saveout dr2s and ps - still needs to be merged with results from other hemi for MC correction
-saveRDS(TD_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_adr2.rds'))
-saveRDS(BU_L_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_adr2.rds'))
 saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_adr2.rds'))
-saveRDS(ThetasFromPG_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_adr2.rds'))
 saveRDS(BuProp_sdr2,'/cbica/projects/pinesParcels/results/PWs/RBUProp_sdr2.rds')
 
-saveRDS(TD_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RTDL_p.rds'))
-saveRDS(BU_L_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUL_p.rds'))
 saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RBUProp_p.rds'))
-saveRDS(ThetasFromPG_ap,paste0('/cbica/projects/pinesParcels/results/PWs/RThetasFromPG_p.rds'))
 saveRDS(BuProp_sp,'/cbica/projects/pinesParcels/results/PWs/RBUProp_sp.rds')

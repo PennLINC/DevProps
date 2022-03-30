@@ -6,6 +6,7 @@ output: html_document
 ```{r}
 library(reshape2)
 library(diptest)
+library(pracma)
 
 ## enter subj name in manually
 testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
@@ -25,8 +26,20 @@ meltedL<-melt(testL4)
 meltedR<-melt(testR4)
 melted=data.frame(c(meltedL,meltedR)$value)
 colnames(melted)<-"value"
+
 p<-ggplot(melted,aes(x=value))
-p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))
+p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,181)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))
+
+# convert to histogram format, aligned with group-level plot
+histoVers<-histc(melted$value,edges=seq(0,180,10))
+plotdataf<-data.frame(histoVers$cnt[1:18],seq(1,18))
+# normalize to percentage, as in other
+plotdataf$histoVers.cnt.1.18.<-plotdataf$histoVers.cnt.1.18./sum(plotdataf$histoVers.cnt.1.18.)
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')
+
+# saved out at 750x750
 ```
 
 ```{r}
@@ -161,72 +174,6 @@ p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (D
 #  
 #}
 
-```
-
-```{r}
-#library(shapes)
-## within subject shape pca. 24 bins, x y coords, and 37k faces
-#binnedFaces<-array(0,dim=c(24,2,18520))
-## divisor for 24/360 possible degrees
-#divs=180/24
-## for each vert, fill in x and y coords.
-#for (i in 1:18520){
-#  print(i)
-#  # 2-24 as x-axis (24 bins representing angular distance from bottom up prop)
-#  binnedFaces[,1,i]<-seq(1,24)
-#  # extract Left hemi
-#  AngDist=testL[,i]
-#  # discr. to 24 bins to eval. which bin is best represented
-#  for (b in 1:24){
-#    range=c((((b-1)*divs)),((b*divs)))
-#    # set y coord to density of this bin
-#    binnedFaces[b,2,i]=length(AngDist[AngDist < range[2] & AngDist > range[1]])/2
-#  }
-#}
-#
-#binnedFaces_proc<-procGPA(binnedFaces)
-#shapepca(binnedFaces_proc)
-#plot(binnedFaces_proc$mshape)
-```
-
-```{r}
-
-#PCA1scores=sort(binnedFaces_proc$scores[,1],index.return=T)
-#PCA1scoresneg=sort(-binnedFaces_proc$scores[,1],index.return=T)
-#
-#for (i in 1:100){
-#  index=PCA1scores$ix[i]
-#  #plot(binnedFaces[,1,index],binnedFaces[,2,index])
-#  hist(testL[,index],breaks=24)
-#}
-#
-#for (i in 1:100){
-#  index=PCA1scoresneg$ix[i]
-##  plot(binnedFaces[,1,index],binnedFaces[,2,index])
-#  hist(testL[,index],breaks=24)
-#}
-#
-## ggplot vertices by where they are in PC space
-#
-#plotdf<-data.frame(binnedFaces_proc$scores)
-#ggplot(plotdf,aes(PC1,PC2))+geom_point(alpha=.1)+theme_classic()
-#plot3d(plotdf$PC1,plotdf$PC2,plotdf$PC3)
-#
-## pc2 loadings
-#PCA2scores=sort(binnedFaces_proc$scores[,2],index.return=T)
-#PCA2scoresneg=sort(-binnedFaces_proc$scores[,2],index.return=T)
-#
-#for (i in 1:100){
-#  index=PCA2scores$ix[i]
-# # plot(binnedFaces[,1,index],binnedFaces[,2,index])
-#  hist(testL[,index],breaks=24)
-#}
-#
-#for (i in 1:100){
-#  index=PCA2scoresneg$ix[i]
-#  #plot(binnedFaces[,1,index],binnedFaces[,2,index]) 
-#  hist(testL[,index],breaks=24)
-#}
 ```
 
 ```{r}

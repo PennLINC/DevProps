@@ -69,35 +69,36 @@ g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
-% fixed colorscale
-mincol=-pi;
-maxcol=pi;
-% circular
-%custommap= vertcat(flipud(inferno),inferno);
-%custommap=colormap('inferno');
-%custommap=flipud(colormap('inferno'));
-% for red/blue 0-centered
-%mincol=-3;
-%maxcol=3;
-%custommap=colormap(b2r(mincol,maxcol));
-% abscense of color to gray to accom. lighting "none"
-%custommap(126,:)=[.5 .5 .5];
+%%%%%%% fixed colorscale varities
 
-% matches circular hist
-roybigbl_cm=inferno(6);
-roybigbl_cm(1,:)=[0, 0, 255];
-roybigbl_cm(2,:)=[0, 255, 255];
-roybigbl_cm(3,:)=[116, 192, 68];
-roybigbl_cm(4,:)=[246, 235, 20];
-roybigbl_cm(5,:)=[255, 165, 0];
-roybigbl_cm(6,:)=[255, 0, 0];
+%%% circular
+%mincol=-pi;
+%maxcol=pi;
+
+
+%%% for red/blue 0-centered
+mincol=-20;
+maxcol=20;
+custommap=colormap(b2r(mincol,maxcol));
+% abscense of color to gray to accom. lighting "none"
+custommap(126,:)=[.5 .5 .5];
+
+
+%%% matches circular hist
+%roybigbl_cm=inferno(6);
+%roybigbl_cm(1,:)=[0, 0, 255];
+%roybigbl_cm(2,:)=[0, 255, 255];
+%roybigbl_cm(3,:)=[116, 192, 68];
+%roybigbl_cm(4,:)=[246, 235, 20];
+%roybigbl_cm(5,:)=[255, 165, 0];
+%roybigbl_cm(6,:)=[255, 0, 0];
 % scale to 1
-roybigbl_cm=roybigbl_cm.*(1/255);
+%roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
-interpsteps=[0 .2 .4 .6 .8 1];
-roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+%interpsteps=[0 .2 .4 .6 .8 1];
+%roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % add white layer for thresholded faces
-custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+%custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 
 figure
@@ -145,7 +146,7 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 %%% right hemisphere
 data=zeros(1,5120);
-data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
+data(g_noMW_combined_R)=FaceVecR;
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 

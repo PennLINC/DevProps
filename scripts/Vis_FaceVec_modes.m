@@ -101,7 +101,7 @@ roybigbl_cm=roybigbl_cm.*(1/255);
 interpsteps=[0 .2 .4 .6 .8 1];
 roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % add white layer for thresholded faces
-roybigbl_cm(1,:)=[.9 .9 .9];
+roybigbl_cm(1,:)=[0 0 0];
 
 %CIRCULAR
 %custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
