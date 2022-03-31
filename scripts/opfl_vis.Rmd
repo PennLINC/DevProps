@@ -16,8 +16,7 @@ testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4
 
 ```{r}
 # spatial null examples
-test=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'))
-
+#test=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'))
 ```
 
 ```{r}
@@ -37,7 +36,7 @@ plotdataf<-data.frame(histoVers$cnt[1:18],seq(1,18))
 plotdataf$histoVers.cnt.1.18.<-plotdataf$histoVers.cnt.1.18./sum(plotdataf$histoVers.cnt.1.18.)
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')
 
 # saved out at 750x750
 ```
@@ -48,7 +47,7 @@ ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)
 
-ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics - PGG')+guides(y="none")
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics: \u2207PG')+guides(y="none")
 
 nullDistrEx<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDistr1.csv'))
 nullM<-melt(nullDistrEx)
@@ -60,7 +59,7 @@ ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)
 
-ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics - CG')+guides(y="none")
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics: \u2207Curv.')+guides(y="none")
 
 nullDistrEx<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_cSpunDistr1.csv'))
 nullM<-melt(nullDistrEx)

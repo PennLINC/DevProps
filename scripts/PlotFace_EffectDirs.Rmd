@@ -1,0 +1,53 @@
+---
+title: "PlotFace_EffectDirs"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(scales)
+# copied from FDR faces
+
+# load in facewise output from left hemi
+LBuProp_adr2=readRDS('Y:/results/PWs/LBUProp_adr2.rds')
+LBP_s=readRDS('Y:/results/PWs/LBUProp_sdr2.rds')
+
+LBuProp_p=readRDS('Y:/results/PWs/LBUProp_p.rds')
+LBP_sp=readRDS('Y:/results/PWs/LBUProp_sp.rds')
+
+# and right hemi
+RBuProp_adr2=readRDS('Y:/results/PWs/RBUProp_adr2.rds')
+RBP_s=readRDS('Y:/results/PWs/RBUProp_sdr2.rds')
+
+RBuProp_p=readRDS('Y:/results/PWs/RBUProp_p.rds')
+RBP_sp=readRDS('Y:/results/PWs/RBUProp_sp.rds')
+
+# combine each
+Propdr2=c(LBuProp_adr2,RBuProp_adr2)
+Propp=c(LBuProp_p,RBuProp_p)
+BUs=c(LBP_s,RBP_s[1:4842])
+BUsP=c(LBP_sp,RBP_sp[1:4842])
+
+# fdr each
+Propp_f=p.adjust(Propp,method='fdr')
+BUsP_f=p.adjust(BUsP,method='fdr')
+
+# mask dr2s accordingly
+Propdr2[Propp_f>0.05]=0
+Propdr2[is.na(Propp_f)]=0
+
+```
+
+```{r}
+# get count of positive, negative, and null faces. Note the sign flip, as stats are run on BUPROP not TDPROP
+PosNum=length(Propdr2[Propdr2<0])
+NegNum=length(Propdr2[Propdr2>0])
+# normalize to total number of faces
+PosNum=PosNum/length(Propdr2)
+NegNum=NegNum/length(Propdr2)
+
+barDF<-data.frame(Faces=c('More TD','Less TD'),len=c(PosNum,NegNum))
+
+ggplot(data=barDF,aes(x=Faces,y=len,fill=Faces))+geom_bar(stat='identity')+theme_classic(base_size=24)+scale_y_continuous(labels = percent_format(accuracy = 1),limits=c(0,.5))+scale_fill_manual(values=c('#4857a7','#ef3e3d'))+theme(legend.position = "none")+ylab("Faces Changing \nwith Age")+xlab("")
+# saved out at 500x350
+```

@@ -175,7 +175,7 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-%c=colorbar
-%c.Location='southoutside'
-%colormap(custommap);
+c=colorbar
+c.Location='southoutside'
+colormap(custommap);
 print(Fn,'-dpng')

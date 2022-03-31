@@ -110,7 +110,7 @@ writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/ModeModes
 Vis_FaceVec_modes(OutArray_L,OutArray_R,'GroupPGGModes',GroPromArray_L,GroPromArray_R)
 
 % filling in unmasked faces with unmasked BU Prop averages, which are the first 45xx
-Vis_FaceVec_Bup(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp.png')
+Vis_FaceVec_Bup(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp_cb.png')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

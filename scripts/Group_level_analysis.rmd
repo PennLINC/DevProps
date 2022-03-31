@@ -168,18 +168,18 @@ y_disthist<-y_disthist/sum(y_disthist)
 
 difHist=o_disthist-y_disthist
 
-barplot(t(o_disthist),ylim=c(0,0.07),main = 'Old r.s. OpFl Directionality',xlab='0-180')
+# boring plots
+#barplot(t(o_disthist),ylim=c(0,0.07),main = 'Old r.s. OpFl Directionality',xlab='0-180')
+#barplot(t(y_disthist),ylim=c(0,0.07),main = 'Young OpFl Directionality',xlab='0-180')
+#barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
 
-barplot(t(y_disthist),ylim=c(0,0.07),main = 'Young OpFl Directionality',xlab='0-180')
-
-barplot(t(difHist),main='Difference in OpFl Directionality',xlab='0-180')
-
+# fancy plots
 #### young fancy
 plotdatafy<-data.frame(seq(1,18),y_disthist)
 # correct to be degrees rather than histogram bin index
 plotdatafy$seq.1..18.<-plotdatafy$seq.1..18.*10
 
-p<-ggplot(plotdatafy,aes(x=seq.1..18.,y=disthist*100))
+p<-ggplot(plotdatafy,aes(x=seq.1..18.,y=y_disthist*100))
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Distance: 8-14'))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.07,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')+ylab('% of Propagations')
 # saved out at 650x650
 
@@ -189,7 +189,7 @@ plotdatafo<-data.frame(seq(1,18),o_disthist)
 # correct to be degrees rather than histogram bin index
 plotdatafo$seq.1..18.<-plotdatafo$seq.1..18.*10
 
-p<-ggplot(plotdatafo,aes(x=seq.1..18.,y=disthist*100))
+p<-ggplot(plotdatafo,aes(x=seq.1..18.,y=o_disthist*100))
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Distance: 17-21'))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.07,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')+ylab('% of Propagations')
 
 # saved out at 650x650
@@ -201,7 +201,7 @@ plotdataf<-data.frame(seq(1,18),o_disthist-y_disthist)
 plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold"),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.07,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1.3, unit='cm'))+ylab('count')
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold"),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.07,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
 
 
 # load in permuted old young dif
@@ -350,7 +350,7 @@ plotdataf<-data.frame(seq(1,18),disthist)
 plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=disthist*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs'))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs'))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')
 
 # saved out at 750x750
 ```
@@ -362,96 +362,12 @@ plotdataf<-data.frame(seq(1,18),curv_disthist)
 plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=curv_disthist*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207Curv. Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'),plot.title = element_text(size=30))+ylab('count')+ylab('% of Propagations')
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207Curv. Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'),plot.title = element_text(size=29))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')
 
 # saved out at 750x750
 ```
 
-```{r}
-# correct to be degrees rather than histogram bin index
-plotdataf<-data.frame(seq(10,170,10),disthistModes)
-# correct to be degrees rather than histogram bin index
-colnames(plotdataf)<-c('index','disthistModes')
 
-p<-ggplot(plotdataf,aes(x=index,y=disthistModes))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylab('count')
-
-#### resting state cmatched
-plotdataf<-data.frame(seq(1,18),rs_disthist)
-# correct to be degrees rather than histogram bin index
-plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
-
-p<-ggplot(plotdataf,aes(x=seq.1..18.,y=rs_disthist))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: RS")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
-
-# correct to be degrees rather than histogram bin index
-plotdataf<-data.frame(seq(10,170,10),rs_disthistModes)
-# correct to be degrees rather than histogram bin index
-colnames(plotdataf)<-c('index','rs_disthistModes')
-
-p<-ggplot(plotdataf,aes(x=index,y=rs_disthistModes))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: RS Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
-
-#### carit
-plotdataf<-data.frame(seq(1,18),c_disthist)
-# correct to be degrees rather than histogram bin index
-plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
-
-p<-ggplot(plotdataf,aes(x=seq.1..18.,y=c_disthist))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Carit")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
-
-# correct to be degrees rather than histogram bin index
-plotdataf<-data.frame(seq(10,170,10),c_disthistModes)
-# correct to be degrees rather than histogram bin index
-colnames(plotdataf)<-c('index','c_disthistModes')
-
-p<-ggplot(plotdataf,aes(x=index,y=c_disthistModes))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Carit Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
-
-
-```
-
-```{r}
-# difference hists
-plotdataf<-data.frame(seq(1,18),c_disthist-rs_disthist)
-# correct to be degrees rather than histogram bin index
-plotdataf$seq.1..18.<-plotdataf$seq.1..18.*10
-colnames(plotdataf)<-c('index','difdisthist')
-
-p<-ggplot(plotdataf,aes(x=index,y=difdisthist))
-
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("difdisthist",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Carit")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
-
-
-plotdataf<-data.frame(seq(10,170,10),c_disthistModes-rs_disthistModes)
-# correct to be degrees rather than histogram bin index
-colnames(plotdataf)<-c('index','difdisthistmodes')
-
-p<-ggplot(plotdataf,aes(x=index,y=difdisthistmodes))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(5,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"),guide=guide_colorbar(ticks = F))+ggtitle("Angular Distance: Modal Difference")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+scale_y_continuous(labels = percent_format(accuracy = 1))
-```
-
-```{r}
-### aaaaand permuted task vs rest dif
-PermDif=read.csv('Y:/results/PWs/Task_v_rest_AngDistDif_permuted.csv')
-permDf<-data.frame(PermDif)
-
-# make vectors of mean values of permuted at each bin
-meanVec=colMeans(permDf[1:1000,])
-# make vectors of 95 and 5th percentile of permuted at each bin
-topPercVec=unlist(lapply(permDf[1:1000,1:18],quantile,prob=.95,names=F))
-botPercVec=unlist(lapply(permDf[1:1000,1:18],quantile,prob=.05,names=F))
-
-plotdf<-data.frame((c_disthist-rs_disthist),meanVec,topPercVec,botPercVec,seq(1:18),t(PermDif[1001,]))
-
-
-# keller kode
-ggplot(plotdf)+geom_ribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80')+geom_step(aes(x=seq.1.18.*10,y=X1001*100),color='blue',size=2)+theme_classic(base_size = 30)+xlab("Angular Distance (degrees)")+ylab('Percentage Difference')
-
-#
-p<-ggplot(plotdf,aes(x=seq.1.18.*10,y=X1001))
-p+geom_ribbon(aes(x=seq.1.18.*10,ymin=botPercVec,ymax=topPercVec),fill='gray80',alpha=1)+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10,alpha=.8)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs: Dif")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')
-```
 
 ```{r}
 library(visreg)
@@ -469,7 +385,7 @@ anovaRes$`Pr(>Chi)`
 TDProp_lm<-lm(TDProp~FD+sex+RemainingTRs,data=BuMerge)
 BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
 
-ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .8) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
+ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
 
 
 # aaaand combat chunk on it
@@ -492,72 +408,41 @@ BuMerge$harmTDProp<-dat.harmonized$TDProp
 BuMerge$harmFD<-dat.harmonized$FD
 
 visreg(gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge))
+
+# get residuals of model for plotting
+TDProp_lm<-lm(harmTDProp~harmFD+sex,data=BuMerge)
+BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
+
+ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("Top-Down Propagations:\n ComBat Harmonized") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4)) +scale_y_continuous(labels = percent_format(accuracy = 1))
+
+#### show DMN Segreg
+
+# dev analyses controlling for DMN seg
+devMod_DMSC<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs+DMNseg,data=BuMerge)
+ndevMod_DMSC<-gam(TDProp~FD+sex+RemainingTRs+DMNseg,data=BuMerge)
+anovaRes<-anova.gam(devMod_DMSC,ndevMod_DMSC,test='Chisq')
+anovaRes$`Pr(>Chi)`
+
+
+# get residuals of model for plotting
+TDProp_lm<-lm(TDProp~FD+sex+RemainingTRs+DMNseg,data=BuMerge)
+BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
+
+ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("Top-Down Propagations:\n Controlling for DMN Seg.") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4)) +scale_y_continuous(labels = percent_format(accuracy = 1))
+
+# DMN model
+summary(gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))
+# and plotting dmn seg directly
+DMN_lm<-lm(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge)
+BuMerge$DMN_lm_resid<-DMN_lm$residuals+mean(BuMerge$DMNseg)
+
+ggplot(BuMerge,aes(x=(interview_age)/12,y=DMN_lm_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("DMN External \n Connectivity") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4))
 ```
 
 ```{r}
 write.table(masterdf$SubjID,'~/G600_TRs.txt',quote = F,col.names = F,row.names = F)
 ```
 
-```{r}
-# mean direction by pg bins
-meanDirb1=t(read.csv('Y:/PWs/scripts/MeanDir_Bin1.csv'))
-plotdf<-data.frame(meanDirb1)
-ggplot(plotdf,aes(meanDirb1,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb2=t(read.csv('Y:/PWs/scripts/MeanDir_Bin2.csv'))
-
-plotdf<-data.frame(meanDirb2)
-ggplot(plotdf,aes(meanDirb2,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb3=t(read.csv('Y:/PWs/scripts/MeanDir_Bin3.csv'))
-
-plotdf<-data.frame(meanDirb3)
-ggplot(plotdf,aes(meanDirb3,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb4=t(read.csv('Y:/PWs/scripts/MeanDir_Bin4.csv'))
-
-plotdf<-data.frame(meanDirb4)
-ggplot(plotdf,aes(meanDirb4,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb5=t(read.csv('Y:/PWs/scripts/MeanDir_Bin5.csv'))
-
-plotdf<-data.frame(meanDirb5)
-ggplot(plotdf,aes(meanDirb5,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb6=t(read.csv('Y:/PWs/scripts/MeanDir_Bin6.csv'))
-
-plotdf<-data.frame(meanDirb6)
-ggplot(plotdf,aes(meanDirb6,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb7=t(read.csv('Y:/PWs/scripts/MeanDir_Bin7.csv'))
-
-plotdf<-data.frame(meanDirb7)
-ggplot(plotdf,aes(meanDirb7,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb8=t(read.csv('Y:/PWs/scripts/MeanDir_Bin8.csv'))
-
-plotdf<-data.frame(meanDirb8)
-ggplot(plotdf,aes(meanDirb8,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb9=t(read.csv('Y:/PWs/scripts/MeanDir_Bin9.csv'))
-
-plotdf<-data.frame(meanDirb9)
-ggplot(plotdf,aes(meanDirb9,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-
-
-meanDirb10=t(read.csv('Y:/PWs/scripts/MeanDir_Bin10.csv'))
-
-plotdf<-data.frame(meanDirb10)
-ggplot(plotdf,aes(meanDirb10,fill=..x..))+geom_histogram()+coord_polar(start=3.1416)+theme_classic()+scale_fill_gradientn("meanDirb1",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))
-```
 
 
 ```{r}

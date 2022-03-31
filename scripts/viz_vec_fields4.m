@@ -163,12 +163,32 @@ colormap(custommap)
 view(280,185);
 print('pggPial.png','-dpng')
 
-%%% Fig 1: optical flow example TRs
+% Fig S2: CG Big
+cg=load('~/data/fs4curv.mat');
+cG_LH=cg.gpg.gPG_LH;
+cG_RH=cg.gpg.gPG_RH;
+% calculate group curvature gradient on sphere
+cg_L = grad(faces_l, vx_l, cG_LH);
+cg_R = grad(faces_r, vx_r, cG_RH);
+% extract face-wise vector cartesian vector components
+cGx_L=cg_L(:,1);
+cGy_L=cg_L(:,2);
+cGz_L=cg_L(:,3);
+cGx_R=cg_R(:,1);
+cGy_R=cg_R(:,2);
+cGz_R=cg_R(:,3);
 
-
-
-
-
+figure('units','pixels','position',[0 0 1500 1500])
+axis([-1, 1, -1, 1, 0, 1]);
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), cGx_R, cGy_R, cGz_R, 2, 'w','linewidth',2);
+hold on
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), cG_RH, 'EdgeColor','none');
+axis equal
+daspect([1, 1, 1]);
+colormap(custommap);
+colorbar
+view(280,185);
+print('cgBig.png','-dpng')
 
 
 
@@ -190,7 +210,7 @@ axis([-1, 1, -1, 1, 0, 1]);
 quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w','linewidth','3');
 hold on
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
-axis equal
+axis equalc
 daspect([1, 1, 1]);
 caxis([-3,3]);
 colorbar
