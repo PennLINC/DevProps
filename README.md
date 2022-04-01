@@ -3,30 +3,14 @@
 # 1. Pre-processing
 [preProc_PW.m](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW.m) will motion mask subject time series, and generate indices of TRs in 10+ length continuous windows uninterrupted by FD > 0.2 / outlier frames. These windows (.txt files) are saved to projects/hcpd, not projects/pinesParcels at the moment. This script then calls [downsample_TS.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_TS.sh) to downsample this timeseries from the original spatial resolution (fslr). Finally, this script will compute optical flow on the freesurfer sphere (with [OpFl_Sph_CompVer.m](https://github.com/PennLINC/PWs/blob/main/scripts/OpFl_Sph_CompVer.m) ) , calculate angular distance from the PGG at each face for each vector (with [PGG_AngDistCalc.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc.m) ), and then re-mask out the medial wall for the subject (with [mask_mw_faces](https://github.com/PennLINC/PWs/blob/main/scripts/mask_mw_faces.m) )
 
-items to validate in preProc_PW:
-
-#### [apply_motion_mask.m](https://github.com/PennLINC/PWs/blob/main/scripts/apply_motion_mask.m): txt files generated for continuous segments is accurate
-
-#### [OpFl_Sph_fs4.m](https://github.com/PennLINC/PWs/blob/main/scripts/OpFl_Sph_fs4.m): angular transformations are accurate
-
-#### [PGG_AngDistCalc4.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc4_CompVer.m): Angular distance calculated accurately
-
 ###### note 1: separate processing stream exists for carit data: should be exactly equivalent, but have "\_c\" after script names to differentiate
 ###### note 2: OpFl_Sph and PGG_AngDistCalc are run as compiled progams (more specifically, from [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_OpFl_Sph_CompVer.sh) and [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_PGG_AngDistCalc4_CompVer.sh), respectively.) They are compiled directly from the linked files, but note the scripts used for large SGE submissions are derived from those linked. Expect non-compiled versions to run 3-5 times slower.
  
 # 2.1 Reference map feature extraction
 The PGG needs to be derived from a downsampled PG, and 1000 null PGGs need to be derived from spun PGs. The PG is first downsampled to fsaverage4 ([downsample_gPG4.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_gPG4.sh)). Next, the downsampled PG is converted from a gifti to .mat ([PGfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGfuncgii_2_mat.m)), as subsequent compiled matlab code cannot utilize the gifti() command properly without xml error. The equivalent script is run for the curvature map in [Cfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/Cfuncgii_2_mat.m)
 
-items to validate in 2.1:
-
-#### No L/R mislabels
-
 # 2.2 Reference map spinning + feature extraction: spatial null
 To create null maps, the [spin test](https://github.com/spin-test/spin-test) is adapted: maps are spun and then gradients are calculated on spun maps to obtain spun vector fields. See [SpinPG.m](https://github.com/PennLINC/PWs/blob/main/scripts/SpinPG.m) for implementaiton of spins, and [AggSpins_TakeGrad.m](https://github.com/PennLINC/PWs/blob/main/scripts/AggSpins_TakeGrad.m) for conversion of spun PGs to spun PGGs.
-
-items to validate in 2.2:
-
-#### No medial wall mis-indexing
 
 # 3.1 Extract Directional info from OpFlow output
 [Extract_BUTD_ResultantVecs.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs.m) will calculate the TRs for which signal is hierarchically ascending vs. descending, and saveout subj metrics. Task data can be processed the same way with an equivalent script, [Extract_BUTD_ResultantVecs_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_c.m). *Curvature* data can also be processed the same way, also with an equivalent script [Extract_BUTD_ResultantVecs_curv.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_curv.m). 

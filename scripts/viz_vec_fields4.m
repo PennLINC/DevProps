@@ -210,7 +210,7 @@ axis([-1, 1, -1, 1, 0, 1]);
 quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w','linewidth','3');
 hold on
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
-axis equalc
+axis equal
 daspect([1, 1, 1]);
 caxis([-3,3]);
 colorbar
