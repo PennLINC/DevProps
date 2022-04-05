@@ -26,7 +26,9 @@ colnames(FD_TRs)[3]<-'RemainingTRs'
 mergeddf<-merge(demo,FD_TRs,by='SubjID')
 
 # initialize Dip SD
+RealDips=rep(0,dim(subjList)[1])
 DipSDs=rep(0,dim(subjList)[1])
+CDipSDs=rep(0,dim(subjList)[1])
 
 # keep track of remaining TRs
 remTRs=rep(0,dim(subjList)[1])
@@ -36,6 +38,7 @@ Subjvec=rep(0,dim(subjList)[1])
 
 # for plopping all null dips into one vector
 NullDips=matrix(ncol=1000,nrow=dim(subjList)[1])
+CNullDips=matrix(ncol=1000,nrow=dim(subjList)[1])
 
 # load in D and shapes iteratively
 for (s in 1:dim(subjList)[1]){
@@ -45,36 +48,81 @@ for (s in 1:dim(subjList)[1]){
     if (file.exists(paste0(ResFp,subj,'_SpunDips4.csv'))) {
       SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
       ObsDip<-as.numeric(SpunDips[2,1001])
+      RealDips[s]<-ObsDip
       SpunDips<-as.numeric(SpunDips[2,1:1000])
       SpunSD=sd(SpunDips)
       SpunMean=mean(SpunDips)
+      #print(ObsDip)
       # insert into df
       NullDips[s,]=SpunDips
-      print(SpunMean)
+      #print(SpunMean)
       DipSDs[s]=(ObsDip-SpunMean)/SpunSD
       remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
+      # curvature
+      #CSpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'),header=F)
+      #CObsDip<-as.numeric(CSpunDips[2,1001])
+      #CSpunDips<-as.numeric(CSpunDips[2,1:1000])
+      #CSpunSD=sd(CSpunDips)
+      #CSpunMean=mean(CSpunDips)
+      #CNullDips[s,]=CSpunDips
+      #CDipSDs[s]=(CObsDip-CSpunMean)/CSpunSD
       # and to record same order of subj loading and prevent funny biz
       Subjvec[s]=subj
+
     }
 }
 
 # merge populated vecs
-popDf=data.frame(Subjvec,DipSDs,remTRs)
+popDf=data.frame(Subjvec,DipSDs,CDipSDs,RealDips,remTRs)
 colnames(popDf)[1]<-'SubjID'
 
 # remaining TRs thresh
 inclusionVec<-popDf$remTRs>600
 includedSubjsvec<-popDf$SubjID[inclusionVec]
 popDfThresh=popDf[popDf$remTRs>600,]
-ThreshShapeMat<-shapeMat[,,inclusionVec]
+#ThreshShapeMat<-shapeMat[,,inclusionVec]
 
 masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 ```
 
 ```{r}
-# get group-wide null distribution
-NullDips
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=23)+xlim(0,64)+xlab('Standard Deviations of Observed from Nulls')+scale_x_continuous(breaks=seq(3,63,5))
 ```
+
+
+```{r}
+# get group-wide null distribution for those that passed QC
+NullDipsThresh=NullDips[popDf$remTRs>600,]
+
+# get all spun dips
+SpunDips<-as.numeric(NullDipsThresh)
+# get mean and SD to compare across subjs
+meanSpunDips<-mean(SpunDips)
+SDSpunsDips<-sd(SpunDips)
+
+# get 99th percentile of nulls
+nineninePercentile=quantile(SpunDips,probs=c(0.01,0.99))[2]
+
+# convert Obs Dips in terms of SD to real terms of typical Dip stat deviations on spun dips
+####
+ObsDip_SDs<-as.numeric(masterdf$DipSDs)
+ObsDip_SDs_conv=(ObsDip_SDs*SDSpunsDips)+meanSpunDips
+
+plotdf<-data.frame(ObsDip_SDs_conv,SpunDips)
+
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_boxplot(aes(ObsDip_SDs_conv),color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics: \u2207PG')+guides(y="none")+geom_vline(xintercept=c(ObsDip_SDs_conv))+geom_vline(xintercept = nineninePercentile,color='blue')
+
+```
+
+```{r}
+RealDips=data.frame(masterdf$RealDips)
+NullDips=data.frame(melt(NullDipsThresh))
+
+ggplot(RealDips,aes(x=masterdf.RealDips))+geom_density(size=1.5,color='red')+theme_classic()+xlim(c(0,.04))
+
+ggplot(NullDips,aes(x=value))+geom_density(size=1.5)+theme_classic()+xlim(c(0,.04))
+```
+
 
 ```{r}
 # plot each subj for how many SDs they were away from the mean in their own respective null distribution

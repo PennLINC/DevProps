@@ -52,18 +52,18 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 %fprintf(fid,cmd);
 %system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
 % CG
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
 
 
 % RUN 4
 % temporal nulls: optical flow
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_tnull_matlabCompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=18G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_tnull_matlabCompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
 
 
 %%% mask medial wall and extract R-friendly face data
