@@ -70,9 +70,10 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 
 # load in dmn seg
 DMNseg=read.csv('Y:/results/DMNseg.csv')
-colnames(DMNseg)<-c('SubjID','DMNseg')
+colnames(DMNseg)<-c('SubjID','DMNseg','DMNsegGro')
 masterdf<-merge(masterdf,DMNseg,by='SubjID')
 ```
+
 ```{r}
 # mode mode distributions
 PGGmodeL=read.csv('Y:/results/PWs/ModeModes4_L.csv')
