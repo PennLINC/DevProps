@@ -267,6 +267,44 @@ roybigbl_cm(14,:)=[0, 200, 0];
 roybigbl_cm(15,:)=[0, 255, 0];
 roybigbl_cm(16,:)=[0, 255, 255]; 
 % pulled from https://github.com/Washington-University/workbench/blob/master/src/Files/PaletteFile.cxx
+pen it, plop Direcs in
+%open(video)
+%writeVideo(video, BOLD);
+%close(video);
+
+[pinesparcels@cubic-sattertt1 scripts]$ vim viz_vec_fields4.m
+
+E575: viminfo: Illegal starting char in line: le.m
+Press ENTER or type command to continue
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+
+%%%% This chunk is for video: not needed for figs
+% vector field
+DirecsVecs=struct('cdata',[],'colormap',[]);
+speshframes=[209:226];
+for i=1:17
+j=speshframes(i)
+u=OpFl.vf_right{j};
+vATTR=fr.TRs{j};
+vATTR=zscore(vATTR);
+%%%%%%
+figure('units','pixels','position',[0 0 1500 1500])
+subplot(2,2,1)
+axis([-1, 1, -1, 1, 0, 1]);
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w','linewidth','3');
+hold on
+trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
+axis equal
+daspect([1, 1, 1]);
+caxis([-3,3]);
+colorbar
+view(270,200);
+%%%colormap(custommap)
+%%%%
+
 % scale to 1
 roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
