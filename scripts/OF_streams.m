@@ -1,7 +1,8 @@
-addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
+function OF_streams(subj)
+%addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 
 % enter subj manually for now
-subj='';
+%subj='';
 
 %%% load in OF vector fields
 OFvecsFile=load(['~/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat']);
@@ -53,58 +54,152 @@ Fx(idx) = NaN;
 Fy(idx) = NaN;
 Fz(idx) = NaN;
 
-%%%% now we need to convert vector fields to this space
+%%% pull in mask
+surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+mwIndVec_l = read_medial_wall_label(surfML);
+surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+mwIndVec_r = read_medial_wall_label(surfMR);
+% make binary "is medial wall" vector for vertices
+mw_L=zeros(1,2562);
+mw_L(mwIndVec_l)=1;
+mw_R=zeros(1,2562);
+mw_R(mwIndVec_r)=1;
+% convert to faces
+% convert to faces
+F_MW_L=sum(mw_L(faces_l),2)./3;
+F_MW_R=sum(mw_R(faces_r),2)./3;
+% convert "partial" medial wall to medial wall
+F_MW_L=ceil(F_MW_L);
+F_MW_R=ceil(F_MW_R);
+% face mask indices
+fmwIndVec_l=find(F_MW_L);
+fmwIndVec_r=find(F_MW_R);
+% make medial wall vector
+g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
+g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 
-%%% select example vector field to propagate along
-exVecField=OFvecs_R{1059};
-
-% using griddata for 3d
-uq = griddata(Pr(:,1),Pr(:,2),Pr(:,3),exVecField(:,1),Fx,Fy,Fz);
-vq = griddata(Pr(:,1),Pr(:,2),Pr(:,3),exVecField(:,2),Fx,Fy,Fz);
-wq = griddata(Pr(:,1),Pr(:,2),Pr(:,3),exVecField(:,3),Fx,Fy,Fz);
-
-% replace NaNs with 0s
-uq(isnan(uq))=0;
-vq(isnan(vq))=0;
-wq(isnan(wq))=0;
-
-% viz this versus original
-%figure
-%quiver3(Fx,Fy,Fz,uq,vq,wq,2,'r');
-%print('~/regrid_quiv.png','-dpng');
-%figure
-%quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), exVecField(:, 1), exVecField(:, 2), exVecField(:, 3), 2, 'b');
-%print('~/OG_quiv.png','-dpng');
-
-%%% calculate streamlines
-% x y z are COORDINATES of vector field (incenters of triangle locations in cartesian grid)
-% U V W are the vector fields themselves
-% to seed from every face, startX,startY,startZ should be same as x y z 
-
-figure('units','pixels','position',[0 0 1500 1500])
-examplestreamlines=stream3(X,Y,Z,uq,vq,wq,Pr(:,1),Pr(:,2),Pr(:,3),[.1,500]);
-streamline(examplestreamlines)
+%%% initialize loop variables
+% adjacency matrix for streamlines
+adjMatL=zeros(5120);
+adjMatR=zeros(5120);
 
 % sequence of numbers for indexing faces
-faceSeq=1:5120;
+faceSeq=1:5120';
 
-% for each streamline, find closest point. Reduce to sequence/vector of points falling along this streamline (instead of xyz coords)
-for f=1:5120
-	% recover potential streamlines from this face
-	Streams=examplestreamlines{:,f};
-	% for each segment of stream (1st is seed point)
-	for segm=2:length(Streams)
-		% get closest neighbors to the described points on freesurfer mesh centroids
-		dist2 = sum((Pr - Streams(segm,:)) .^ 2, 2);
-		closest = Pr(dist2 == min(dist2),:);
+% for all TR pairs
+for trp=1:length(OFvecs_L)
+tic
+trp
+%%%%%%%%%%%%%
+%%%%%%%% LEFT
+%%%%%%%%%%%%%
+
+	%%% select vector field to propagate along
+	VecField=OFvecs_L{trp};
+
+	% using griddata for 3d
+	uq = griddata(P(:,1),P(:,2),P(:,3),VecField(:,1),Fx,Fy,Fz);
+	vq = griddata(P(:,1),P(:,2),P(:,3),VecField(:,2),Fx,Fy,Fz);
+	wq = griddata(P(:,1),P(:,2),P(:,3),VecField(:,3),Fx,Fy,Fz);
+
+	% replace NaNs with 0s
+	uq(isnan(uq))=0;
+	vq(isnan(vq))=0;
+	wq(isnan(wq))=0;
+
+	% generate streamlines using only "in-bounds" faces as seed locations
+	trp_streamlines=stream3(X,Y,Z,uq,vq,wq,P(g_noMW_combined_L,1),P(g_noMW_combined_L,2),P(g_noMW_combined_L,3),[.1,500]);
+
+	% for each streamline, find closest point. Reduce to sequence/vector of points falling along this streamline (instead of xyz coords)
+	for f=1:length(g_noMW_combined_L)
+		% what is true index of this f
+		fInd=g_noMW_combined_L(f);
+		% recover potential streamlines from this face
+		Streams=trp_streamlines{:,f};
+		sizeStreams=size(Streams);
+		% initialize "closest" vector to record faces the streamlines grace
+		closestVec=zeros(1,sizeStreams(1));
+		% for each segment of stream (reminder that 1st is seed point)
+		for segm=1:sizeStreams(1);
+			% get closest neighbors to the described points on freesurfer mesh centroids
+			% https://www.mathworks.com/matlabcentral/answers/107029-find-closest-coordinates-to-a-point
+			dist2 = sum((P - Streams(segm,:)) .^ 2, 2);
+			closest = faceSeq(dist2 == min(dist2));
+			% -1 to account for first point being "lost" (streamline in the seed-point itself)
+			closestVec(segm)=closest;
+		end
+		% get unique faces in closest vector
+		unFaces=unique(closestVec);
+		% get non-self values
+		nonSelf=setdiff(unFaces,fInd);
+		% if there are non-self values, insert into adjacency
+		if length(nonSelf) > 0
+			adjMatL(fInd,nonSelf)=adjMatL(fInd,nonSelf)+1;
+		end
 	end
-f
-end
 
-view(280,185)
-print('~/test3.png','-dpng')
+%%%%%%%%%%%%%
+%%%%%%% RIGHT
+%%%%%%%%%%%%%
 
 
-% for each streamline point, find closest point
-% https://www.mathworks.com/matlabcentral/answers/107029-find-closest-coordinates-to-a-point
-% record instances in "SC' matrix
+        %%% select vector field to propagate along
+        VecField=OFvecs_R{trp};
+
+	% using griddata for 3d
+        uq = griddata(Pr(:,1),Pr(:,2),Pr(:,3),VecField(:,1),Fx,Fy,Fz);
+        vq = griddata(Pr(:,1),Pr(:,2),Pr(:,3),VecField(:,2),Fx,Fy,Fz);
+        wq = griddata(Pr(:,1),Pr(:,2),Pr(:,3),VecField(:,3),Fx,Fy,Fz);
+
+        % replace NaNs with 0s
+        uq(isnan(uq))=0;
+        vq(isnan(vq))=0;
+        wq(isnan(wq))=0;
+
+        % generate streamlines using only "in-bounds" faces as seed locations
+        trp_streamlines=stream3(X,Y,Z,uq,vq,wq,Pr(g_noMW_combined_R,1),Pr(g_noMW_combined_R,2),Pr(g_noMW_combined_R,3),[.1,500]);
+	
+	% for each streamline, find closest point. Reduce to sequence/vector of points falling along this streamline (instead of xyz coords)
+        for f=1:length(g_noMW_combined_R)
+		% what is true index of this f
+                fInd=g_noMW_combined_R(f);
+                % recover potential streamlines from this face
+                Streams=trp_streamlines{:,f};
+                sizeStreams=size(Streams);
+                % initialize "closest" vector to record faces the streamlines grace
+                closestVec=zeros(1,sizeStreams(1));
+                % for each segment of stream (reminder that 1st is seed point)
+                for segm=1:sizeStreams(1);
+                        % get closest neighbors to the described points on freesurfer mesh centroids
+                        % https://www.mathworks.com/matlabcentral/answers/107029-find-closest-coordinates-to-a-point
+                        dist2 = sum((Pr - Streams(segm,:)) .^ 2, 2);
+                        closest = faceSeq(dist2 == min(dist2));
+                        % -1 to account for first point being "lost" (streamline in the seed-point itself)
+                        closestVec(segm)=closest;
+                end
+                % get unique faces in closest vector
+                unFaces=unique(closestVec);
+                % get non-self values
+                nonSelf=setdiff(unFaces,fInd);
+                % if there are non-self values, insert into adjacency
+                if length(nonSelf) > 0
+                        adjMatR(fInd,nonSelf)=adjMatR(fInd,nonSelf)+1;
+                end
+        end
+
+% end over this TRP %%%%
+toc %%%%%%%%%%%%%%%%%%%
+end %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% mask mw
+adjMatL(g_noMW_combined_L,:)=0;
+adjMatL(:,g_noMW_combined_L)=0;
+adjMatR(g_noMW_combined_R,:)=0;
+adjMatR(:,g_noMW_combined_R)=0;
+
+% saveout
+adjMats=struct('L',{adjMatL},'R',{adjMatR});
+fn=['~/results/PWs/Proced/' subj '/' subj '_FSC.mat'];
+save(fn,'adjMats')
+ 
