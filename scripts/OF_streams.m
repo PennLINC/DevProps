@@ -193,10 +193,8 @@ end %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% mask mw
-adjMatL(g_noMW_combined_L,:)=0;
-adjMatL(:,g_noMW_combined_L)=0;
-adjMatR(g_noMW_combined_R,:)=0;
-adjMatR(:,g_noMW_combined_R)=0;
+adjMatL=adjMatL(g_noMW_combined_L,g_noMW_combined_L);
+adjMatR=adjMatR(g_noMW_combined_R,g_noMW_combined_R);
 
 % saveout
 adjMats=struct('L',{adjMatL},'R',{adjMatR});
