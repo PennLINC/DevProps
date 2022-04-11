@@ -29,15 +29,15 @@ Pr = TRr.incenters;
 
 %%% create cartesian sphere grid for streamline
 % density of grid = n
-n=40;
+n=60;
 % interpolate vector field to meshgrid:
-% neighboring grid points should be 9 units away from each other, 
+% neighboring grid points should be 9 units away from each other; 10 should be ample  
 MaxCoordOfSph=110;
 % we want points only on the surface, so threshold anything that's not pretty dang close to outer "shell"
 MinCoordOfSph=90;
 % create initial cartesian meshgrid:
 %https://de.mathworks.com/matlabcentral/answers/498723-how-to-start-streamlines-on-the-surface-of-a-sphere-griddedinterpolant-requires-at-least-two-sample
-x = linspace((-MaxCoordOfSph+10),(MaxCoordOfSph-10),n);
+x = linspace((-MaxCoordOfSph),(MaxCoordOfSph),n);
 [X,Y,Z] = meshgrid(x,x,x);
 % field
 Fx = X;

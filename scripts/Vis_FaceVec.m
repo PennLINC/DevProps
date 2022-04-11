@@ -66,7 +66,7 @@ g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 data=zeros(1,5120);
-data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
+data(g_noMW_combined_L)=FaceVecL;
 
 %%%%%%% fixed colorscale varities
 
@@ -77,7 +77,7 @@ data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 %%% for red/blue 0-centered
 mincol=0;
-maxcol=.75;
+maxcol=.06;
 %custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 %custommap(126,:)=[.5 .5 .5];
@@ -99,7 +99,7 @@ maxcol=.75;
 %interpsteps=[0 .125 .25 .375 .5 .625 .75 .875 1];
 %BO_cm=interp1(interpsteps,BO_cm,linspace(0,1,255));
 %custommap=BO_cm;
-custommap=flipud(colormap(inferno));
+custommap=colormap(jet);
 
 %%% matches circular hist
 %roybigbl_cm=inferno(6);
@@ -163,7 +163,7 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 
 %%% right hemisphere
 data=zeros(1,5120);
-data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
+data(g_noMW_combined_R)=FaceVecR;
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
@@ -208,8 +208,8 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-%c=colorbar
-%c.Location='southoutside'
-%colormap(custommap)
+c=colorbar
+c.Location='southoutside'
+colormap(custommap)
 
 print(Fn,'-dpng')
