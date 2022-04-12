@@ -289,7 +289,7 @@ for Vert=1:length(azd_R)
 end
 
 % make the last one "true" observed from masked data
-Tr_AngDists=horzcat(True_gangDist_L(g_noMW_combined_L),True_gangDist_R(g_noMW_combined_R));
+Tr_AngDists=horzcat(True_gangDist_L(:,g_noMW_combined_L),True_gangDist_R(:,g_noMW_combined_R));
 [dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(Tr_AngDists);
 DTres(1001)=dip;
 

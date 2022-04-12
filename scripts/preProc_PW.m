@@ -60,10 +60,10 @@ system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' 
 
 % RUN 4
 % temporal nulls: optical flow
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_tnull_matlabCompVer.sh $MATLAB_DIR ' subj];
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_tnull_comb_CompVer.sh $MATLAB_DIR ' subj];
 %fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
 %fprintf(fid,cmd);
-%system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
+%system(['qsub -l h_vmem=80G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
 
 
 %%% mask medial wall and extract R-friendly face data

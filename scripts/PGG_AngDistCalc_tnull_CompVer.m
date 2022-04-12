@@ -1,4 +1,4 @@
-function PGG_AngDistCalc_snull(subj)
+function PGG_AngDistCalc_tnull(subj)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% load in optical flow data and calculate gradient gradient data, compare angular distance between them
@@ -136,7 +136,7 @@ for t=1:100
 		% current temporal index in master struct
 		curShufInd=tInds(fr);
 		% current vector field
-	        relVf_L=data.us.vf_left{fr};
+	        relVf_L=data.us.vf_left{curShufInd};
 		% xyz components
 	        xComp_L=relVf_L(i,1);
 	        yComp_L=relVf_L(i,2);
@@ -157,7 +157,7 @@ for t=1:100
 		% current temporal index in master struct
 		curShufInd=tInds(fr);
 		% current vector field
-		relVf_R=data.us.vf_right{fr};
+		relVf_R=data.us.vf_right{curShufInd};
 		% xyz components
 	        xComp_R=relVf_R(i,1);
 	        yComp_R=relVf_R(i,2);
@@ -183,7 +183,7 @@ for t=1:100
 	    % note azimuth elevation ordering for atan2d
 	    gPGvec_L=[tgazes_L(Vert) tgels_L(Vert)]; 
 	    % PG GROUP LOAD IN
-	    for fr=1:lenOpFl
+	    for fr=1:LengthOf_OG_TS
 	        OpFlVec_L=[azesOpf_L(Vert,fr) elsOpf_L(Vert,fr)];
     		ga = acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )));
 		gangDist_L(fr,Vert) = ga;	
@@ -193,30 +193,18 @@ for t=1:100
 	% for each vertex
 	for Vert=1:length(azd_R)
 	    % note azimuth elevation ordering for atan2d
-	    gPGvec_R=[gazes_R(Vert) gels_R(Vert)];
-	    for fr=1:lenOpFl
+	    gPGvec_R=[tgazes_R(Vert) tgels_R(Vert)];
+	    for fr=1:LengthOf_OG_TS
 	        OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
         	ga = acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )));
         	gangDist_R(fr,Vert) = ga;
     	    end
 	end
-	% get index of where they are 0 in all directions
-	sp_gPGg_L0=find(all(sp_gPG_LH')==0);
-	sp_gPGg_R0=find(all(sp_gPG_RH')==0);
-	% get union of two medial wall masks
-	MasterMaskL=union(sp_gPGg_L0,sp_mw_L.inds{S});
-	MasterMaskR=union(sp_gPGg_R0,sp_mw_R.inds{S});
-	% include OG MW mask to remove OpFl vectors there
-        MasterMaskL=union(fmwIndVec_l,MasterMaskL);
-        MasterMaskR=union(fmwIndVec_r,MasterMaskR);
-	% extract data outside of these masks	
-	OutOfMaskL=setdiff([1:5120],MasterMaskL);
-	OutOfMaskR=setdiff([1:5120],MasterMaskR);
 	% merge ang distances
-	sp_AngDists=horzcat(gangDist_L(:,OutOfMaskL),gangDist_R(:,OutOfMaskR));
+	tnull_AngDists=horzcat(gangDist_L(:,g_noMW_combined_L),gangDist_R(:,g_noMW_combined_R));
 	% dip test
-	[dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(sp_AngDists);
-	DTres(S)=dip;
+	[dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(tnull_AngDists);
+	DTres(t)=dip;
 	% save out some example distributions
 	%if (S<10)
 	%	SpunAngDist_exFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_SpunDistr' num2str(S) '.csv'];
@@ -225,18 +213,59 @@ for t=1:100
 	toc
 end
 
-% run once on actual PGG for comparison
-True_gangDist_L=zeros(lenOpFl,length(azd_L));
-True_gangDist_R=zeros(lenOpFl,length(azd_R));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% run once on non-shuffled data for comparison %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%% EXTRACT OPFLOW VECTOR FROM REAL DATA PRIOR TO THIS RUN
+True_gangDist_L=zeros(LengthOf_OG_TS,length(azd_L));
+True_gangDist_R=zeros(LengthOf_OG_TS,length(azd_R));
+
+%%%%%% translate xyz vector fields from shuffled opfl to az/el/r %%%%%%%%%%
+azesOpf_L=zeros(length(azd_L),LengthOf_OG_TS);
+elsOpf_L=zeros(length(azd_L),LengthOf_OG_TS);
+for i=1:length(azd_L)
+    for fr=1:LengthOf_OG_TS
+        % current vector field
+        relVf_L=OG_TS.us.vf_left{fr};
+        % xyz components
+        xComp_L=relVf_L(i,1);
+        yComp_L=relVf_L(i,2);
+        zComp_L=relVf_L(i,3);
+        % convert to spherical coord system
+        vs_L=cart2sphvec(double([xComp_L;yComp_L;zComp_L]),azd_L(i),eld_L(i));
+        % store in output vector (r is redundant across all vecs)
+        azesOpf_L(i,fr)=vs_L(1);
+        elsOpf_L(i,fr)=vs_L(2);
+        rvec=vs_L(3);
+    end
+end
+% right hemisphre
+azesOpf_R=zeros(length(azd_R),LengthOf_OG_TS);
+elsOpf_R=zeros(length(azd_R),LengthOf_OG_TS);
+for i=1:length(azd_R)
+    for fr=1:LengthOf_OG_TS
+        % current vector field
+        relVf_R=OG_TS.us.vf_right{fr};
+        % xyz components
+        xComp_R=relVf_R(i,1);
+        yComp_R=relVf_R(i,2);
+        zComp_R=relVf_R(i,3);
+        % convert to spherical coord system
+        vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(i),eld_R(i));
+        % store in output vector (r is redundant across all vecs)
+        azesOpf_R(i,fr)=vs_R(1);
+        elsOpf_R(i,fr)=vs_R(2);
+        rvec=vs_R(3);
+    end
+end
+disp('done converting real opfl vectors from cartesian')
 
 % for each vertex
 for Vert=1:length(azd_L)
     % note azimuth elevation ordering for atan2d
     gPGvec_L=[tgazes_L(Vert) tgels_L(Vert)]; 
     % PG GROUP LOAD IN
-    for fr=1:lenOpFl
+    for fr=1:LengthOf_OG_TS
         OpFlVec_L=[azesOpf_L(Vert,fr) elsOpf_L(Vert,fr)];
     	ga = acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )));
 	True_gangDist_L(fr,Vert) = ga;	
@@ -245,7 +274,7 @@ end
 for Vert=1:length(azd_R)
     % note azimuth elevation ordering for atan2d
     gPGvec_R=[tgazes_R(Vert) tgels_R(Vert)];
-    for fr=1:lenOpFl
+    for fr=1:LengthOf_OG_TS
         % load optical flow angles
         OpFlVec_R=[azesOpf_R(Vert,fr) elsOpf_R(Vert,fr)];
         ga = acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )));
@@ -254,7 +283,7 @@ for Vert=1:length(azd_R)
 end
 
 % make the last one "true" observed from masked data
-Tr_AngDists=horzcat(True_gangDist_L(g_noMW_combined_L),True_gangDist_R(g_noMW_combined_R));
+Tr_AngDists=horzcat(True_gangDist_L(:,g_noMW_combined_L),True_gangDist_R(:,g_noMW_combined_R));
 [dip,xl,xu,ifault,gcm,lcm,mn,mj]=HartigansDipTest(Tr_AngDists);
 DTres(101)=dip;
 
