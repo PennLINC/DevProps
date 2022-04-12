@@ -5,7 +5,7 @@ function preProc_PWs(subj)
 subj
 
 % add matlab path for used functions
-addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
+%addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % apply motion masks and extract TR indcies of continuous segments
 %%% already ran on subjs - NOTE HCPD DIREC VERSION RUN, EXCLUDES NONCONTINUOUS SEGMENTS 
@@ -52,10 +52,10 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 %fprintf(fid,cmd);
 %system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
 % CG
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
 
 
 % RUN 4
@@ -65,6 +65,12 @@ system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' 
 %fprintf(fid,cmd);
 %system(['qsub -l h_vmem=80G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
 
+% Run 5
+% CFC
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CircFC.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CFC.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CFC.sh']);
 
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)
