@@ -70,7 +70,7 @@ subj
 cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CircFC.sh $MATLAB_DIR ' subj];
 fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CFC.sh'], 'w');
 fprintf(fid,cmd);
-system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CFC.sh']);
+system(['qsub -l h_vmem=11G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CFC.sh']);
 
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)

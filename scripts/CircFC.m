@@ -75,8 +75,8 @@ g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 % initialize output arrays
 AnglesL=zeros(length(g_noMW_combined_L),lenOpFl);
 AnglesR=zeros(length(g_noMW_combined_R),lenOpFl);
-CFC_L=zeros(length(g_noMW_combined_L),length(g_noMW_combined_L));
-CFC_R=zeros(length(g_noMW_combined_R),length(g_noMW_combined_R));
+CFC_L=zeros(5120);
+CFC_R=zeros(5120);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% FOR ALL LEFT FACES %%%%%%
@@ -86,7 +86,6 @@ CFC_R=zeros(length(g_noMW_combined_R),length(g_noMW_combined_R));
 for F=g_noMW_combined_L
         % translate xyz vector fields from opfl to az/el/r to polar angles
         % note, by not saving rho (just theta), we are discarding magnitude information at this point
-        Thetas_L=zeros(1,lenOpFl);
         for fr=1:lenOpFl
                 % current vector field
                 relVf_L=vfl{fr};
@@ -102,18 +101,18 @@ for F=g_noMW_combined_L
 end	
 % II. derive circ corrs
 % get triu, loop over triu coordinates
-[i,j]=meshgrid(1:length(g_noMW_combined_L),1:length(g_noMW_combined_L));
-UpperCoords_x=i(i>j);
-UpperCoords_y=j(i>j);
+[i,j]=meshgrid(g_noMW_combined_L,g_noMW_combined_L);
+UpperCoords_x=i(i<j);
+UpperCoords_y=j(i<j);
 % loop over upper triangle of adjacency matrix
 for F=1:length(UpperCoords_x);
+	F
 	% get x and y coord
 	Xcoord=UpperCoords_x(F);
 	Ycoord=UpperCoords_y(F);
 	[CFC_L(Xcoord,Ycoord) pval]=circ_corrcc(AnglesL(Xcoord,:),AnglesL(Ycoord,:));
 end	
 	
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% FOR ALL RIGHT FACES %%%%%
 %Get az/el, derive circ corrs%
@@ -122,7 +121,6 @@ end
 for F=g_noMW_combined_R
         % translate xyz vector fields from opfl to az/el/r to polar angles
         % note, by not saving rho (just theta), we are discarding magnitude information at this point
-        Thetas_R=zeros(1,lenOpFl);
         for fr=1:lenOpFl
                 % current vector field
                 relVf_R=vfr{fr};
@@ -138,9 +136,9 @@ for F=g_noMW_combined_R
 end
 % II. derive circ corrs
 % get triu, loop over triu coordinates
-[i,j]=meshgrid(1:length(g_noMW_combined_R),1:length(g_noMW_combined_R));
-UpperCoords_x=i(i>j);
-UpperCoords_y=j(i>j);
+[i,j]=meshgrid(g_noMW_combined_R,g_noMW_combined_R);
+UpperCoords_x=i(i<j);
+UpperCoords_y=j(i<j);
 % loop over upper triangle of adjacency matrix
 for F=1:length(UpperCoords_x);
         % get x and y coord
@@ -149,6 +147,12 @@ for F=1:length(UpperCoords_x);
         [CFC_R(Xcoord,Ycoord) pval]=circ_corrcc(AnglesR(Xcoord,:),AnglesR(Ycoord,:));
 end
 
+% mirror
+CFC_L=triu(CFC_L)+triu(CFC_L,1)';
+CFC_R=triu(CFC_R)+triu(CFC_R,1)';
+% mask mw 0s out
+CFC_L=CFC_L(g_noMW_combined_L,g_noMW_combined_L);
+CFC_R=CFC_R(g_noMW_combined_R,g_noMW_combined_R);
 % saveout
 adjMats=struct('L',{CFC_L},'R',{CFC_R});
 fn=['~/results/PWs/Proced/' subj '/' subj '_CircFC.mat'];

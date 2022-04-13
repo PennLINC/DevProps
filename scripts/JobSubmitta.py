@@ -6,6 +6,8 @@ import datetime
 my_file = open("/cbica/projects/pinesParcels/PWs/G600TRs.txt", "r")
 content = my_file.read()
 content_list = content. split("\n")
+# temp
+# content_list=content_list[50:]
 # pause to let something else finish
 # time.sleep(20000)
 # remove last line (blank)
@@ -19,7 +21,7 @@ while len(subjects)>0:
   que = len(qstat.split('\n'))-3
   # if we are using less than 7 job slots (one is occupied by this script)
   # ayyyy we done wit 7 jobs atta time we str8 flossin' out here at 35 now 
-  if que < 50:
+  if que < 42:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -34,7 +36,7 @@ while len(subjects)>0:
         print(newsub)
         subprocess.run(["qsub","qsubMatlab.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
-    elif que < 50:
+    elif que < 42:
       newsub = subjects.pop()
       OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_CSpunDips4_spoon.csv'
       if not os.path.exists(OpFile):
