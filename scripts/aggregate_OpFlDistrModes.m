@@ -103,6 +103,10 @@ for f = 1:5120
 	end
 end
 
+% read magnitude length vecs for plot masking
+magL=readtable('~/data/vHL.csv');
+magR=readtable('~/data/vHR.csv');
+
 %save
 writetable(table(OutArray_L),'/cbica/projects/pinesParcels/results/PWs/ModeModes4_L.csv');
 writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/ModeModes4_R.csv');
@@ -111,7 +115,7 @@ Vis_FaceVec_modes(OutArray_L,OutArray_R,'GroupPGGModes',GroPromArray_L,GroPromAr
 
 % filling in unmasked faces with unmasked BU Prop averages, which are the first 45xx
 Vis_FaceVec_Bup(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp_cb.png')
-
+Vis_FaceVec_Bup_desat(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp_desat.png',table2array(magL),table2array(magR))
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -1,23 +1,4 @@
-function Vis_FaceVec(FaceVecL,FaceVecR,Fn) 
-
-%angDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat.mat'];
-%Angs=load(angDistFP);
-%AngsL=Angs.AngDist.gLeft';
-%AngsR=Angs.AngDist.gRight';
-
-% calc AFC
-%bothHemisHierAngTS=vertcat(AngsL,AngsR);
-%AngFC=corrcoef(bothHemisHierAngTS');
-
-% arbitrarily pick a face to highlight the AFC profile of
-%ArbFaceNum=720;
-
-%Modes=readtable('test_leftmode.csv')
-%FaceVec=table2array(Modes(:,2));
-
-% get ang dist in
-%FaceVecL=AngFC(ArbFaceNum,1:20480);
-%FaceVecR=AngFC(ArbFaceNum,20481:40960);
+function Vis_FaceVec_Bup(FaceVecL,FaceVecR,Fn,MagVecL,MagVecR) 
 
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
@@ -40,6 +21,7 @@ F_R=faces_r;
 % vertices V
 V_R=vx_r;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % use native freesurfer command for mw mask indices
 surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
 mwIndVec_l = read_medial_wall_label(surfML);
@@ -64,59 +46,29 @@ fmwIndVec_r=find(F_MW_R);
 g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
 g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 
-%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% quantile vec calculated in R: from the .md file
+quantileVec=[0.003076 0.005329 0.0077179 0.010210 0.013047];
+% prominence equivalent portion: desaturing low-magnitude PGG vectors (loweset-mag most desaturated)
+for dumb=1:5
+thresh=quantileVec(dumb);
+FN=strcat(Fn,num2str(dumb),'.png');
+%%%%%%%%
 data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
+dataMag=zeros(1,5120);
+dataMag=MagVecL;
+% if this face is below the iterative magnitude threshold, 0 it
+data(dataMag<(thresh))=0;
 
-%%%%%%% fixed colorscale varities
+% fixed colorscale
+mincol=.34;
+maxcol=.66;
 
-%%% circular
-%mincol=-pi;
-%maxcol=pi;
+% flip to make top-down bright
+custommap=flipud(colormap(inferno));
 
-
-%%% for red/blue 0-centered
-mincol=-20;
-maxcol=20;
-%custommap=colormap(b2r(mincol,maxcol));
-% abscense of color to gray to accom. lighting "none"
-%custommap(126,:)=[.5 .5 .5];
-
-% blue-orange color scheme
-%BO_cm=inferno(9);
-%BO_cm(1,:)=[49 197 244];
-%BO_cm(2,:)=[71 141 203];
-%BO_cm(3,:)=[61 90 168];
-%BO_cm(4,:)=[64 104 178];
-%BO_cm(5,:)=[126 126 126];
-%BO_cm(6,:)=[240 74 35];
-%BO_cm(7,:)=[243 108 33];
-%BO_cm(8,:)=[252 177 11];
-%BO_cm(9,:)=[247 236 31];
-% scale to 1
-%BO_cm=BO_cm.*(1/255);
-% interpolate color gradient
-%interpsteps=[0 .125 .25 .375 .5 .625 .75 .875 1];
-%BO_cm=interp1(interpsteps,BO_cm,linspace(0,1,255));
-%custommap=BO_cm;
-custommap=colormap(inferno);
-
-%%% matches circular hist
-%roybigbl_cm=inferno(6);
-%roybigbl_cm(1,:)=[0, 0, 255];
-%roybigbl_cm(2,:)=[0, 255, 255];
-%roybigbl_cm(3,:)=[116, 192, 68];
-%roybigbl_cm(4,:)=[246, 235, 20];
-%roybigbl_cm(5,:)=[255, 165, 0];
-%roybigbl_cm(6,:)=[255, 0, 0];
-% scale to 1
-%roybigbl_cm=roybigbl_cm.*(1/255);
-% interpolate color gradient
-%interpsteps=[0 .2 .4 .6 .8 1];
-%roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
-% add white layer for thresholded faces
-%custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
-
+% set mw to gray
+custommap(1,:)=[.5 .5 .5];
 
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
@@ -129,11 +81,11 @@ colormap(custommap)
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
+lighting gouraud; %phong;
 lighting none;
 shading flat;
 camlight;
-	alpha(1)
-
+alpha(1)
 length(faces)
 
 set(gca,'CLim',[mincol,maxcol]);
@@ -148,13 +100,14 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
+lighting gouraud; %phong;
 lighting none;
 material metal %shiny %metal;
 shading flat;
 camlight;
 alpha(1)
- pos = get(asub, 'Position');
- posnew = pos; posnew(2) = posnew(2) + 0.13; posnew(1) = posnew(1) -.11; set(asub, 'Position', posnew);
+pos = get(asub, 'Position');
+posnew = pos; posnew(2) = posnew(2) + 0.13; posnew(1) = posnew(1) -.11; set(asub, 'Position', posnew);
 set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
@@ -164,6 +117,10 @@ set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 %%% right hemisphere
 data=zeros(1,5120);
 data(g_noMW_combined_R)=FaceVecR;
+dataMag=zeros(1,5120);
+dataMag=MagVecR;
+% if this face is below the iterative magnitude threshold, 0 it
+data(dataMag<(thresh))=0;
 
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
@@ -176,12 +133,13 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
-lighting none
+lighting phong; %gouraud
+lighting none;
 material metal %shiny %metal;%shading flat;
 shading flat;
 camlight;
- pos = get(asub, 'Position');
- posnew = pos; posnew(1) = posnew(1) - 0.11; set(asub, 'Position', posnew);
+pos = get(asub, 'Position');
+posnew = pos; posnew(1) = posnew(1) - 0.11; set(asub, 'Position', posnew);
 alpha(1)
 
 
@@ -196,13 +154,14 @@ caxis([mincol; maxcol]);
 daspect([1 1 1]);
 axis tight;
 axis vis3d off;
+lighting gouraud; %phong;
 lighting none;
 material metal %shiny %metal;
 shading flat;
 camlight;
 alpha(1)
- pos = get(asub, 'Position');
- posnew = pos; posnew(2) = posnew(2) + 0.13; set(asub, 'Position', posnew);
+pos = get(asub, 'Position');
+posnew = pos; posnew(2) = posnew(2) + 0.13; set(asub, 'Position', posnew);
 set(gcf,'Color','w')
 
 
@@ -210,6 +169,6 @@ set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 c=colorbar
 c.Location='southoutside'
-colormap(custommap)
-
-print(Fn,'-dpng')
+colormap(custommap);
+print(FN,'-dpng')
+end

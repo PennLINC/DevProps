@@ -1,0 +1,16 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+left=read.csv('Y:/data/vHL.csv')
+right=read.csv('Y:/data/vHR.csv')
+hist(c(left$vHL,right$vHR))
+hist(log(c(left$vHL,right$vHR)))
+### get mag values for plotting
+quantile(log(c(left$vHL,right$vHR)),seq(0,.1,.02))
+### save magvec values for plotting
+write.csv(log(left$vHL),'Y:/data/vHLlog.csv')
+write.csv(log(right$vHR),'Y:/data/vHRlog.csv')
+```

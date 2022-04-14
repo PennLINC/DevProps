@@ -59,11 +59,30 @@ vsumR=sum(abs(gPGg_R),2);
 vHL=sqrt((gPGx_L.^2)+(gPGy_L.^2)+(gPGz_L.^2));
 vHR=sqrt((gPGx_R.^2)+(gPGy_R.^2)+(gPGz_R.^2));
 
-% generate mw mask
-gPGg_L0=find(all(gPGg_L')==0);
-gPGg_R0=find(all(gPGg_R')==0);
-g_noMW_combined_L=setdiff([1:5120],gPGg_L0);
-g_noMW_combined_R=setdiff([1:5120],gPGg_R0);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% use native freesurfer command for mw mask indices
+surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+mwIndVec_l = read_medial_wall_label(surfML);
+surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+mwIndVec_r = read_medial_wall_label(surfMR);
+% make binary "is medial wall" vector for vertices
+mw_L=zeros(1,2562);
+mw_L(mwIndVec_l)=1;
+mw_R=zeros(1,2562);
+mw_R(mwIndVec_r)=1;
+% convert to faces
+% convert to faces
+F_MW_L=sum(mw_L(faces_l),2)./3;
+F_MW_R=sum(mw_R(faces_r),2)./3;
+% convert "partial" medial wall to medial wall
+F_MW_L=ceil(F_MW_L);
+F_MW_R=ceil(F_MW_R);
+% face mask indices
+fmwIndVec_l=find(F_MW_L);
+fmwIndVec_r=find(F_MW_R);
+% make medial wall vector
+g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
+g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 
 % apply mw mask
 vsumL=vsumL(g_noMW_combined_L);
