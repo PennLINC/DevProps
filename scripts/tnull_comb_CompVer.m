@@ -174,13 +174,13 @@ F_L=faces_l;
 % vertices V
 V_L=vx_l;
 % vector fields
-vfl=data.us.vf_left;
+vfl=us.vf_left;
 % faces_R
 F_R=faces_r;
 % vertices V
 V_R=vx_r;
 % vector fields
-vfr=data.us.vf_right;
+vfr=us.vf_right;
 % get incenters of triangles
 TR_L = TriRep(F_L,V_L);
 P_L = TR_L.incenters;

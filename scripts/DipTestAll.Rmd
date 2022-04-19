@@ -4,6 +4,8 @@ output: html_document
 ---
 
 ```{r}
+library(ggplot2)
+library(scales)
 # load in subj list
 subjList=read.delim('Y:/PWs/hcpd_subj_list.txt')
 # load in ages
@@ -29,7 +31,6 @@ for (s in 1:dim(subjList)[1]){
     subj=subjList[s,1]
     # and to record same order of subj loading and prevent funny biz
     Subjvec[s]=subj
-    print(s)
     # and remaining TRs
     remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
 }
@@ -52,18 +53,38 @@ Ps=rep(0,dim(masterdf)[1])
 # load in D and shapes iteratively
 for (s in 1:dim(masterdf)[1]){
     subj=masterdf$SubjID[s]
-    ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
-    # load in dip test
-    dipstat=readRDS(paste0(ResFp,subj,'_gDipTest.rds'))
-    Ds[s]=dipstat$statistic
-    SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips.csv'),header=F)
+    SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
     ObsDip<-as.numeric(SpunDips[2,1001])
     SpunDips<-as.numeric(SpunDips[2,1:1000])
     Ps[s]=sum(SpunDips>ObsDip)
-  }
+    Ds[s]=ObsDip
 }
 
 masterdf$Ps<-Ps
 masterdf$Ds<-Ds
+
+
+
+```
+
+```{r}
+# plot single subject 
+#####################
+####### (2f)
+```
+
+
+```{r}
+# plot relationship between dips statistic and proportion top-down
+####################
+####### (2h)
+BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp.csv'))
+Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
+BuPropdf<-data.frame(BuProp,Subjs)
+colnames(BuPropdf)<-c('BuProp','SubjID')
+BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
+
+BuDs<-ggplot(BuMerge,aes(x=Ds,y=1-BuProp))+geom_point(size=3,alpha=.5)+theme_classic(base_size=28)+geom_smooth(method='lm',color='black')
+BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent_format(accuracy = 1))+scale_x_continuous(breaks=c(.002,.006,.01))
 
 ```

@@ -71,10 +71,10 @@ for s = 1:height(Subjs)
         		ModesR_Prom(f,s)=1-(M2/M);
 			% insert prop. TDm note contingencies. BUTD file is already masked
 			if f < 4590;
-				TDP_mL(f,s)=BUTD_L(f,1);
+				TDP_mL(f,s)=1-BUTD_L(f,1);
 			end
 			if f < 4596
-				TDP_mR(f,s)=BUTD_R(f,1);
+				TDP_mR(f,s)=1-BUTD_R(f,1);
 			end
 		end	
 	end
@@ -114,7 +114,7 @@ writetable(table(OutArray_R),'/cbica/projects/pinesParcels/results/PWs/ModeModes
 Vis_FaceVec_modes(OutArray_L,OutArray_R,'GroupPGGModes',GroPromArray_L,GroPromArray_R)
 
 % filling in unmasked faces with unmasked BU Prop averages, which are the first 45xx
-Vis_FaceVec_Bup(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp_cb.png')
+Vis_FaceVec_Bup(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp.png')
 Vis_FaceVec_Bup_desat(TDP_vL(1:4589),TDP_vR(1:4595),'GroupTDProp_desat.png',table2array(magL),table2array(magR))
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,8 +176,8 @@ F_R=load(outFP_R);
 % printout columns 1 (BUProp), 6 (BU_resvec_R), 7 (TD_resvec_R), and 8 (whole-circle resvec theta)
 matL=cell2mat(F_L.OutDf_L);
 matR=cell2mat(F_R.OutDf_R);
-csv_L=table(matL(:,1));
-csv_R=table(matR(:,1));
+csv_L=table(1-matL(:,1));
+csv_R=table(1-matR(:,1));
 
-Vis_FaceVec_Bup(table2array(csv_L),table2array(csv_R),'ExampleSubjBup.png')
+Vis_FaceVec_Bup(table2array(csv_L),table2array(csv_R),'ExampleSubjTDprop.png')
 

@@ -87,6 +87,19 @@ for y=1:7
                 end
         end
 end
+
+% add last column to catch faces not assigned a network
+membL(:,8)=.5;
+membR(:,8)=.5;
+
+% convert to facewise membership vector
+[~, yeoLabel_L] = max(membL,[],2);
+[~, yeoLabel_R] = max(membR,[],2);
+
+% vis it
+Vis_FaceVecY7(yeoLabel_L(g_noMW_combined_L),yeoLabel_R(g_noMW_combined_R),'yeo7.png')
+
+
 % saveout as table
 writetable(table(membL(g_noMW_combined_L,:)),'~/data/yeo7FaceBooleans_L.csv');
 writetable(table(membR(g_noMW_combined_R,:)),'~/data/yeo7FaceBooleans_R.csv'); 

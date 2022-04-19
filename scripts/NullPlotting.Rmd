@@ -59,13 +59,13 @@ for (s in 1:dim(subjList)[1]){
       DipSDs[s]=(ObsDip-SpunMean)/SpunSD
       remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
       # curvature
-      #CSpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'),header=F)
-      #CObsDip<-as.numeric(CSpunDips[2,1001])
-      #CSpunDips<-as.numeric(CSpunDips[2,1:1000])
-      #CSpunSD=sd(CSpunDips)
-      #CSpunMean=mean(CSpunDips)
-      #CNullDips[s,]=CSpunDips
-      #CDipSDs[s]=(CObsDip-CSpunMean)/CSpunSD
+      CSpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'),header=F)
+      CObsDip<-as.numeric(CSpunDips[2,1001])
+      CSpunDips<-as.numeric(CSpunDips[2,1:1000])
+      CSpunSD=sd(CSpunDips)
+      CSpunMean=mean(CSpunDips)
+      CNullDips[s,]=CSpunDips
+      CDipSDs[s]=(CObsDip-CSpunMean)/CSpunSD
       # and to record same order of subj loading and prevent funny biz
       Subjvec[s]=subj
 
@@ -80,7 +80,6 @@ colnames(popDf)[1]<-'SubjID'
 inclusionVec<-popDf$remTRs>600
 includedSubjsvec<-popDf$SubjID[inclusionVec]
 popDfThresh=popDf[popDf$remTRs>600,]
-#ThreshShapeMat<-shapeMat[,,inclusionVec]
 
 masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 ```
@@ -89,6 +88,9 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=23)+xlim(0,64)+xlab('Standard Deviations of Observed from Nulls')+scale_x_continuous(breaks=seq(3,63,5))
 ```
 
+```{r}
+ggplot(popDfThresh,aes(x=CDipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=23)+xlab('Standard Deviations of Observed from Nulls')
+```
 
 ```{r}
 # get group-wide null distribution for those that passed QC

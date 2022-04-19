@@ -90,20 +90,12 @@ PG_LH=LPGf.cdata(:,1);
 RPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
 RPGf=gifti(RPGfp);
 PG_RH=RPGf.cdata(:,1);
-% and individual
-iLPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_L_10k_rest.func.gii'];
-iLPGf=gifti(iLPGfp);
-iPG_LH=iLPGf.cdata(:,1);
-% right hemi
-iRPGfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_PG_R_10k_rest.func.gii'];
-iRPGf=gifti(iRPGfp);
-iPG_RH=iRPGf.cdata(:,1);
 
 % get sorting order of PG
 [outL,idxL] = sort(iPG_LH);
 [outR, idxR] = sort(iPG_RH);
 
-% mw index
+% mw index (crude)
 mwIndr=find(outR==0);
 goodIndr=setdiff([1:length(outR)],mwIndr);
 
@@ -120,22 +112,31 @@ PGy_R=PGg_R(:,2);
 PGz_R=PGg_R(:,3);
 
 %%% set colormap
-custommap=colormap('inferno'); %or whatever
+crkerustommap=colormap('inferno'); %or whatever
 % reduce just a little bit on the close-to-white coloring
 custommap=custommap(1:240,:);
 
 %%%% Fig 1: PGG big
-figure('units','pixels','position',[0 0 1500 1500])
+figure('units','pixels','position',[0 0 2500 2500])
 axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R, 2, 'w','linewidth',2);
-hold on
 trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
+hold on
+quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R,'w','LineWidth',2,'AutoScaleFactor',5,'ShowArrowHead','on','MaxHeadSize',20);
+% note the function from https://www.mathworks.com/matlabcentral/answers/354324-how-to-make-the-quiver-arrow-head-size-fixed
+% NEEDS hold on to work
+% broken_arrow's function
+%quiver3addarrowheads(in_quivhandle,3,60);
 axis equal
 daspect([1, 1, 1]);
 colormap(custommap);
 colorbar
 view(280,185);
 print('pggBig.png','-dpng')
+
+
+
+print('pggBig_custArrowheads.png','-dpng')
+
 
 %%% Fig 1: pial PG
 % load in fsaverage4 faces and vertices %%%
@@ -271,14 +272,6 @@ pen it, plop Direcs in
 %open(video)
 %writeVideo(video, BOLD);
 %close(video);
-
-[pinesparcels@cubic-sattertt1 scripts]$ vim viz_vec_fields4.m
-
-E575: viminfo: Illegal starting char in line: le.m
-Press ENTER or type command to continue
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
 %%%% This chunk is for video: not needed for figs

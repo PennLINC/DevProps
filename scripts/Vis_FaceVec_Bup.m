@@ -73,14 +73,14 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-mincol=.34;
-maxcol=.66;
+mincol=.39;
+maxcol=.61;
 
-% flip to make top-down bright
-custommap=flipud(colormap(inferno));
+% parula for TD Prop.
+custommap=colormap(parula);
 
 % set mw to black
-custommap(1,:)=[0 0 0];
+%custommap(1,:)=[0 0 0];
 
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
