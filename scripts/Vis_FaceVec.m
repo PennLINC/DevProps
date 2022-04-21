@@ -71,13 +71,13 @@ data(g_noMW_combined_L)=FaceVecL;
 %%%%%%% fixed colorscale varities
 
 %%% circular
-%mincol=-pi;
-%maxcol=pi;
+mincol=2*-pi;
+maxcol=2*pi;
 
 
 %%% for red/blue 0-centered
-mincol=0;
-maxcol=10;
+%mincol=0;
+%maxcol=10;
 %custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 %custommap(126,:)=[.5 .5 .5];
@@ -99,9 +99,10 @@ maxcol=10;
 %interpsteps=[0 .125 .25 .375 .5 .625 .75 .875 1];
 %BO_cm=interp1(interpsteps,BO_cm,linspace(0,1,255));
 %custommap=BO_cm;
-custommap=colormap(inferno);
+%custommap=colormap(inferno);
 
 %%% matches circular hist
+% for 180 degree max
 %roybigbl_cm=inferno(6);
 %roybigbl_cm(1,:)=[0, 0, 255];
 %roybigbl_cm(2,:)=[0, 255, 255];
@@ -114,8 +115,32 @@ custommap=colormap(inferno);
 % interpolate color gradient
 %interpsteps=[0 .2 .4 .6 .8 1];
 %roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
-% add white layer for thresholded faces
+% make circular with flipud
 %custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+
+% for 90 degree max
+roybigbl_cm=inferno(7);
+% blue
+roybigbl_cm(1,:)=[0, 0, 255];
+% cyan
+roybigbl_cm(2,:)=[0, 255, 255];
+% green
+roybigbl_cm(3,:)=[116, 192, 68];
+% yellow
+roybigbl_cm(4,:)=[246, 235, 20];
+% green
+roybigbl_cm(5,:)=[116, 192, 68];
+% cyan
+roybigbl_cm(6,:)=[0, 255, 255];
+% blue
+roybigbl_cm(7,:)=[0, 0, 255];
+% scale to 1
+roybigbl_cm=roybigbl_cm.*(1/255);
+% interpolate color gradient
+interpsteps=[0 .1666 .33333 .5 .66666 .8333333 1];
+roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+% make circular with flipud
+custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 
 figure
