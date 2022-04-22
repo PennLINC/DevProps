@@ -7,7 +7,37 @@ output: html_document
 library(reshape2)
 library(diptest)
 library(pracma)
+library(gpglot2)
 
+```
+
+```{r}
+Left720=read.csv('Y:/data/MeanMeanPGGDif_L.csv')
+Left720<-melt(Left720)
+hist(Left720$value)
+
+
+
+Left90=read.csv('Y:/data/left90.csv')
+Left90<-melt(Left90)
+Right90=read.csv('Y:/data/right90.csv')
+Right90<-melt(Right90)
+
+
+Comb=c(Left90$value,Right90$value)
+hist(Comb,breaks = seq(0,(pi/2),(pi/20)))
+
+melted=data.frame(Left360)
+
+p<-ggplot(melted,aes(x=value))
+p+geom_histogram(color='black',aes(fill= ..x..),binwidth = pi/20)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,(pi/2))))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))
+
+#LeftMeanMean_90=read.csv('Y:/data/MeanMeanReflect90R.csv')
+#LeftMeanMean_90<-melt(LeftMeanMean_90)
+
+```
+
+```{r}
 ## enter subj name in manually
 testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
 testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))

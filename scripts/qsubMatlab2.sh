@@ -1,1 +1,1 @@
-matlab -nodisplay -r "preProc_PW2('${1}')"
+matlab -nodisplay -r "MeanAngle_EachFace_xTrs_L"

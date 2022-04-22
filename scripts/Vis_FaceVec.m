@@ -71,8 +71,8 @@ data(g_noMW_combined_L)=FaceVecL;
 %%%%%%% fixed colorscale varities
 
 %%% circular
-mincol=2*-pi;
-maxcol=2*pi;
+mincol=0;
+maxcol=pi;
 
 
 %%% for red/blue 0-centered
@@ -119,7 +119,7 @@ maxcol=2*pi;
 %custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 % for 90 degree max
-roybigbl_cm=inferno(7);
+roybigbl_cm=inferno(3);
 % blue
 roybigbl_cm(1,:)=[0, 0, 255];
 % cyan
@@ -127,21 +127,17 @@ roybigbl_cm(2,:)=[0, 255, 255];
 % green
 roybigbl_cm(3,:)=[116, 192, 68];
 % yellow
-roybigbl_cm(4,:)=[246, 235, 20];
-% green
-roybigbl_cm(5,:)=[116, 192, 68];
-% cyan
-roybigbl_cm(6,:)=[0, 255, 255];
-% blue
-roybigbl_cm(7,:)=[0, 0, 255];
+%roybigbl_cm(4,:)=[246, 235, 20];
 % scale to 1
 roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
-interpsteps=[0 .1666 .33333 .5 .66666 .8333333 1];
+%interpsteps=[0 .33333 .66666 1];
+interpsteps=[0 .5 1];
 roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % make circular with flipud
-custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
-
+%custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
+%custommap=roybigbl_cm;
+custommap=colormap(parula);
 
 figure
 [vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
