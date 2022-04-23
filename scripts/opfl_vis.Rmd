@@ -5,35 +5,23 @@ output: html_document
 
 ```{r}
 library(reshape2)
+library(ggplot2)
 library(diptest)
 library(pracma)
-library(gpglot2)
-
 ```
 
 ```{r}
-Left720=read.csv('Y:/data/MeanMeanPGGDif_L.csv')
-Left720<-melt(Left720)
-hist(Left720$value)
 
+# read in reflected mean directions per face
+refl_L=read.csv('Y:/data/MeanMeanReflect90L.csv')
+refl_R=read.csv('Y:/data/MeanMeanReflect90R.csv')
 
+#combine
+combined=data.frame(c(melt(refl_L)$value,melt(refl_R)$value))
+colnames(combined)<-'value'
 
-Left90=read.csv('Y:/data/left90.csv')
-Left90<-melt(Left90)
-Right90=read.csv('Y:/data/right90.csv')
-Right90<-melt(Right90)
-
-
-Comb=c(Left90$value,Right90$value)
-hist(Comb,breaks = seq(0,(pi/2),(pi/20)))
-
-melted=data.frame(Left360)
-
-p<-ggplot(melted,aes(x=value))
-p+geom_histogram(color='black',aes(fill= ..x..),binwidth = pi/20)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,(pi/2))))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))
-
-#LeftMeanMean_90=read.csv('Y:/data/MeanMeanReflect90R.csv')
-#LeftMeanMean_90<-melt(LeftMeanMean_90)
+p<-ggplot(combined,aes(x=value))
+p+geom_histogram(color='black',aes(fill= ..x..),binwidth = pi/10)+xlab("Distance (radians)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,pi)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow"))+ggtitle("Angular Distance (radians)")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))
 
 ```
 
@@ -50,7 +38,6 @@ testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4
 ```
 
 ```{r}
-library(ggplot2)
 meltedL<-melt(testL4)
 meltedR<-melt(testR4)
 melted=data.frame(c(meltedL,meltedR)$value)
@@ -96,9 +83,9 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 ```
 
 ```{r}
-SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'),header=F)
-ObsDip<-as.numeric(SpunDips[2,1001])
-SpunDips<-as.numeric(SpunDips[2,1:1000])
+SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_ShufDips4.csv'),header=F)
+ObsDip<-as.numeric(SpunDips[2,101])
+SpunDips<-as.numeric(SpunDips[2,1:100])
 plotdf<-data.frame(ObsDip,SpunDips)
 
 ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics: \u2207Curv.')+guides(y="none")

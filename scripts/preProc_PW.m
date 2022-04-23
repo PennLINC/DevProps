@@ -47,29 +47,22 @@ subj
 
 % RUN 3
 % Spatial Nulls: PGG
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
 % CG
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
 
 % RUN 4
 % temporal nulls: optical flow
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_tnull_comb_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=80G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
-
-% Run 5
-% CFC
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CircFC.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CFC.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=11G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CFC.sh']);
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_tnull_comb_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=100G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
 
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)

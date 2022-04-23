@@ -20,8 +20,7 @@ while len(subjects)>0:
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 7 job slots (one is occupied by this script)
-  # ayyyy we done wit 7 jobs atta time we str8 flossin' out here at 35 now 
-  if que < 42:
+  if que < 32:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
