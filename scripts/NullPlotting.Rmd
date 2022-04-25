@@ -85,7 +85,10 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 ```
 
 ```{r}
-ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=23)+xlim(0,64)+xlab('Standard Deviations of Observed from Nulls')+scale_x_continuous(breaks=seq(3,63,5))
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=16)+xlim(0,22.5)+xlab('Standard Deviations of Observed from Nulls')+theme(axis.text = element_text(size=16))
+
+
+# saved at 500x250
 ```
 
 ```{r}
@@ -127,8 +130,31 @@ ggplot(NullDips,aes(x=value))+geom_density(size=1.5)+theme_classic()+xlim(c(0,.0
 
 
 ```{r}
-# plot each subj for how many SDs they were away from the mean in their own respective null distribution
+# individual level, set subj manually
 
+SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
+ObsDip<-as.numeric(SpunDips[2,1001])
+SpunDips<-as.numeric(SpunDips[2,1:1000])
+plotdf<-data.frame(ObsDip,SpunDips)
+
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistic vs. Spatial Null')+guides(y="none")
+
+# saved out at 450 x 225
+
+nullDistrEx<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDistr1.csv'))
+nullM<-melt(nullDistrEx)
+hist(nullM$value)
+
+# convert to histogram format, aligned with group-level plot
+histoVers<-histc(nullM$value,edges=seq(0,180,10))
+plotdataf<-data.frame(histoVers$cnt[1:18],seq(1,18))
+# normalize to percentage, as in other
+plotdataf$histoVers.cnt.1.18.<-plotdataf$histoVers.cnt.1.18./sum(plotdataf$histoVers.cnt.1.18.)
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG: Spun'))+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=20, face="bold"), axis.title = element_blank(),axis.text = element_blank(),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none')+ylab('count')+ylab('% of Propagations')
+
+# saved out at 300x300
 ```
 
 ```{r}
