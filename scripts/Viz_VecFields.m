@@ -280,7 +280,7 @@ lastInSegs=CSI{:,1}+CSI{:,2}-1;
 numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
-for i=1058:1060
+for i=1058:1061
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt);
 u=OpFl.vf_right{OpFlVecofInt};
