@@ -74,14 +74,15 @@ Note the sample size here is different (smaller). Not all subjects had high-qual
 items to validate in 4:
 #### T-test directionality: i.e., more top-down w/ task
 
-# 6. Age effects
+# 6.1 Age effects: Whole-cortex
+[Bin_And_Aggregate_BuProp_180.m](https://github.com/PennLINC/PWs/blob/e9dafb2118b3814b971d74d9cab4c35c51916aa2/scripts/Bin_And_Aggregate_BuProp_180.m) will derive individual-level whole-cortex metrics for proportion bottom-up (or top-down). This output can read into R and plotted with line 391 of [this script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd). Code for reported stats is directly above.
 
-[Bin_And_Aggregate_BuProp_180.m](https://github.com/PennLINC/PWs/blob/e9dafb2118b3814b971d74d9cab4c35c51916aa2/scripts/Bin_And_Aggregate_BuProp_180.m) will derive individual-level whole-cortex metrics for proportion bottom-up (or top-down). Note this is in addition to mass univariate testing.
-
-[BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat.m) will convert these values to .csv files for R to leverage
+# 6.2 Age effects: Mass univariate
+As above, [BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat.m) will convert extracted values to .csv files for R to leverage.
 
 facewise_stats_([L](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_L.R)/[R](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_R.R)).R: this will conduct mass univariate tests on the extracted top-down proportion metrics. Follow it up with [FDR_facewise.R](https://github.com/PennLINC/PWs/blob/main/scripts/FDR_facewise.R) to correct for multiple comparisons
 
+# 6.3 Age effects: angular distributions
 FINALLY, we need to create the permuted old - young PGG angular distance difference histogram (fig. 3d). These 1000 permutations are ran through [this script](https://github.com/PennLINC/PWs/blob/e2258b09c2ae78bc3a998faa59a283723d3cb085/scripts/Bin_And_Aggregate_PGGDistribution_180_permSubjs.m), which uses the old and young tertile splits (for the true histogram differences only) constructed in this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) from lines 101 to 110. The resulting figure is plotted with the same .rmd in the chunk beneath (lines 163:231), which can be run after permSubjs.m has ran.
 
 
