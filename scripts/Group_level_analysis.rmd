@@ -656,3 +656,41 @@ coord_polar(start = 3.1416)
 p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')+ylim(c(-40000,78000))
 
 ```
+
+
+```{r}
+prop=read.csv('Y:/data/meanProp.csv')
+PropMasked=c(prop$TDP_vL[1:4589],prop$TDP_vR[1:4595])
+
+PGGdata_L=read.csv('Y:/data/MeanMeanPGGDif_L.csv')
+PGGdata_R=read.csv('Y:/data/MeanMeanPGGDif_R.csv')
+PGGcombined=c(melt(PGGdata_L)$value,melt(PGGdata_R)$value)
+
+# transform -6 to 6 radians to parallel vs. antiparallel (0 to pi)
+PGGcombined=abs(PGGcombined)
+# recenter on pi
+PGGcombined=PGGcombined-pi
+# abs it to reflect across pi
+PGGcombined=abs(PGGcombined)
+# mult by -1 to restore directionality
+PGGcombined=PGGcombined*-1
+# re-translate to restore -pi from above
+PGGcombined=PGGcombined+pi
+
+# load in pg values
+PGFaceVals_L=read.csv('Y:/PWs/scripts/PGFaceVals_L.csv')
+PGFaceVals_R=read.csv('Y:/Pws/scripts/PGFaceVals_R.csv')
+PGFaceVals=c(melt(PGFaceVals_L)$value,melt(PGFaceVals_R)$value)
+
+plotdf<-data.frame(PGGcombined,PropMasked,PGFaceVals)
+
+ggplot(plotdf,aes(x=PGGcombined,y=PropMasked))+geom_point(size=2,alpha=.3)+theme_classic()+xlab('Primary Direction of Face')+ylab('% Top-Down')+ylim(.4,.6)+geom_smooth()
+
+ggplot(plotdf,aes(x=PGGcombined,y=PropMasked,color=PGFaceVals))+geom_point(size=2,alpha=.3)+theme_classic()+xlab('Primary Direction of Face')+ylab('% Top-Down')+scale_color_continuous(type='viridis')+ylim(.4,.6)+geom_smooth()
+
+ggplot(plotdf[plotdf$PGFaceVals< -2.5,],aes(x=PGGcombined,y=PropMasked))+geom_point(alpha=.1)+theme_classic()+xlab('Primary Direction of Face')+ylab('% Top-Down')+ylim(.4,.6)+geom_smooth()
+
+ggplot(plotdf[plotdf$PGFaceVals > 2.5,],aes(x=PGGcombined,y=PropMasked))+geom_point(alpha=.1)+theme_classic()+xlab('Primary Direction of Face')+ylab('% Top-Down')+ylim(.4,.6)+geom_smooth()
+
+summary(lm(PropMasked~PGGcombined*PGFaceVals))
+```

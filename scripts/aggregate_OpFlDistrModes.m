@@ -16,6 +16,8 @@ TDP_mL=zeros(5120,height(Subjs));
 TDP_mR=zeros(5120,height(Subjs));
 TDP_vL=zeros(5120,1);
 TDP_vR=zeros(5120,1);
+TDP_sL=zeros(5120,1);
+TDP_sR=zeros(5120,1);
 
 % edges to discretize on 
 edges=0:10:180;
@@ -97,9 +99,11 @@ for f = 1:5120
 	% same contingencies as above
 	if f < 4590;
 		TDP_vL(f,1)=mean(TDP_mL(f,:));
+		TDP_sL(f,1)=std(TDP_mL(f,:));
 	end
 	if f < 4596
 		TDP_vR(f,1)=mean(TDP_mR(f,:));	
+		TDP_sR(f,1)=std(TDP_mR(f,:));
 	end
 end
 
