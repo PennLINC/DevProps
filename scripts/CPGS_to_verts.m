@@ -1,3 +1,5 @@
+addpath(genpath('~/multiscale/scripts/derive_parcels/Toolbox'))
+
 % load left joel embeds
 embL=load('/cbica/projects/pinesParcels/results/PWs/embL.mat');
 % right
@@ -65,12 +67,12 @@ RoutputVerts=zeros(5,2562);
 for p=1:5
 	for v=1:2562
 		[rowL,colL]=find(faces_l==v);
-		vertVals=mean(vecL(rowL));
+		vertVals=mean(vecL(p,rowL));
 		LoutputVerts(p,v)=vertVals;
 	end
 	for v=1:2562
                 [rowR,colR]=find(faces_r==v);
-                vertVals=mean(vecR(rowR));
+                vertVals=mean(vecR(p,rowR));
                 RoutputVerts(p,v)=vertVals;
         end
 end
