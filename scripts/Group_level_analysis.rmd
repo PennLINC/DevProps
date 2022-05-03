@@ -412,6 +412,15 @@ BuMerge$harmTDProp<-dat.harmonized$TDProp
 BuMerge$harmFD<-dat.harmonized$FD
 
 visreg(gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge))
+# get delta adjusted r^2
+adjR2=summary(gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge))$r.sq
+adjR2_noage=summary(gam(harmTDProp~harmFD+sex,data=BuMerge))$r.sq
+# get anova-p
+ageMod=gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge)
+noAgeMod=gam(harmTDProp~harmFD+sex,data=BuMerge)
+anovaRes=anova.gam(ageMod,noAgeMod,test='Chisq')
+unlist(anovaRes$`Pr(>Chi)`)[2]
+
 
 # get residuals of model for plotting
 TDProp_lm<-lm(harmTDProp~harmFD+sex,data=BuMerge)
@@ -420,10 +429,33 @@ BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
 ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("Top-Down Propagations:\n ComBat Harmonized") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4)) +scale_y_continuous(labels = percent_format(accuracy = 1))
 
 #### show DMN Segreg
+### Group parcels
+
+# dev analyses controlling for DMN seg
+devMod_DMSC<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs+DMNsegGro,data=BuMerge)
+ndevMod_DMSC<-gam(TDProp~FD+sex+RemainingTRs+DMNsegGro,data=BuMerge)
+
+# get delta adjusted r^2
+adjR2=summary(gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs+DMNsegGro,data=BuMerge))$r.sq
+adjR2_noage=summary(gam(TDProp~FD+sex+RemainingTRs+DMNsegGro,data=BuMerge))$r.sq
+adjR2-adjR2_noage
+
+# get p-value
+anovaRes<-anova.gam(devMod_DMSC,ndevMod_DMSC,test='Chisq')
+anovaRes$`Pr(>Chi)`
+
+### individualized parcels
 
 # dev analyses controlling for DMN seg
 devMod_DMSC<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs+DMNseg,data=BuMerge)
 ndevMod_DMSC<-gam(TDProp~FD+sex+RemainingTRs+DMNseg,data=BuMerge)
+
+# get delta adjusted r^2
+adjR2=summary(gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs+DMNseg,data=BuMerge))$r.sq
+adjR2_noage=summary(gam(TDProp~FD+sex+RemainingTRs+DMNseg,data=BuMerge))$r.sq
+adjR2-adjR2_noage
+
+# get p-value
 anovaRes<-anova.gam(devMod_DMSC,ndevMod_DMSC,test='Chisq')
 anovaRes$`Pr(>Chi)`
 
@@ -434,13 +466,40 @@ BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
 
 ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("Top-Down Propagations:\n Controlling for DMN Seg.") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4)) +scale_y_continuous(labels = percent_format(accuracy = 1))
 
-# DMN model
-summary(gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))
+# DMN model - group
+summary(gam(DMNsegGro~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))
+devMod_DMgro<-gam(DMNsegGro~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge)
+ndevMod_DMgro<-gam(DMNsegGro~FD+sex+RemainingTRs+TDProp,data=BuMerge)
+
+# get delta adjusted r^2
+adjR2=summary(gam(DMNsegGro~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))$r.sq
+adjR2_noage=summary(gam(DMNsegGro~FD+sex+RemainingTRs+TDProp,data=BuMerge))$r.sq
+adjR2-adjR2_noage
+
+# get p-value
+anovaRes<-anova.gam(devMod_DMgro,ndevMod_DMgro,test='Chisq')
+anovaRes$`Pr(>Chi)`
+
 # and plotting dmn seg directly
 DMN_lm<-lm(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge)
 BuMerge$DMN_lm_resid<-DMN_lm$residuals+mean(BuMerge$DMNseg)
 
 ggplot(BuMerge,aes(x=(interview_age)/12,y=DMN_lm_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("DMN External \n Connectivity") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4))
+
+
+# DMN model - individualized
+summary(gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))
+devMod_DM<-gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge)
+ndevMod_DM<-gam(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge)
+
+# get delta adjusted r^2
+adjR2=summary(gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))$r.sq
+adjR2_noage=summary(gam(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge))$r.sq
+adjR2-adjR2_noage
+
+# get p-value
+anovaRes<-anova.gam(devMod_DM,ndevMod_DM,test='Chisq')
+anovaRes$`Pr(>Chi)`
 ```
 
 ```{r}
