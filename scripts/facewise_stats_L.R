@@ -8,18 +8,18 @@ library(ppcor)
 # difference in R2
 DeltaR2EstVec<-function(x){
   # relevant df
-  testdf<-data.frame(cbind(as.numeric(df$interview_age),as.numeric(df$sex),df$FD,x))
-  colnames(testdf)<-c('Age','Sex','Motion','varofint')
+  testdf<-data.frame(cbind(as.numeric(df$interview_age),as.numeric(df$sex),df$FD,df$RemainingTRs,x))
+  colnames(testdf)<-c('Age','Sex','Motion','RemainingTRs','varofint')
   # no-age model (segreg ~ sex + motion)
-  noAgeGam<-gam(varofint~Sex+Motion,data=testdf)
+  noAgeGam<-gam(varofint~Sex+Motion+RemainingTRs,data=testdf)
   noAgeSum<-summary(noAgeGam)
   # age-included model for measuring difference
-  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=4),data=testdf)
+  AgeGam<-gam(varofint~Sex+Motion+RemainingTRs+s(Age,k=4),data=testdf)
   AgeSum<-summary(AgeGam)
   dif<-AgeSum$r.sq-noAgeSum$r.sq
   # partial spearmans to extract age relation (for direction)
   pspear=pcor(testdf,method='spearman')$estimate
-  corest<-pspear[4]
+  corest<-pspear[5]
   if(corest<0){
     dif=dif*-1
   }
@@ -31,12 +31,12 @@ DeltaR2EstVec<-function(x){
 # chisq test sig. output
 DeltaPEstVec<-function(x){
   # relevant df
-  testdf<-data.frame(cbind(as.numeric(df$interview_age),as.numeric(df$sex),df$FD,x))  
-  colnames(testdf)<-c('Age','Sex','Motion','varofint')
+  testdf<-data.frame(cbind(as.numeric(df$interview_age),as.numeric(df$sex),df$FD,df$RemainingTRs,x))  
+  colnames(testdf)<-c('Age','Sex','Motion','RemainingTRs','varofint')
   # no-age model (segreg ~ sex + motion)
-  noAgeGam<-gam(varofint~Sex+Motion,data=testdf)
+  noAgeGam<-gam(varofint~Sex+Motion+RemainingTRs,data=testdf)
   # age-included model for measuring difference
-  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=4),data=testdf)  
+  AgeGam<-gam(varofint~Sex+Motion+RemainingTRs+s(Age,k=4),data=testdf)  
   # test of dif with anova.gam
   anovaRes<-anova.gam(noAgeGam,AgeGam,test='Chisq')
   anovaP<-anovaRes$`Pr(>Chi)`
@@ -168,8 +168,8 @@ for (f in 1:Lfaces){
         # extract age p
         BuProp_ap[f]=DeltaPEstVec(df$FaceBuProp)
 	# sex effects
-	BuProp_sdr2[f]=DeltaR2EstVec_s(df$FaceBuProp)
-	BuProp_sp[f]=DeltaPEstVec_s(df$FaceBuProp)
+	#BuProp_sdr2[f]=DeltaR2EstVec_s(df$FaceBuProp)
+	#BuProp_sp[f]=DeltaPEstVec_s(df$FaceBuProp)
 }
 
 # saveout means
@@ -177,8 +177,8 @@ write.csv(BuProp,'~/results/PWs/MeanPropBU_L.csv',col.names=F,row.names=F,quote=
 
 # saveout dr2s and ps - still needs to be merged with results from other hemi for MC correction
 saveRDS(BuProp_adr2,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_adr2.rds'))
-saveRDS(BuProp_sdr2,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sdr2.rds')
+#saveRDS(BuProp_sdr2,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sdr2.rds')
 
 saveRDS(BuProp_ap,paste0('/cbica/projects/pinesParcels/results/PWs/LBUProp_p.rds'))
-saveRDS(BuProp_sp,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sp.rds')
+#saveRDS(BuProp_sp,'/cbica/projects/pinesParcels/results/PWs/LBUProp_sp.rds')
 

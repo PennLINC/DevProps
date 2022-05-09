@@ -180,66 +180,68 @@ PGGang_L=cart2pol(gazes_L(F),gels_L(F));
 OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
 
 %%%%%%%%%%%% Bottom-up
+%%%%%%%%%%%% Granular feature extraction
 
 % contingent on BU TRs existing. Note this is within the F loop despite indentation.
-if length(BU_Trs_L)>0
+%if length(BU_Trs_L)>0
 	% unfortunately, will require splitting up left and right and making EACH a contingency (4 contg, BULBUR,TDLTDR)
 	% get bottom up TRs (broadly)	
-	BUAngs_L=Thetas_L(BU_Trs_L);
+%	BUAngs_L=Thetas_L(BU_Trs_L);
 
 	% get resVec thetas
-	BU_L_CM=circ_mean(BUAngs_L);
+%	BU_L_CM=circ_mean(BUAngs_L);
 
 	% center on angular distance from gPGG
-	BU_L_CM_rel=PGGang_L-BU_L_CM;
+%	BU_L_CM_rel=PGGang_L-BU_L_CM;
 
 	% get BU resultant vector angle, convert back to cartesian in the proccess (1 as fill-in for rho, discards OpFl magn.)
-	[BUHorzC_L,BUVertC_L]=pol2cart(BU_L_CM_rel,1);
+%	[BUHorzC_L,BUVertC_L]=pol2cart(BU_L_CM_rel,1);
 
         % get BU resultant vector length
-        VL_L=circ_r(BUAngs_L);
-        OutDf_L(F,6)=num2cell(VL_L);
+%        VL_L=circ_r(BUAngs_L);
+%        OutDf_L(F,6)=num2cell(VL_L);
 
 	% if in valid face, scale x y to vector length and plop in output df
-	if (std(FaceAngDistPGG_L)~=0)
-		BUHorzC_L=BUHorzC_L*VL_L;
-		BUVertC_L=BUVertC_L*VL_L;
-		OutDf_L(F,2)=num2cell(BUHorzC_L);
-		OutDf_L(F,3)=num2cell(BUVertC_L);
-	end
-end
+%	if (std(FaceAngDistPGG_L)~=0)
+%		BUHorzC_L=BUHorzC_L*VL_L;
+%		BUVertC_L=BUVertC_L*VL_L;
+%		OutDf_L(F,2)=num2cell(BUHorzC_L);
+%		OutDf_L(F,3)=num2cell(BUVertC_L);
+%	end
+%end
 % end "if bottom down TRs instances at this face exist" contingency
 
 %%%%%%%%%% Top-down
+%%%%%%%%%% granular feature extraction
 
 % same contingency as above
-if length(TD_Trs_L)>0
+%if length(TD_Trs_L)>0
         % get topdown TRs (broadly)
-        TDAngs_L=Thetas_L(TD_Trs_L);
+%        TDAngs_L=Thetas_L(TD_Trs_L);
 
          % get resVec thetas
-        TD_L_CM=circ_mean(TDAngs_L);
+%        TD_L_CM=circ_mean(TDAngs_L);
 
         % center on angular distance from gPGG
-        TD_L_CM_rel=PGGang_L-TD_L_CM;
+%        TD_L_CM_rel=PGGang_L-TD_L_CM;
 
         % get TD resultant vector angle
-        [TDHorzC_L,TDVertC_L]=pol2cart(TD_L_CM_rel,1);
+%        [TDHorzC_L,TDVertC_L]=pol2cart(TD_L_CM_rel,1);
 
         % get TD resultant vector length
-        VL_L=circ_r(TDAngs_L);
-        OutDf_L(F,7)=num2cell(VL_L);
+%        VL_L=circ_r(TDAngs_L);
+%        OutDf_L(F,7)=num2cell(VL_L);
 
         % if in valid face, scale x y to vector length and plop in output df
-        if (std(FaceAngDistPGG_L)~=0)
-                TDHorzC_L=TDHorzC_L*VL_L;
-                TDVertC_L=TDVertC_L*VL_L;
-                OutDf_L(F,4)=num2cell(TDHorzC_L);
-                OutDf_L(F,5)=num2cell(TDVertC_L);
-        end
-end
+%        if (std(FaceAngDistPGG_L)~=0)
+%                TDHorzC_L=TDHorzC_L*VL_L;
+%                TDVertC_L=TDVertC_L*VL_L;
+%                OutDf_L(F,4)=num2cell(TDHorzC_L);
+%                OutDf_L(F,5)=num2cell(TDVertC_L);
+%        end
+%end
 % end looping over every face
-end
+%end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% the right hemisphere
@@ -280,36 +282,38 @@ PGGang_R=cart2pol(gazes_R(F),gels_R(F));
 OutDf_R(F,8)=num2cell(PGGang_R-R_CM);
 
 %%%%%%% Bottom up
-if length(BU_Trs_R)>0
-	BUAngs_R=Thetas_R(BU_Trs_R);
-	BU_R_CM=circ_mean(BUAngs_R);
-	BU_R_CM_rel=PGGang_R-BU_R_CM;	
-	[BUHorzC_R,BUVertC_R]=pol2cart(BU_R_CM_rel,1);
-	VL_R=circ_r(BUAngs_R);
-	OutDf_R(F,6)=num2cell(VL_R);
-	if (std(FaceAngDistPGG_R)~=0)
-                BUHorzC_R=BUHorzC_R*VL_R;
-                BUVertC_R=BUVertC_R*VL_R;
-                OutDf_R(F,2)=num2cell(BUHorzC_R);
-                OutDf_R(F,3)=num2cell(BUVertC_R);
-        end
-end
+%%%%%%% granular feature extraction
+%if length(BU_Trs_R)>0
+%	BUAngs_R=Thetas_R(BU_Trs_R);
+%	BU_R_CM=circ_mean(BUAngs_R);
+%	BU_R_CM_rel=PGGang_R-BU_R_CM;	
+%	[BUHorzC_R,BUVertC_R]=pol2cart(BU_R_CM_rel,1);
+%	VL_R=circ_r(BUAngs_R);
+%	OutDf_R(F,6)=num2cell(VL_R);
+%	if (std(FaceAngDistPGG_R)~=0)
+%                BUHorzC_R=BUHorzC_R*VL_R;
+%                BUVertC_R=BUVertC_R*VL_R;
+%                OutDf_R(F,2)=num2cell(BUHorzC_R);
+%                OutDf_R(F,3)=num2cell(BUVertC_R);
+%        end
+%end
 
 %%%%%% Top-down
-if length(TD_Trs_R)>0
-        TDAngs_R=Thetas_R(TD_Trs_R);
-	TD_R_CM=circ_mean(TDAngs_R);
-	TD_R_CM_rel=PGGang_R-TD_R_CM;
-        [TDHorzC_R,TDVertC_R]=pol2cart(TD_R_CM_rel,1);
-        VL_R=circ_r(TDAngs_R);
-        OutDf_R(F,7)=num2cell(VL_R);	
-	if (std(FaceAngDistPGG_R)~=0)
-                TDHorzC_R=TDHorzC_R*VL_R;
-                TDVertC_R=TDVertC_R*VL_R;
-                OutDf_R(F,4)=num2cell(TDHorzC_R);
-                OutDf_R(F,5)=num2cell(TDVertC_R);
-        end	
-end
+%%%%%% Granular feature extraction
+%if length(TD_Trs_R)>0
+%        TDAngs_R=Thetas_R(TD_Trs_R);
+%	TD_R_CM=circ_mean(TDAngs_R);
+%	TD_R_CM_rel=PGGang_R-TD_R_CM;
+%        [TDHorzC_R,TDVertC_R]=pol2cart(TD_R_CM_rel,1);
+%        VL_R=circ_r(TDAngs_R);
+%        OutDf_R(F,7)=num2cell(VL_R);	
+%	if (std(FaceAngDistPGG_R)~=0)
+%                TDHorzC_R=TDHorzC_R*VL_R;
+%                TDVertC_R=TDVertC_R*VL_R;
+%                OutDf_R(F,4)=num2cell(TDHorzC_R);
+%                OutDf_R(F,5)=num2cell(TDVertC_R);
+%        end	
+%end
 
 % end looping over every face
 end
