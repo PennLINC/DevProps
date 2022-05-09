@@ -48,7 +48,7 @@ items to validate in 3.2:
 
 For replicating the subject data depicted in the schematic figure, we can use [Viz_VecFields.m](https://github.com/PennLINC/PWs/blob/main/scripts/Viz_VecFields.m).
 
-# 4 Group-level aggregation and map visualization
+# 4.2 Group-level aggregation and map visualization
 [aggregate_OpFlDistrModes.m](https://github.com/PennLINC/PWs/blob/main/scripts/aggregate_OpFlDistrModes.m) segments subject-level angular distributions into 18 angular distance bins. This reduction is needed to reduce subject-level angular distance data to a granularity feasible for aggregation into a single group-level distribution (across faces, TRs, and subjects). This script also captures the cross-subject mode of these out directionality bins for each cortical face, allowing for projection of these data onto the cortex. Note that for the modal plot, prominence of the top mode (height relative to non-neighboring modes) is also fed into [Vis_FaceVec_modes.m](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec_modes.m). 
 
 Finally, the mean proportion of propagations that are top-down vs. bottom-up at each face are fed into [Vis_FaceVec.m)](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec.m)
