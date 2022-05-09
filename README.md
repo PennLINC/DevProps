@@ -7,7 +7,7 @@
 ###### note 2: OpFl_Sph and PGG_AngDistCalc are run as compiled progams (more specifically, from [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_OpFl_Sph_CompVer.sh) and [here](https://github.com/PennLINC/PWs/blob/main/scripts/run_PGG_AngDistCalc4_CompVer.sh), respectively.) They are compiled directly from the linked files, but note the scripts used for large SGE submissions are derived from those linked. Expect non-compiled versions to run 3-5 times slower.
  
 # 2.1 Reference map feature extraction
-The PGG needs to be derived from a downsampled PG, and 1000 null PGGs need to be derived from spun PGs. The PG is first downsampled to fsaverage4 ([downsample_gPG4.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_gPG4.sh)). Next, the downsampled PG is converted from a gifti to .mat ([PGfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGfuncgii_2_mat.m)), as subsequent compiled matlab code cannot utilize the gifti() command properly without xml error. The equivalent script is run for the curvature map in [Cfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/Cfuncgii_2_mat.m)
+The PGG needs to be derived from a downsampled PG, and 1000 null PGGs need to be derived from spun PGs. The PG is first downsampled to fsaverage4 ([downsample_gPG4.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_gPG4.sh)). Next, the downsampled PG is converted from a gifti to .mat ([PGfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGfuncgii_2_mat.m)), as subsequent compiled matlab code cannot utilize the gifti() command properly without xml error.
 
 # 2.2 Reference map spinning + feature extraction, prep for spatial null
 To create null maps, the [spin test](https://github.com/spin-test/spin-test) is adapted: maps are spun and then gradients are calculated on spun maps to obtain spun vector fields. See [SpinPG.m](https://github.com/PennLINC/PWs/blob/main/scripts/SpinPG.m) for implementation of spins, and [AggSpins_TakeGrad.m](https://github.com/PennLINC/PWs/blob/main/scripts/AggSpins_TakeGrad.m) for conversion of spun PGs to spun PGGs.
@@ -22,8 +22,6 @@ This is a computationally intensive script. Consequently, the code is compiled. 
 Subsequently, individual subjects can be qsub'ed with the resulting run_PGG_AngDistCalc_snull_CompVer.sh command. Specifically, you will want to open a text file, print run_PGG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR {subject ID} to a .sh file, and then qsub that .sh file with at least 13GB of virtual memory. See this [script](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW2.m) fo ran example.
 
 After the qsub has completed, results can be easily plotted in R. Note that the subject ID is not saved in [this script](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.Rmd), you have to enter it manually (to avoid uploading subj IDs). For individual-level plotting you can start at line 133.
-
-A parallel set of scripts exists for the curvature gradient. [This](https://github.com/PennLINC/PWs/blob/main/scripts/CG_AngDistCalc_snull_CompVer.m) is the key one, analagous to PGG_ANgDistCalc_snull_CompVer.m.
 
 items to validate in 3.1:
 #### No L/R mislabels
@@ -46,11 +44,11 @@ items to validate in 3.2:
 #### shuffle behaving properly, no L/R flips
 
 # 4.1 Extract Directional info from OpFlow output
-[Extract_BUTD_ResultantVecs.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs.m) will calculate the TRs for which signal is hierarchically ascending vs. descending, and saveout subj metrics. Task data can be processed the same way with an equivalent script, [Extract_BUTD_ResultantVecs_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_c.m). *Curvature* data can also be processed the same way, also with an equivalent script [Extract_BUTD_ResultantVecs_curv.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_curv.m). 
+[Extract_BUTD_ResultantVecs.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs.m) will calculate the TRs for which signal is hierarchically ascending vs. descending, and saveout subj metrics. Task data can be processed the same way with an equivalent script, [Extract_BUTD_ResultantVecs_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_c.m). 
 
 For replicating the subject data depicted in the schematic figure, we can use [Viz_VecFields.m](https://github.com/PennLINC/PWs/blob/main/scripts/Viz_VecFields.m).
 
-# 4 Group-level directionality
+# 4 Group-level aggregation and map visualization
 [aggregate_OpFlDistrModes.m](https://github.com/PennLINC/PWs/blob/main/scripts/aggregate_OpFlDistrModes.m) segments subject-level angular distributions into 18 angular distance bins. This reduction is needed to reduce subject-level angular distance data to a granularity feasible for aggregation into a single group-level distribution (across faces, TRs, and subjects). This script also captures the cross-subject mode of these out directionality bins for each cortical face, allowing for projection of these data onto the cortex. Note that for the modal plot, prominence of the top mode (height relative to non-neighboring modes) is also fed into [Vis_FaceVec_modes.m](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec_modes.m). 
 
 Finally, the mean proportion of propagations that are top-down vs. bottom-up at each face are fed into [Vis_FaceVec.m)](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec.m)
