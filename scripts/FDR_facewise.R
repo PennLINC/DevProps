@@ -29,8 +29,8 @@ Propdr2[Propp_f>0.05]=0
 Propdr2[is.na(Propp_f)]=0
 
 # uncombine: seperate vecs for sep. hemis
-Prop_L=Propdr2[1:length(LBU_L_adr2)]
-Prop_R=Propdr2[(length(LBU_L_adr2)+1):length(BUdr2)]
+Prop_L=Propdr2[1:length(LBuProp_adr2)]
+Prop_R=Propdr2[(length(LBuProp_adr2)+1):length(Propp)]
 
 # print out each for matlab friendly reading
 write.table(Prop_L,'~/results/PWs/FDRed_Prop_L.csv',col.names=F,row.names=F,quote=F)

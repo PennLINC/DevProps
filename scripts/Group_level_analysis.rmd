@@ -228,8 +228,8 @@ ggplot(plotdf)+geom_stepribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPe
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist*100))
 
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207PG Distance: Difference")+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
-# saved out at 650x650
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207PG Distance: Difference")+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
+# saved out at 825x825
 
 ### aaaaand permuted task vs rest dif
 
@@ -372,6 +372,7 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 
 ```{r}
 library(visreg)
+library(scales)
 # convert to prop TD
 BuMerge$TDProp=1-BuMerge$BuProp
 
@@ -390,7 +391,7 @@ BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
 
 ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4)+ggtitle('Whole-Cortex') + geom_point(size=3,alpha=.5) + xlab("Age (Years)") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), plot.title=element_text(size=30), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
 
-# saved at 750x750
+# saved at 800x800
 
 # aaaand combat chunk on it
 library(devtools)
@@ -415,6 +416,7 @@ visreg(gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge))
 # get delta adjusted r^2
 adjR2=summary(gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge))$r.sq
 adjR2_noage=summary(gam(harmTDProp~harmFD+sex,data=BuMerge))$r.sq
+adjR2-adjR2_noage
 # get anova-p
 ageMod=gam(harmTDProp~s(interview_age,k=4)+harmFD+sex,data=BuMerge)
 noAgeMod=gam(harmTDProp~harmFD+sex,data=BuMerge)
@@ -484,22 +486,8 @@ anovaRes$`Pr(>Chi)`
 DMN_lm<-lm(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge)
 BuMerge$DMN_lm_resid<-DMN_lm$residuals+mean(BuMerge$DMNseg)
 
-ggplot(BuMerge,aes(x=(interview_age)/12,y=DMN_lm_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4) + geom_point(size=3,alpha=.5) + xlab("Age") +ylab("DMN External \n Connectivity") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4))
+ggplot(BuMerge,aes(x=(interview_age)/12,y=DMN_lm_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4,size=3) + geom_point(size=5,alpha=.5) + xlab("Age") +ylab("DMN External \n Connectivity") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4))
 
-
-# DMN model - individualized
-summary(gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))
-devMod_DM<-gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge)
-ndevMod_DM<-gam(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge)
-
-# get delta adjusted r^2
-adjR2=summary(gam(DMNseg~s(interview_age,k=4)+FD+sex+RemainingTRs+TDProp,data=BuMerge))$r.sq
-adjR2_noage=summary(gam(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge))$r.sq
-adjR2-adjR2_noage
-
-# get p-value
-anovaRes<-anova.gam(devMod_DM,ndevMod_DM,test='Chisq')
-anovaRes$`Pr(>Chi)`
 ```
 
 ```{r}

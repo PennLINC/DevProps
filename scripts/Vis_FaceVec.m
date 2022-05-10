@@ -71,16 +71,16 @@ data(g_noMW_combined_L)=FaceVecL;
 %%%%%%% fixed colorscale varities
 
 %%% circular
-mincol=.42;
-maxcol=.58;
+mincol=-.15;
+maxcol=.15;
 
 
 %%% for red/blue 0-centered
 %mincol=0;
 %maxcol=10;
-%custommap=colormap(b2r(mincol,maxcol));
+custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
-%custommap(126,:)=[.5 .5 .5];
+custommap(126,:)=[.5 .5 .5];
 
 % blue-orange color scheme
 %BO_cm=inferno(9);
@@ -119,25 +119,25 @@ maxcol=.58;
 %custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 
 % for 90 degree max
-roybigbl_cm=inferno(3);
+%roybigbl_cm=inferno(3);
 % blue
-roybigbl_cm(1,:)=[0, 0, 255];
+%roybigbl_cm(1,:)=[0, 0, 255];
 % cyan
-roybigbl_cm(2,:)=[0, 255, 255];
+%roybigbl_cm(2,:)=[0, 255, 255];
 % green
-roybigbl_cm(3,:)=[116, 192, 68];
+%roybigbl_cm(3,:)=[116, 192, 68];
 % yellow
 %roybigbl_cm(4,:)=[246, 235, 20];
 % scale to 1
-roybigbl_cm=roybigbl_cm.*(1/255);
+%roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
 %interpsteps=[0 .33333 .66666 1];
-interpsteps=[0 .5 1];
-roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+%interpsteps=[0 .5 1];
+%roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 % make circular with flipud
 %custommap=vertcat(flipud(roybigbl_cm),roybigbl_cm);
 %custommap=roybigbl_cm;
-custommap=colormap(parula);
+%custommap=colormap(parula);
 % mw to black
 %custommap(1,:)=[0 0 0];
 
@@ -231,8 +231,9 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-c=colorbar('XTickLabel',{'.45', '.50', '.55'},'XTick', .45:.05:.55)
-c.Location='southoutside'
-colormap(custommap)
+%c=colorbar;
+%c=colorbar('XTickLabel',{'.45', '.50', '.55'},'XTick', .45:.05:.55)
+%c.Location='southoutside'
+%colormap(custommap)
 
 print(Fn,'-dpng')

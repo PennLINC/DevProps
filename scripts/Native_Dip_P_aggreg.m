@@ -181,7 +181,7 @@ for s = 1:height(Subjs)
 
 	% make the last one "true" observed from masked data
 	Tr_AngDists=horzcat(True_gangDist_L(:,g_noMW_combined_L),True_gangDist_R(:,g_noMW_combined_R));
-	[dip, p_value, xlow,xup]=HartigansDipSigniftest(Tr_AngDists,1000)
+	[dip, p_value, xlow,xup]=HartigansDipSigniftest(Tr_AngDists,10000)
 	subj_dip_ps(s)=p_value;
 end
 writetable(table(subj_dip_ps),'~/results/PWs/native_dip_ps.csv')
