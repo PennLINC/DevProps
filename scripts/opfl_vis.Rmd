@@ -8,6 +8,7 @@ library(reshape2)
 library(ggplot2)
 library(diptest)
 library(pracma)
+library(vroom)
 ```
 
 ```{r}
@@ -26,21 +27,52 @@ p+geom_histogram(color='black',aes(fill= ..x..),binwidth = pi/10)+xlab("Distance
 ```
 
 ```{r}
+#### SEE IF YOU CAN GET AWAY WITH RUNNING THIS LOCALLY
+# try looping over every subject and getting every angular distance from every face
+# load in subj list
+subjList=read.delim('Y:/PWs/hcpd_subj_list.txt')
+# convert to used naming convention
+# initialize vector of all angular distances
+valuesVec=zeros(1,19)
+# subjvec to run in parallel for even more confidence in merging
+Subjvec=rep(0,dim(subjList)[1])
+# load angDist iteratively
+for (s in 1:dim(subjList)[1]){
+      print(s)
+      subj=subjList[s,1]
+    ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
+    # if output exists
+    if (file.exists(paste0(ResFp,subj,'_gAngDist_Masked4_L.csv'))) {
+      AngDists_L<-vroom(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
+      AngDistsvec=melt(AngDists_L)$value
+      histoVers<-histc(AngDistsvec,edges=seq(0,180,10))
+      valuesVec=valuesVec+histoVers$cnt
+      # and right hemi
+      AngDists_R<-vroom(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))
+      AngDistsvec=melt(AngDists_R)$value
+      histoVers<-histc(AngDistsvec,edges=seq(0,180,10))
+      valuesVec=valuesVec+histoVers$cnt
+    }
+}
+
+# convert to dataframe
+plotdataf<-data.frame(valuesVec[1:18],seq(1,18))
+
+#plot
+p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')
+
+```
+
+
+```{r}
 ## enter subj name in manually
 testL4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
 testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))
 
-```
-
-```{r}
-# spatial null examples
-#test=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_CSpunDips4.csv'))
-```
-
-```{r}
 meltedL<-melt(testL4)
 meltedR<-melt(testR4)
-melted=data.frame(c(meltedL,meltedR)$value)
+melted=data.frame(valuesVec)
 colnames(melted)<-"value"
 
 p<-ggplot(melted,aes(x=value))
@@ -55,7 +87,17 @@ plotdataf$histoVers.cnt.1.18.<-plotdataf$histoVers.cnt.1.18./sum(plotdataf$histo
 p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')
 
-# saved out at 750x750
+# saved out at 800x800 for axes
+
+# version for small single subjs
+p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_blank(),legend.position='none')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_blank(),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_blank(), panel.grid.major = element_line(color='gray80'))+ylim(0,6.8)
+
+# saved at 400x400
+```
+
+```{r}
+
 ```
 
 ```{r}
