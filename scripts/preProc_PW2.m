@@ -42,12 +42,11 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 %system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD4.sh']);
 
 %%% RUN 2.5
-Extract_BUTD_ResultantVecs_c(subj)
+%Extract_BUTD_ResultantVecs_c(subj)
 %PGG_AngDistCalc4(subj)
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
 %system(['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_CompVer.sh $MATLAB_DIR' subj]);
 
 % RUN 3
 %%% mask medial wall and extract R-friendly face data
-%mask_mw_faces(subj)
-
+mask_mw_faces_4(subj)

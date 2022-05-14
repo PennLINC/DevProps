@@ -27,7 +27,10 @@ p+geom_histogram(color='black',aes(fill= ..x..),binwidth = pi/10)+xlab("Distance
 ```
 
 ```{r}
-#### SEE IF YOU CAN GET AWAY WITH RUNNING THIS LOCALLY
+#### Cluster version for indy yeo networks: this is local version to be run ONCE and saved as values vec (because it takes long to run)
+
+writetable(table(membL(g_noMW_combined_L,:)),'~/data/yeo7FaceBooleans_L.csv');
+
 # try looping over every subject and getting every angular distance from every face
 # load in subj list
 subjList=read.delim('Y:/PWs/hcpd_subj_list.txt')
@@ -55,12 +58,29 @@ for (s in 1:dim(subjList)[1]){
     }
 }
 
+# write out csv - check 19th bin to fold into 18th
+read.csv(valuesVec,'~/valuesVec.csv')
+
+# alternatively, load in after written once
+#valuesVec=read.csv('~/valuesVec.csv')
+
 # convert to dataframe
 plotdataf<-data.frame(valuesVec[1:18],seq(1,18))
+```
+
+```{r}
 
 #plot
-p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')
+p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=valuesVec.1.18.))
+
+#legendless
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('BOLD-\u2207PG Angular Distances '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+scale_y_continuous(limits=c(0,310000000))+ylab('count')
+
+
+# 800x800
+
+# sep one for legend
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('BOLD-\u2207PG Angular Distances '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('')+scale_y_continuous(labels=scales::comma)
 
 ```
 
@@ -72,7 +92,7 @@ testR4=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4
 
 meltedL<-melt(testL4)
 meltedR<-melt(testR4)
-melted=data.frame(valuesVec)
+melted=data.frame(c(meltedL$value,meltedR$value))
 colnames(melted)<-"value"
 
 p<-ggplot(melted,aes(x=value))
@@ -91,7 +111,7 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 
 # version for small single subjs
 p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_blank(),legend.position='none')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_blank(),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_blank(), panel.grid.major = element_line(color='gray80'))+ylim(0,6.8)
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_blank(),legend.position='none')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_blank(),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_blank(), panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+scale_y_continuous(breaks=c(5,6),limits=c(4.7,6.8),oob = scales::rescale_none)
 
 # saved at 400x400
 ```
@@ -301,68 +321,4 @@ p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow",
 
 ```
 
-
-```{r}
-# for vis saveout
-library(infotheo)
-
-getmode <- function(v) {
-   uniqv <- unique(v)
-   uniqv[which.max(tabulate(match(v, uniqv)))]
-}
-
-# Red is up at 0, OJ at 36 degress, Yel at 72, G at 108, teal at 144, blue is down at 180
-colorpal=colorRampPalette(c('#FF0000','#FFA500','#FFFF00','#00FF00','#00FFFF','#0000FF'))
-sc<-scale_color_gradientn(colors=colorpal(180),limits=c(0,180))
-
-testdf<-data.frame(abs(testL[,1]),abs(testL[,2]))
-
-plot(testdf$abs.testL...2..,testdf$abs.testL...1..)
-cor.test(testdf$abs.testL...2..,testdf$abs.testL...1..)
-# interesting. directionality anticorrelated over time (vertices take turns traveling up and down hierarchy)
-# consider "grayplots" with color coding instead: x is time, y is vertices org. by PG, orientation is color-coded as above.
-
-# test if sc is working
-ggplot(testdf,aes(abs.testL...2..,abs.testL...1..,color=abs.testL...2..))+geom_point(size=4,alpha=.7)+sc+theme_classic()
-
-# assign hexadecimal color value to each vertex
-hexaLeft=rep(0,length(testL))
-modeLeft=rep(0,length(testL))
-
-# colors for every 24thile
-cols24<-colorpal(24)
-
-# mode of abs ang dist for each vert
-for (i in 1:length(testL)){
-  # get absolute angular distribution (dist from direct bottom-up prop.)
-  absAngDist=abs(testL[,i])
-  # discr. to 24 bins to eval. which bin is best represented
-  discretized_AAD=discretize(absAngDist,disc="equalwidth",nbins=24)
-  # find tallest bin
-  AAD_mode=getmode(discretized_AAD$X)
-  # assign corresponding color
-  hexaLeft[i]=cols24[AAD_mode]
-  modeLeft[i]=AAD_mode
-}
-
-# save to cluster
-write.csv(hexaLeft,paste0('Y:/results/PWs/Proced/',subj,'/test_left.csv'))
-write.csv(modeLeft,paste0('Y:/results/PWs/Proced/',subj,'/test_leftmode.csv'))
-write.csv(binnedFaces_proc$scores[,2],paste0('Y:/results/PWs/Proced/',subj,'/test_PC1.csv'))
-write.csv(binnedFaces_proc$scores[,3],paste0('Y:/results/PWs/Proced/',subj,'/test_PC2.csv'))
-
-```
-
-
-```{r}
-library(ggplot2)
-library(gganimate)
-plotdf<-data.frame(t(testL))
-longplotdf<-melt(plotdf)
-variableSub<-rep(seq(1,487),each=18544)
-longplotdf$variable<-variableSub
-x <- ggplot(longplotdf,aes(value))+geom_histogram()+xlim(c(0,180))+theme_minimal()
-y<-x + transition_states(variable,transition_length=1,state_length=1)+labs(title = "TR # {closest_state}")
-animate(y,nframes=2000)
-anim_save('AngDistOvertime.gif')
 ```

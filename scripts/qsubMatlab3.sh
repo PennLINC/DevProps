@@ -1,1 +1,1 @@
-matlab -nodisplay -r "preProc_PW3('${1}')"
+matlab -nodisplay -r "mask_allsubs"
