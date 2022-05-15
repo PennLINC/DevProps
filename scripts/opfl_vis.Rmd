@@ -91,10 +91,10 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 
 ```{r}
 ## enter subj names in manually
-subj1='sub-0145733'
-subj2='sub-0899582'
-subj3='sub-1881164'
-subj4='sub-1994884'
+subj1=
+subj2=
+subj3=
+subj4=
 
 L1=read.csv(paste0('Y:/results/PWs/Proced/',subj1,'/',subj1,'_gAngDist_Masked4_L.csv'))
 R1=read.csv(paste0('Y:/results/PWs/Proced/',subj1,'/',subj1,'_gAngDist_Masked4_R.csv'))
