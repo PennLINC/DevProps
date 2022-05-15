@@ -7,10 +7,10 @@ y_R=read.csv('~/data/yeo7FaceBooleans_R.csv')
 
 # try looping over every subject and getting every angular distance from every face
 # load in subj list
-subjList=read.table('~/PWs/rs_subs.csv')
+subjList=read.delim('~/PWs/rs_subs.csv',sep=' ')
 
 # for each yeo7 networks
-for (y in 1:7){
+for (y in 5:7){
 	# initialize vector of all angular distances
 	valuesVec=rep(0,19)
 	# load angDist iteratively
