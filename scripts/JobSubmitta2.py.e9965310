@@ -1,6 +1,0 @@
-import: unable to open X server `' @ error/import.c/ImportImageCommand/344.
-import: unable to open X server `' @ error/import.c/ImportImageCommand/344.
-import: unable to open X server `' @ error/import.c/ImportImageCommand/344.
-import: unable to open X server `' @ error/import.c/ImportImageCommand/344.
-/var/tmp/gridengine/8.1.9-1/default/spool/2118ffn022/job_scripts/9965310: line 6: syntax error near unexpected token `('
-/var/tmp/gridengine/8.1.9-1/default/spool/2118ffn022/job_scripts/9965310: line 6: `my_file = open("/cbica/projects/pinesParcels/PWs/G600TRs.txt", "r")'
