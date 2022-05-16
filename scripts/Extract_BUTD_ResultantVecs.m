@@ -241,7 +241,7 @@ OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
 %        end
 %end
 % end looping over every face
-%end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% the right hemisphere

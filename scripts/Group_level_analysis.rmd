@@ -228,8 +228,8 @@ ggplot(plotdf)+geom_stepribbon(aes(x=seq.1.18.*10,ymin=botPercVec*100,ymax=topPe
 
 p<-ggplot(plotdataf,aes(x=seq.1..18.,y=o_disthist...y_disthist*100))
 
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207PG Distance: Difference")+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
-# saved out at 825x825
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(5,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207PG Distance: Difference")+ylab('Percentage of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('Percentage of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
+# saved out at 850x825
 
 ### aaaaand permuted task vs rest dif
 
