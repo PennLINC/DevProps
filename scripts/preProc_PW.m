@@ -62,7 +62,7 @@ subj
 cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_tnull_comb_CompVer.sh $MATLAB_DIR ' subj];
 fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
 fprintf(fid,cmd);
-system(['qsub -l h_vmem=100G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
+system(['qsub -l h_vmem=150G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
 
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)

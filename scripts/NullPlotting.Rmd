@@ -45,11 +45,11 @@ for (s in 1:dim(subjList)[1]){
     subj=subjList[s,1]
     ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
     # if output exists
-    if (file.exists(paste0(ResFp,subj,'_ShufDips4.csv'))) {
-      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_ShufDips4.csv'),header=F)
-      ObsDip<-as.numeric(SpunDips[2,101])
+    if (file.exists(paste0(ResFp,subj,'_SpunDips4.csv'))) {
+      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
+      ObsDip<-as.numeric(SpunDips[2,1001])
       RealDips[s]<-ObsDip
-      SpunDips<-as.numeric(SpunDips[2,1:100])
+      SpunDips<-as.numeric(SpunDips[2,1:1000])
       SpunSD=sd(SpunDips)
       SpunMean=mean(SpunDips)
       #print(ObsDip)
@@ -78,13 +78,13 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 
 ```{r}
 # for spatial
-ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=23)+xlim(0,25)+xlab('Standard Deviations from Nulls')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,25)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 # for temporal
-ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=23)+xlim(0,100)+xlab('Standard Deviations from Nulls')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 
-# saved at 500x250
+# saved at 510x250
 ```
 
 ```{r}
