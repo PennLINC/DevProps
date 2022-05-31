@@ -134,7 +134,7 @@ write.table(rs_cmatch_subjs,'Y:/PWs/rs_cmatch_subs.csv')
 # _C: will need FP alteration in .m, but is from same subjects
 ```
 
-```{r}
+```{r, fig.width=8,fig.height=9}
 # read in discretized cross subj histograms (linear)
 o_disthist<-t(read.csv('Y:/results/PWs/old_subs_AngDistHist.csv'))
 y_disthist<-t(read.csv('Y:/results/PWs/young_subs_AngDistHist.csv'))
@@ -185,7 +185,7 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 ```
 
 
-```{r}
+```{r, fig.width=8,fig.height=9}
 # checkup on how BuProp from hists (and rs_subs.csv) maps onto bimodality
 BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp.csv'))
 Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
@@ -198,7 +198,7 @@ BuDs<-ggplot(BuMerge,aes(x=Ds,y=1-BuProp))+geom_point(size=3,alpha=.5)+theme_cla
 BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent_format(accuracy = 1))+scale_x_continuous(breaks=c(.002,.006,.01))
 ```
 
-```{r}
+```{r, fig.width=8,fig.height=9}
 # convert to prop TD
 BuMerge$TDProp=1-BuMerge$BuProp
 
