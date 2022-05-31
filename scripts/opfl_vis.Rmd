@@ -1,9 +1,10 @@
 ---
 title: "opfl_analyses"
-output: html_document
+output: github_document
 ---
 
 ```{r}
+#### This one cannot be knit because it requires manual entry of subject IDs (remaining TRs > 1860 = top 4 participants by data volume)
 library(reshape2)
 library(ggplot2)
 library(diptest)
@@ -13,93 +14,61 @@ library(ggridges)
 ```
 
 ```{r}
-
-# read in reflected mean directions per face
-refl_L=read.csv('Y:/data/MeanMeanReflect90L.csv')
-refl_R=read.csv('Y:/data/MeanMeanReflect90R.csv')
-
-#combine
-combined=data.frame(c(melt(refl_L)$value,melt(refl_R)$value))
-colnames(combined)<-'value'
-
-p<-ggplot(combined,aes(x=value))
-p+geom_histogram(color='black',aes(fill= ..x..),binwidth = pi/10)+xlab("Distance (radians)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,pi)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow"))+ggtitle("Angular Distance (radians)")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))
-
-```
-
-```{r}
 #### Cluster version for indy yeo networks: this is local version to be run ONCE and saved as values vec (because it takes long to run)
 
 # try looping over every subject and getting every angular distance from every face
 # load in subj list
 subjList=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
-# convert to used naming convention
-# initialize vector of all angular distances
-valuesVec=zeros(1,19)
-# subjvec to run in parallel for even more confidence in merging
-Subjvec=rep(0,dim(subjList)[1])
-# load angDist iteratively
-for (s in 1:dim(subjList)[1]){
-      print(s)
-      subj=subjList[s,1]
-    ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
-    # if output exists
-    if (file.exists(paste0(ResFp,subj,'_gAngDist_Masked4_L.csv'))) {
-      AngDists_L<-vroom(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
-      print(dim(AngDists_L))
-      AngDistsvec=melt(AngDists_L)$value
-      histoVers<-histc(AngDistsvec,edges=seq(0,180,10))
-      valuesVec=valuesVec+histoVers$cnt
-      # and right hemi
-      AngDists_R<-vroom(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))
-      AngDistsvec=melt(AngDists_R)$value
-      histoVers<-histc(AngDistsvec,edges=seq(0,180,10))
-      valuesVec=valuesVec+histoVers$cnt
-    }
-}
-
-# correction of 19th bin
-valuesVec[18]=valuesVec[18]+valuesVec[19]
-valuesVec=valuesVec[1:18]
-
-# write out csv - check 19th bin to fold into 18th
-write.csv(valuesVec,'~/valuesVec.csv')
+## convert to used naming convention
+## initialize vector of all angular distances
+#valuesVec=zeros(1,19)
+## subjvec to run in parallel for even more confidence in merging
+#Subjvec=rep(0,dim(subjList)[1])
+## load angDist iteratively
+#for (s in 1:dim(subjList)[1]){
+#      print(s)
+#      subj=subjList[s,1]
+#    ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
+#    # if output exists
+#    if (file.exists(paste0(ResFp,subj,'_gAngDist_Masked4_L.csv'))) {
+#      AngDists_L<-vroom(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_L.csv'))
+#      print(dim(AngDists_L))
+#      AngDistsvec=melt(AngDists_L)$value
+#      histoVers<-histc(AngDistsvec,edges=seq(0,180,10))
+#      valuesVec=valuesVec+histoVers$cnt
+#      # and right hemi
+#      AngDists_R<-vroom(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_gAngDist_Masked4_R.csv'))
+#      AngDistsvec=melt(AngDists_R)$value
+#      histoVers<-histc(AngDistsvec,edges=seq(0,180,10))
+#      valuesVec=valuesVec+histoVers$cnt
+#    }
+#}
+#
+## correction of 19th bin
+#valuesVec[18]=valuesVec[18]+valuesVec[19]
+#valuesVec=valuesVec[1:18]
+#
+## write out csv - check 19th bin to fold into 18th
+#write.csv(valuesVec,'~/valuesVec.csv')
 
 # alternatively, load in after written once
 valuesVec=read.csv('~/valuesVec.csv')
 
 # convert to dataframe
-plotdataf<-data.frame(valuesVec[1:18],seq(1,18))
+plotdataf<-data.frame(valuesVec[1:18,2],seq(1,18))
 ```
 
-```{r}
-# load in y7 densities
-y1=read.csv('Y:/data/y_1_allFacesAllSubjs.csv')
-y2=read.csv('Y:/data/y_2_allFacesAllSubjs.csv')
-y3=read.csv('Y:/data/y_3_allFacesAllSubjs.csv')
-y5=read.csv('Y:/data/y_5_allFacesAllSubjs.csv')
-y6=read.csv('Y:/data/y_6_allFacesAllSubjs.csv')
-y7=read.csv('Y:/data/y_7_allFacesAllSubjs.csv')
-```
 
 ```{r}
-plotdataf_y7<-data.frame(valuesVec[1:18],seq(1,18),y1$x[1:18],y2$x[1:18],y3$x[1:18],y5$x[1:18],y6$x[1:18],y7$x[1:18])
+plotdataf_y7<-data.frame(valuesVec[1:18,2],seq(1,18))
 
 #plot
-p<-ggplot(plotdataf_y7,aes(x=seq.1..18.*10,y=(valuesVec.1.18./sum(valuesVec.1.18.))*100))
+p<-ggplot(plotdataf_y7,aes(x=seq.1..18.*10,y=(valuesVec.1.18..2./sum(valuesVec.1.18..2.))*100))
 
 #legendless
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(5,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('BOLD-\u2207PG Angular Distances '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+ylab('Percentage of Propagations')+scale_y_continuous(breaks=c(5,6),limits=c(4.95,6.75),oob = scales::rescale_none)
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(5,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('BOLD-\u2207PG Angular Distances '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+ylab('Percentage of Propagations')+scale_y_continuous(breaks=c(0,1,2,3,4,5,6),limits=c(0,6.75),oob = scales::rescale_none)
 
-#geom_line(aes(x=seq.1..18.*10,y=(y1.x.1.18./sum(valuesVec.1.18.))*100),color='#834287',size=2)+
-#geom_line(aes(x=seq.1..18.*10,y=(y2.x.1.18./sum(valuesVec.1.18.))*100),color='#5b89c1',size=2)+
-#geom_line(aes(x=seq.1..18.*10,y=(y3.x.1.18./sum(valuesVec.1.18.))*100),color='#409845',size=2)+
-#geom_line(aes(x=seq.1..18.*10,y=(y5.x.1.18./sum(valuesVec.1.18.))*100),color='#e5e5bd',size=2)+
-#geom_line(aes(x=seq.1..18.*10,y=(y6.x.1.18./sum(valuesVec.1.18.))*100),color='#efb942',size=2)+
-#geom_line(aes(x=seq.1..18.*10,y=(y7.x.1.18./sum(valuesVec.1.18.))*100),color='#d34f62',size=2)
-
-
-# 800x800
+# 800x867: makes square instead of rectangle for plot grid
 
 # sep one for legend
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('BOLD-\u2207PG Angular Distances '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('')+scale_y_continuous(labels=scales::comma)
@@ -109,10 +78,6 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 
 ```{r}
 ## enter subj names in manually
-subj1='sub-0110411'
-subj2='sub-1496767'
-subj3='sub-1796577'
-subj4='sub-2990073'
 
 L1=read.csv(paste0('Y:/results/PWs/Proced/',subj1,'/',subj1,'_gAngDist_Masked4_L.csv'))
 R1=read.csv(paste0('Y:/results/PWs/Proced/',subj1,'/',subj1,'_gAngDist_Masked4_R.csv'))
@@ -147,7 +112,7 @@ colnames(melted4)<-"value"
 histoVers4<-histc(melted4$value,edges=seq(0,180,10))
 
 # convert first 18 into percentage of total propagations from raw count
-plotdataf<-data.frame(histoVers1$cnt[1:18]/sum(histoVers1$cnt[1:18]),histoVers2$cnt[1:18]/sum(histoVers2$cnt[1:18]),histoVers3$cnt[1:18]/sum(histoVers3$cnt[1:18]),histoVers4$cnt[1:18]/sum(histoVers4$cnt[1:18]),seq(1,18),valuesVec[1:18])
+plotdataf<-data.frame(histoVers1$cnt[1:18]/sum(histoVers1$cnt[1:18]),histoVers2$cnt[1:18]/sum(histoVers2$cnt[1:18]),histoVers3$cnt[1:18]/sum(histoVers3$cnt[1:18]),histoVers4$cnt[1:18]/sum(histoVers4$cnt[1:18]),seq(1,18),valuesVec[1:18,2])
 
 colnames(plotdataf)<-c('s1','s2','s3','s4','seq','fulldistr')
 
@@ -169,7 +134,7 @@ geom_line(aes(x=seq*10,y=s1*100),size=3,color='#4f54a4',stat='identity')+
 geom_line(aes(x=seq*10,y=s2*100),size=3,color='#01b7c9',stat='identity')+
 geom_line(aes(x=seq*10,y=s3*100),size=3,color='#89aa3a',stat='identity')+
 geom_line(aes(x=seq*10,y=s4*100),stat='identity',size=3,color='#dbce31')+scale_y_continuous(breaks=c(5,6),limits=c(4.95,6.75),oob = scales::rescale_none)
-# 800 x 800
+# 800 x 867
 
 # sep plot just for legend
 plotdf_leg<-data.frame(c(1,2,3,4,1,2,3,4),c('# 1','# 2','# 3','# 4','# 1','# 2','# 3','# 4'))
@@ -179,28 +144,6 @@ colnames(plotdf_leg)<-c('numbs','Participants')
 p<-ggplot(plotdf_leg,aes(x=numbs,y=numbs,group=Participants))+geom_line(aes(color=Participants),size=3)+scale_color_manual(values=c('#89aa3a','#01b7c9','#4f54a4','#dbce31'))+theme_bw(base_size=26)
 
 # 800x800 but probs doesnt matter for legend, base_size set
-```
-
-```{r}
-p<-ggplot(melted,aes(x=value))
-p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(0,181)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance over all TRs")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))
-
-# convert to histogram format, aligned with group-level plot
-histoVers<-histc(melted$value,edges=seq(0,180,10))
-plotdataf<-data.frame(histoVers$cnt[1:18],seq(1,18))
-# normalize to percentage, as in other
-plotdataf$histoVers.cnt.1.18.<-plotdataf$histoVers.cnt.1.18./sum(plotdataf$histoVers.cnt.1.18.)
-
-p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG Angular Distance over all TRs '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2, unit='cm'))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('% of Propagations')
-
-# saved out at 800x800 for axes
-
-# version for small single subjs
-p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
-p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_blank(),legend.position='none')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_blank(),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_blank(), panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+scale_y_continuous(breaks=c(5,6),limits=c(4.7,6.8),oob = scales::rescale_none)
-
-# saved at 400x400
 ```
 
 
@@ -241,146 +184,4 @@ nullM<-melt(nullDistrEx)
 hist(nullM$value)
 ```
 
-```{r}
-disthist=read.csv(paste0('Y:/results/PWs/Proced/',subj,'/disthist.csv'),header=F)
-plotdf<-data.frame(t(disthist))
-plotdf$index<-seq(1:36)
 
-# Make the plot
-p <- ggplot(plotdf, aes(x = as.factor(index), # x-axis factor label
-					
-					# y-axis numberical parameter
-					y = round(as.numeric(X2)/800))) +	
-
-# the bar height will represent
-# the actual value of the data
-geom_bar(stat = "identity",color='black',
-		aes(fill=index)) + # define bar color
-
-# define the polar coordinate
-coord_polar(start = 3.1416)
-# plot
-p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+ylim(-400,650)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')
-
-# with modes
-disthist_Modes_L=t(read.csv(paste0('Y:/results/PWs/Proced/',subj,'/', subj, '_AngDistFacial_360ModesL.csv'),header=F))
-disthist_Modes_R=t(read.csv(paste0('Y:/results/PWs/Proced/',subj,'/', subj, '_AngDistFacial_360ModesR.csv'),header=F))
-
-#combine hemispheres
-DistModes360=c(as.numeric(disthist_Modes_L[,2]),as.numeric(disthist_Modes_R[,2]))
-plotdf<-data.frame(table(DistModes360))
-plotdf$DistModes360<-as.integer(plotdf$DistModes360)
-
-p <- ggplot(plotdf, aes(x = as.factor(DistModes360), # x-axis factor label
-					
-					# y-axis numberical parameter
-					y = Freq)) +	
-
-# the bar height will represent
-# the actual value of the data
-geom_bar(stat = "identity",
-		aes(fill=DistModes360)) + # define bar color
-
-# define the polar coordinate
-coord_polar(start = 3.1416)
-# plot
-p+theme_minimal(base_size=24)+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"),breaks=c(1,18,36),labels=c(expression(paste('-',pi)),0,expression(paste('',pi))))+ylim(-400,670)+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"),legend.position = 'bottom',legend.key.width = unit(2,'cm'),legend.title = element_blank(),axis.text = element_blank(),axis.title.y=element_blank())+xlab('Distance (Radians)')
-
-
-```
-
-```{r}
-# read in example subj
-FacewiseModesL=read.csv(paste0('Y:/results/PWs/Proced/',subj,'_facewiseMode_L.csv'))
-FacewiseModesR=read.csv(paste0('Y:/results/PWs/Proced/',subj,'_facewiseMode_R.csv'))
-
-ModeBinsL<-t(FacewiseModesL)[1:4851]
-PromBinsL<-t(FacewiseModesL)[4852:9702]
-
-ModeBinsR<-t(FacewiseModesR)[1:4842]
-PromBinsR<-t(FacewiseModesR)[4843:9684]
-
-meltedL<-melt(ModeBinsL)
-meltedR<-melt(ModeBinsR)
-melted=data.frame(c(meltedL,meltedR)$value)
-colnames(melted)<-"value"
-
-# scale value to reflect degrees rather than bin numbrer
-melted$value<-melted$value*10
-
-p<-ggplot(melted,aes(x=value))
-p+geom_histogram(color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 23)+scale_x_continuous(limits=(c(1,180)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("Angular Distance: Facial Modes")+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.08,.41),plot.margin=margin(b=.1,t=.1,l=.1,r=2.1, unit='cm'))+ylim(c(0,1000))
-```
-
-```{r}
-#Vector<-NULL
-#VectorOld<-NULL
-## individual verts
-#for (i in 100:160){
-#  hist(testL[,i],breaks = 24)
-#  #hist(abs(testL[,i]),breaks = 24)
-#  #hist(abs(abs(testL[,i])-90),breaks = 24)
-#  #hist(testL_alt[,i],breaks=24)
-#  #VectorOld=c(VectorOld,testL[,i])
-#  #Vector=c(Vector,testL[,i])
-#  
-#}
-
-```
-
-```{r}
-# second subj
-testL42=read.csv(paste0('Y:/results/PWs/Proced/',subj2,'/',subj2,'_gAngDist_Masked4_L.csv'))
-testR42=read.csv(paste0('Y:/results/PWs/Proced/',subj2,'/',subj2,'_gAngDist_Masked4_R.csv'))
-
-```
-
-```{r}
-meltedL2<-melt(testL42)
-meltedR2<-melt(testR42)
-melted2=c(meltedL2,meltedR2)
-hist(melted2$value,main="Angular Distance b/w PGG and OpFl vectors over vertices over all TRs",xlab = "Distance (Degrees)")
-```
-
-```{r}
-# difference hists
-disthist2=read.csv(paste0('Y:/results/PWs/Proced/',subj2,'/disthist.csv'),header=F)
-plotdf2<-data.frame(t(disthist2))
-plotdf2$index<-seq(1:36)
-# normalize by number of TRs
-numTRs=dim(testL42)[2]
-# from subj 1
-numTRs1=dim(testL4)[2]
-
-plotdf2$X2<-as.numeric(plotdf2$X2)/numTRs
-plotdf$X2<-as.numeric(plotdf$X2)/numTRs1
-
-# Make the plot
-p <- ggplot(plotdf2, aes(x = as.factor(index), # x-axis factor label
-					
-					# y-axis numerical parameter - this converts to percent of TRs observed in that direction
-
-					y = as.numeric(plotdf2$X2)*(1/sum(as.numeric(plotdf2$X2))))) +	
-
-# the bar height will represent
-# the actual value of the data
-geom_bar(stat = "identity",
-		aes(fill=index)) + # define bar color
-
-# define the polar coordinate
-coord_polar(start = 3.1416)
-# plot
-p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.01,.036)
-
-# dif hist
-plotdf$dif<-(as.numeric(plotdf$X2)*(1/sum(as.numeric(plotdf$X2))))-(as.numeric(plotdf2$X2)*(1/sum(as.numeric(plotdf2$X2))))
-
-p <- ggplot(plotdf, aes(x = as.factor(index),y = dif)) + geom_bar(stat = "identity",
-		aes(fill=index))+coord_polar(start = 3.1416)
-# plot
-p+theme_minimal()+scale_fill_gradientn("index",colors=c("red","orange","yellow","green","cyan","blue","cyan","green","yellow","orange","red"))+theme(panel.grid.major=element_line(colour="black"),panel.grid.minor=element_line(colour="black"))+ylim(-.0035,.0035)
-
-
-```
-
-```
