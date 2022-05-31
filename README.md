@@ -49,14 +49,11 @@ items to validate in 3.2:
 For replicating the subject data depicted in the schematic figure, we can use [Viz_VecFields.m](https://github.com/PennLINC/PWs/blob/main/scripts/Viz_VecFields.m).
 
 # 4.2 Group-level aggregation and map visualization
-[aggregate_OpFlDistrModes.m](https://github.com/PennLINC/PWs/blob/main/scripts/aggregate_OpFlDistrModes.m) segments subject-level angular distributions into 18 angular distance bins. This reduction is needed to reduce subject-level angular distance data to a granularity feasible for aggregation into a single group-level distribution (across faces, TRs, and subjects). This script also captures the cross-subject mode of these out directionality bins for each cortical face, allowing for projection of these data onto the cortex. Note that for the modal plot, prominence of the top mode (height relative to non-neighboring modes) is also fed into [Vis_FaceVec_modes.m](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec_modes.m). 
+[aggregate_OpFlDistrModes.m](https://github.com/PennLINC/PWs/blob/main/scripts/aggregate_OpFlDistrModes.m) segments subject-level angular distributions into 18 angular distance bins. This reduction is needed to reduce subject-level angular distance data to a granularity feasible for aggregation into a single group-level distribution (across faces, TRs, and subjects). This script also captures the cross-subject mode of these out directionality bins for each cortical face, allowing for projection of these data onto the cortex.
 
 Finally, the mean proportion of propagations that are top-down vs. bottom-up at each face are fed into [Vis_FaceVec.m)](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec.m)
 
 The above script also supports setting "subject" as a variable (character string), and running these visualization scripts on individual-level data for modes and proportions.
-
-items to validate in 4:
-#### Only top-down v. bottom-up proportion: extracted from calculation in Extract_BUTD_ResultantVecs.m
 
 # 5. Task effects
 First, we convert the output of Extract_BUTD_ResultantVecs.m to .csv's rather than .m files so R can use 'em: [BUTD_to_Rformat_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat_c.m)
@@ -67,13 +64,13 @@ Follow it up with [FDR_facewise_t.R](https://github.com/PennLINC/PWs/blob/main/s
 
 The resulting (masked) delta r^2 values can then be visualized with Vis_FaceVec.m.
 
-Note the sample size here is different (smaller). Not all subjects had high-quality Carit data, see lines 114:156 of this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) for more sample construction information.
+Note the sample size here is different (smaller). Not all subjects had high-quality Carit data, see lines 121:132 of this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) for more sample construction information.
 
-items to validate in 4:
+items to validate in 5:
 #### T-test directionality: i.e., more top-down w/ task
 
 # 6.1 Age effects: Whole-cortex
-[Bin_And_Aggregate_BuProp_180.m](https://github.com/PennLINC/PWs/blob/e9dafb2118b3814b971d74d9cab4c35c51916aa2/scripts/Bin_And_Aggregate_BuProp_180.m) will derive individual-level whole-cortex metrics for proportion bottom-up (or top-down). This output can read into R and plotted with line 391 of [this script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd). Code for reported stats is directly above.
+[Bin_And_Aggregate_BuProp_180.m](https://github.com/PennLINC/PWs/blob/e9dafb2118b3814b971d74d9cab4c35c51916aa2/scripts/Bin_And_Aggregate_BuProp_180.m) will derive individual-level whole-cortex metrics for proportion bottom-up (or top-down). This output can read into R and plotted starting at line 206 of [this script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd), and within [this markdown](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.md). Code for reported stats is directly adjacent to plotting code.
 
 # 6.2 Age effects: Mass univariate
 As above, [BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat.m) will convert extracted values to .csv files for R to leverage.
@@ -81,7 +78,7 @@ As above, [BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/
 facewise_stats_([L](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_L.R)/[R](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_R.R)).R: this will conduct mass univariate tests on the extracted top-down proportion metrics. Follow it up with [FDR_facewise.R](https://github.com/PennLINC/PWs/blob/main/scripts/FDR_facewise.R) to correct for multiple comparisons
 
 # 6.3 Age effects: angular distributions
-FINALLY, we need to create the permuted old - young PGG angular distance difference histogram (fig. 3d). These 1000 permutations are ran through [this script](https://github.com/PennLINC/PWs/blob/e2258b09c2ae78bc3a998faa59a283723d3cb085/scripts/Bin_And_Aggregate_PGGDistribution_180_permSubjs.m), which uses the old and young tertile splits (for the true histogram differences only) constructed in this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) from lines 101 to 110. The resulting figure is plotted with the same .rmd in the chunk beneath (lines 163:231), which can be run after permSubjs.m has ran.
+FINALLY, we need to create the permuted old - young PGG angular distance difference histogram (fig. 3d). These 1000 permutations are ran through [this script](https://github.com/PennLINC/PWs/blob/e2258b09c2ae78bc3a998faa59a283723d3cb085/scripts/Bin_And_Aggregate_PGGDistribution_180_permSubjs.m), which uses the old and young tertile splits (for the true histogram differences only) constructed in this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) starting at line 139. The resulting figure is plotted with the same .rmd, which can be run after permSubjs.m has ran.
 
 
 And that's all I have to say about that
