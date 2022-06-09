@@ -1,4 +1,4 @@
-# PWs
+# Development of Propagations: Replication Guide
 
 # 1. Pre-processing
 [preProc_PW.m](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW.m) will motion mask subject time series, and generate indices of TRs in 10+ length continuous windows uninterrupted by FD > 0.2 / outlier frames. These windows (.txt files) are saved to projects/hcpd, not projects/pinesParcels at the moment. This script then calls [downsample_TS.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_TS.sh) to downsample this timeseries from the original spatial resolution (fslr). Finally, this script will compute optical flow on the freesurfer sphere (with [OpFl_Sph_CompVer.m](https://github.com/PennLINC/PWs/blob/main/scripts/OpFl_Sph_CompVer.m) ) , calculate angular distance from the PGG at each face for each vector (with [PGG_AngDistCalc.m](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc.m) ), and then re-mask out the medial wall for the subject (with [mask_mw_faces](https://github.com/PennLINC/PWs/blob/main/scripts/mask_mw_faces.m) )
@@ -23,9 +23,6 @@ Subsequently, individual subjects can be qsub'ed with the resulting run_PGG_AngD
 
 After the qsub has completed, results can be easily plotted in R. Note that the subject ID is not saved in [this script](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.Rmd), you have to enter it manually (to avoid uploading subj IDs). For individual-level plotting you can start at line 133.
 
-items to validate in 3.1:
-#### No L/R mislabels
-
 # 3.2 Temporal Nulls
 Unfortunately there is no shared temporal aspect between subjects. This means to generate the temporal null, each operation needs to be entirely executed on a subject-by-subject basis. It will take a day or two (maybe three) to run for a single subject, even when compiled/qsub'ed.
 
@@ -39,9 +36,6 @@ This one was compiled with:
 >mcc -m tnull_comb_CompVer.m -R -singleCompThread -R -nodisplay -R -nojvm -a /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/Code_mvNMF_l21_ard_v3_release/lib/freesurfer/matlab/MRIread -a /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/Code_mvNMF_l21_ard_v3_release/lib/freesurfer/matlab/read_surf -a /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/ofd/of.m -a /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/ofd/util/linearsystem.m -a /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/Code_mvNMF_l21_ard_v3_release/src/read_medial_wall_label -a /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/hermans-rasson/HartigansDipTest.m -a /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/ofd/util/grad.m
 
 This output can be qsubbed the same way as above, but requires 100 GB of virtual memory (unless subjects are at the lower end of TRs retained). It can also be visualized using the same r code as above, but note that we have 100 permutations and value 101 is the true dip stat, rather than 1000/1001 with the spatial permutations.
-
-items to validate in 3.2:
-#### shuffle behaving properly, no L/R flips
 
 # 4.1 Extract Directional info from OpFlow output
 [Extract_BUTD_ResultantVecs.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs.m) will calculate the TRs for which signal is hierarchically ascending vs. descending, and saveout subj metrics. Task data can be processed the same way with an equivalent script, [Extract_BUTD_ResultantVecs_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_c.m). 
@@ -66,9 +60,6 @@ The resulting (masked) delta r^2 values can then be visualized with Vis_FaceVec.
 
 Note the sample size here is different (smaller). Not all subjects had high-quality Carit data, see lines 121:132 of this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) for more sample construction information.
 
-items to validate in 5:
-#### T-test directionality: i.e., more top-down w/ task
-
 # 6.1 Age effects: Whole-cortex
 [Bin_And_Aggregate_BuProp_180.m](https://github.com/PennLINC/PWs/blob/e9dafb2118b3814b971d74d9cab4c35c51916aa2/scripts/Bin_And_Aggregate_BuProp_180.m) will derive individual-level whole-cortex metrics for proportion bottom-up (or top-down). This output can read into R and plotted starting at line 206 of [this script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd), and within [this markdown](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.md). Code for reported stats is directly adjacent to plotting code.
 
@@ -78,10 +69,8 @@ As above, [BUTD_to_Rformat.m](https://github.com/PennLINC/PWs/blob/main/scripts/
 facewise_stats_([L](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_L.R)/[R](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_stats_R.R)).R: this will conduct mass univariate tests on the extracted top-down proportion metrics. Follow it up with [FDR_facewise.R](https://github.com/PennLINC/PWs/blob/main/scripts/FDR_facewise.R) to correct for multiple comparisons
 
 # 6.3 Age effects: angular distributions
-FINALLY, we need to create the permuted old - young PGG angular distance difference histogram (fig. 3d). These 1000 permutations are ran through [this script](https://github.com/PennLINC/PWs/blob/e2258b09c2ae78bc3a998faa59a283723d3cb085/scripts/Bin_And_Aggregate_PGGDistribution_180_permSubjs.m), which uses the old and young tertile splits (for the true histogram differences only) constructed in this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) starting at line 139. The resulting figure is plotted with the same .rmd, which can be run after permSubjs.m has ran.
+Here, we create the permuted old - young PGG angular distance difference histogram (fig. 3d). These 1000 permutations are ran through [this script](https://github.com/PennLINC/PWs/blob/e2258b09c2ae78bc3a998faa59a283723d3cb085/scripts/Bin_And_Aggregate_PGGDistribution_180_permSubjs.m), which uses the old and young tertile splits (for the true histogram differences only) constructed in this R [script](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) starting at line 139. The resulting figure is plotted with the same .rmd, which can be run after permSubjs.m has ran.
 
-
-And that's all I have to say about that
 
 
 
