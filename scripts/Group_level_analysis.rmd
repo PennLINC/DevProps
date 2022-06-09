@@ -285,10 +285,10 @@ anovaRes<-anova.gam(devMod_DMgro,ndevMod_DMgro,test='Chisq')
 anovaRes$`Pr(>Chi)`
 
 # and plotting dmn seg directly
-DMN_lm<-lm(DMNseg~FD+sex+RemainingTRs+TDProp,data=BuMerge)
+DMN_lm<-lm(DMNsegGro~FD+sex+RemainingTRs+TDProp,data=BuMerge)
 BuMerge$DMN_lm_resid<-DMN_lm$residuals+mean(BuMerge$DMNseg)
 
-ggplot(BuMerge,aes(x=(interview_age)/12,y=DMN_lm_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4,size=3) + geom_point(size=5,alpha=.5) + xlab("Age") +ylab("DMN External \n Connectivity") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4))
+ggplot(BuMerge,aes(x=(interview_age)/12,y=DMN_lm_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4,size=3) + geom_point(size=5,alpha=.5) + xlab("Age") +ylab("Default Mode \n Connectivity") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 47, b = 0, l = 0),vjust=-4))
 
 ```
 

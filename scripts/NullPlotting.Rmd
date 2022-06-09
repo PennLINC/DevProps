@@ -49,9 +49,9 @@ for (s in 1:dim(subjList)[1]){
     # if output exists
     if (file.exists(paste0(ResFp,subj,'_ShufDips4.csv'))) {
       SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_ShufDips4.csv'),header=F)
-      ObsDip<-as.numeric(SpunDips[2,1001])
+      ObsDip<-as.numeric(SpunDips[2,101])
       RealDips[s]<-ObsDip
-      SpunDips<-as.numeric(SpunDips[2,1:1000])
+      SpunDips<-as.numeric(SpunDips[2,1:100])
       SpunSD=sd(SpunDips)
       SpunMean=mean(SpunDips)
       #print(ObsDip)
@@ -82,10 +82,10 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 # note overlapping use of DipSDs variable name
 
 # for spatial
-ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,25)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+#ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,25)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 # for temporal
-#ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(-1,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 
 # saved at 510x250
@@ -100,7 +100,7 @@ ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)
 
-ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")+scale_x_continuous(limits =c(0,0.00823),breaks=c(0,0.004,0.008))
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")+scale_x_continuous(limits =c(0,0.00823),breaks=c(0,0.004,0.008))+theme(axis.text = element_text(size=22))
 
 # saved out at 350 x 250
 
@@ -137,7 +137,7 @@ ObsDip<-as.numeric(SpunDips[2,101])
 SpunDips<-as.numeric(SpunDips[2,1:100])
 plotdf<-data.frame(ObsDip,SpunDips)
 
-ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")+scale_x_continuous(limits =c(0,0.00823),breaks=c(0,0.004,0.008))
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")+scale_x_continuous(limits =c(0,0.00823),breaks=c(0,0.004,0.008))+theme(axis.text = element_text(size=22))
 
 # saved out at 350 x 250
 

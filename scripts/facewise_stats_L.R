@@ -125,7 +125,6 @@ BuProp_adr2=rep(0,Lfaces)
 
 # for fdr-correcting age associations
 BuProp_ap=rep(0,Lfaces)
-BuProp_sp=rep(0,Lfaces)
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,remainingSubjs)
@@ -149,14 +148,8 @@ for (f in 1:Lfaces){
 	    if (file.exists(paste0(ResFP_L))) {
 	      # load in dat data
 	      Res=read.csv(ResFP_L)
-		# extract TD resvec length
+		# extract TD proportion
 		df$FaceBuProp[s]=Res[f,1]	
-		# extract BU resvec length
-		df$FaceBu_rv[s]=Res[f,2]
-		# extract prop of BU TRs
-		df$FaceTd_rv[s]=Res[f,3]
-		# extract global resvec theta from gPGG
-		df$FaceThetaDist[s]=Res[f,4]
 	    }
 	}
 	# extract mean

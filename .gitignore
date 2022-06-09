@@ -1,3 +1,6 @@
+*.o9*
+*.e9*
+*_rep*
 *_ASK_*
 ri.m
 *_fsc?.sh

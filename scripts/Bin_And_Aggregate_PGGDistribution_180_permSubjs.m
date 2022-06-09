@@ -111,9 +111,9 @@ end
 
 % pull out indices
 TrueOld=TrueOld{:,1};
-IndicesOld=TrueOld(:,1);
+IndicesOld=TrueOld{:,1};
 TrueYoung=TrueYoung{:,1};
-IndicesYoung=TrueYoung(:,1);
+IndicesYoung=TrueYoung{:,1};
 
 % pull out values
 TrueOldmat=OutDf(str2double(IndicesOld),:);

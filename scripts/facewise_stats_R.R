@@ -118,24 +118,13 @@ print(remainingSubjs)
 
 # initialize face-level vectors: keeping 0s in the slots untouched by this run to verify allocation later
 # for plotting means
-TD_L=rep(0,Rfaces)
-BU_L=rep(0,Rfaces)
 BuProp=rep(0,Rfaces)
-ThetasFromPG=rep(0,Rfaces)
 
 # for plotting age effect sizes
-TD_L_adr2=rep(0,Rfaces)
-BU_L_adr2=rep(0,Rfaces)
 BuProp_adr2=rep(0,Rfaces)
-ThetasFromPG_adr2=rep(0,Rfaces)
-BuProp_sdr2=rep(0,Rfaces)
 
 # for fdr-correcting age associations
-TD_L_ap=rep(0,Rfaces)
-BU_L_ap=rep(0,Rfaces)
 BuProp_ap=rep(0,Rfaces)
-ThetasFromPG_ap=rep(0,Rfaces)
-BuProp_sp=rep(0,Rfaces)
 
 # subjvec to run in parallel for even more confidence in merging
 Subjvec=rep(0,remainingSubjs)
@@ -156,7 +145,7 @@ for (f in 1:Rfaces){
 	    if (file.exists(paste0(ResFP_R))) {
 	      # load in dat data
 	      Res=read.csv(ResFP_R)
-		# extract TD resvec length
+		# extract TD proportion (inverse of BU proportion)
 		df$FaceBuProp[s]=Res[f,1]	
 	    }
 	}
