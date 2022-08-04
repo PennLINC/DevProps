@@ -7,7 +7,7 @@ function PGG_AngDistCalc_snull(subj)
 % Add OFD toolbox to path
 %addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
-%%%% Load in fsav5 opflow calc
+%%%% Load in fsav4 opflow calc
 OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
 data=load(OpFlFp)
 
