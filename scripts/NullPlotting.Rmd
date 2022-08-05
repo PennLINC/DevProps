@@ -42,6 +42,9 @@ Subjvec=rep(0,dim(subjList)[1])
 NullDips=matrix(ncol=1000,nrow=dim(subjList)[1])
 CNullDips=matrix(ncol=1000,nrow=dim(subjList)[1])
 
+#nonsig counter for tnulls (p = 0.01 or greater)
+nonsig=0
+
 # load in D and shapes iteratively
 for (s in 1:dim(subjList)[1]){
     subj=subjList[s,1]
@@ -62,7 +65,11 @@ for (s in 1:dim(subjList)[1]){
       remTRs[s]=mergeddf$RemainingTRs[mergeddf$SubjID==subj]
       # and to record same order of subj loading and prevent funny biz
       Subjvec[s]=subj
-
+      if (ObsDip < max(SpunDips)){
+        print(subj)
+        print(ObsDip)
+        nonsig=nonsig+1
+      }
     }
 }
 
@@ -85,7 +92,7 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 #ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,25)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 # for temporal
-ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(-1,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(-6,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 
 # saved at 510x250
