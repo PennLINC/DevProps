@@ -233,7 +233,7 @@ lastInSegs=CSI{:,1}+CSI{:,2}-1;
 numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
-for i=217:219
+for i=217:220
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt);
 u=OpFl.vf_right{OpFlVecofInt};
@@ -309,8 +309,77 @@ c.LineWidth=3
 c.Location='southoutside'
 c.FontName='Arial'
 view(280,185);
-fn=['yourfigure' num2str(i) '.png'];
+fn=['~/PWs/scripts/yourfigure_VH_' num2str(i) '.png'];
 print(fn,'-dpng')
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% simulation  data viz
+for i=3:400
+OpFlVecofInt=i;
+u=OpFl.vf_right{OpFlVecofInt};
+vATTR=fr.TRs{i};
+pFl=load(OpFlFp);
+OpFl=OpFl.us;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Load TS %%%%%%%%
+% load in TRs_l and TRs_r
+TRs_lfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_L_3k.mgh'];
+TRs_rfp=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_R_3k.mgh'];
+% filepaths to files
+TRs_lf=MRIread(TRs_lfp);
+TRs_rf=MRIread(TRs_rfp);
+% files to data
+TRs_l=squeeze(TRs_lf.vol);
+TRs_r=squeeze(TRs_rf.vol);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%% uptake functional data (on surface) %%%%%%
+% handle input data
+disp('Size of input data')
+sizeInDl=size(TRs_l)
+sizeInDr=size(TRs_r)
+disp('Number of TRs detected L and R')
+TR_n=sizeInDl(2)
+sizeInDr(2)
+assert(sizeInDl(2) == sizeInDr(2), 'Unequal time series length between hemispheres')
+% left hemi
+disp('converting left hemi to struct')
+fl=struct;
+% populate struct
+for TRP=1:TR_n;
+        fl.TRs{TRP}=TRs_l(:,TRP);
+end
+% r h
+disp('converting right hemi to struct')
+fr=struct;
+for TRP=1:TR_n;
+        fr.TRs{TRP}=TRs_r(:,TRP);
+end
 
+% z-score
+vATTR=zscore(vATTR);
+% normalize vectors, pull em in
+figure('units','pixels','position',[0 0 2500 2500])
+axis([-1, 1, -1, 1, 0, 1]);
+% dividing all coordinates by scaling factor because vector size is fixed too small relative to coordinate space otherwise
+scalingfactor=5;
+% convert vectors to unit vectors for plotting independent of magnitude
+% thank you https://stackoverflow.com/questions/40778629/matlab-convert-vector-to-unit-vector
+ret = bsxfun(@rdivide, u, sqrt(sum(u'.^2))');
+quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[ret(g_noMW_combined_R,1), ret(g_noMW_combined_R,2), ret(g_noMW_combined_R,3)],'w',.7,'arrowRadius',.05)
+hold on
+% for OpFl Vecs on PG
+trisurf(faces_r, vx_r(:, 1)./scalingfactor, vx_r(:, 2)./scalingfactor, vx_r(:, 3)./scalingfactor, PG_RH, 'EdgeColor','none');
+caxis([-5.5,6.5]);
+axis equal
+daspect([1, 1, 1]);
+colormap(custommap);
+c=colorbar
+c.FontSize=55
+c.LineWidth=3
+c.Location='southoutside'
+c.FontName='Arial'
+view(280,185);
+fn=['Simfigure' num2str(i) '.png'];
+print(fn,'-dpng')
+end

@@ -151,7 +151,7 @@ save(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs
 
 % vector field
 %DirecsVecs=struct('cdata',[],'colormap',[]);
-%for j=1:50
+%for j=1:100
 %u=us.vf_left{j};
 %vATTR=fl.TRs{j};
 %figure;

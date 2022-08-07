@@ -171,6 +171,44 @@ for Vert=1:length(azd_R)
     end
 end
 
+% temporal masking just for simulated data, just for invalid TRs
+if subj=='sub-Sim'
+	% initialize temporal mask vector
+	tmL=[];
+	tmR=[];
+	% go through each TR pair and check for 0 uniformity
+	for fr=1:lenOpFl
+		LeftVecs=data.us.vf_left{fr};
+		LeftTabul=tabulate(LeftVecs(:));
+		% if 0 uniform
+		if LeftTabul(3)==100;
+			% print frame number
+			fr
+			% print value comprising 100%
+			LeftTabul(1)
+			% add this frame to remove vector
+			tmL=[tmL; fr];
+		end
+		RightVecs=data.us.vf_right{fr};
+                RightTabul=tabulate(RightVecs(:));
+                % if 0 uniform
+                if RightTabul(3)==100;
+                        % print frame number
+                        fr
+                        % print value comprising 100%
+                        RightTabul(1)
+                        % add this frame to remove vector
+                        tmR=[tmR; fr];
+                end	
+	end
+	% ensure temporal masks match, expected behavior
+	assert(tmL == tmR, 'invalid TRs from simulated data asymmetric')
+	% reverse temporal mask
+	tm=setdiff([1:lenOpFl],tmL);
+	gangDist_L=gangDist_L(tm,:);
+	gangDist_R=gangDist_R(tm,:);
+end
+
 % save it out
 AngDist=struct;
 AngDist.gLeft=gangDist_L;

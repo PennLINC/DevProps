@@ -59,10 +59,17 @@ subj
 
 % RUN 4
 % temporal nulls: optical flow
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_tnull_comb_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_tnull_comb_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=150G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
+
+%%% RUN 5
+%%% Run Spherical Optical flow with parameter sweeps (4x the runs, intended for subset of subjs)
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_paramSweep.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh'], 'w');
 fprintf(fid,cmd);
-system(['qsub -l h_vmem=150G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
+system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh']);
 
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)
