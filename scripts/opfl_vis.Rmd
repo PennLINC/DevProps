@@ -60,10 +60,10 @@ plotdataf<-data.frame(valuesVec[1:18,2],seq(1,18))
 
 
 ```{r}
-plotdataf_y7<-data.frame(valuesVec[1:18,2],seq(1,18))
+plotdataf_gro<-data.frame(valuesVec[1:18,2],seq(1,18))
 
 #plot
-p<-ggplot(plotdataf_y7,aes(x=seq.1..18.*10,y=(valuesVec.1.18..2./sum(valuesVec.1.18..2.))*100))
+p<-ggplot(plotdataf_gro,aes(x=seq.1..18.*10,y=(valuesVec.1.18..2./sum(valuesVec.1.18..2.))*100))
 
 #legendless
 p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_bw(base_size = 26)+scale_x_continuous(limits=(c(5,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('BOLD-\u2207PG Angular Distances '))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_text(size=20))+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+ylab('Percentage of Propagations')+scale_y_continuous(breaks=c(0,1,2,3,4,5,6),limits=c(0,6.75),oob = scales::rescale_none)
@@ -77,6 +77,10 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 
 
 ```{r}
+###################################################
+### Load and plot subject distribution subset   ###
+###################################################
+
 ## enter subj names in manually
 
 L1=read.csv(paste0('Y:/results/PWs/Proced/',subj1,'/',subj1,'_gAngDist_Masked4_L.csv'))
@@ -144,6 +148,34 @@ colnames(plotdf_leg)<-c('numbs','Participants')
 p<-ggplot(plotdf_leg,aes(x=numbs,y=numbs,group=Participants))+geom_line(aes(color=Participants),size=3)+scale_color_manual(values=c('#89aa3a','#01b7c9','#4f54a4','#dbce31'))+theme_bw(base_size=26)
 
 # 800x800 but probs doesnt matter for legend, base_size set
+```
+
+```{r}
+#########################################
+### plot with simulated data overlaid ###
+#########################################
+# simulated
+LS=read.csv(paste0('Y:/results/PWs/Proced/',subj1,'/',subj1,'_gAngDist_Masked4_L.csv'))
+RS=read.csv(paste0('Y:/results/PWs/Proced/',subj1,'/',subj1,'_gAngDist_Masked4_R.csv'))
+meltedL<-melt(LS)
+meltedR<-melt(RS)
+meltedS=data.frame(c(meltedL$value,meltedR$value))
+colnames(meltedS)<-"value"
+histoVers_S<-histc(meltedS$value,edges=seq(0,180,10))
+
+# convert first 18 into percentage of total propagations from raw count
+plotdataf<-data.frame(histoVers1$cnt[1:18]/sum(histoVers1$cnt[1:18]),histoVers2$cnt[1:18]/sum(histoVers2$cnt[1:18]),histoVers3$cnt[1:18]/sum(histoVers3$cnt[1:18]),histoVers4$cnt[1:18]/sum(histoVers4$cnt[1:18]),histoVers_S$cnt[1:18]/sum(histoVers_S$cnt[1:18]),seq(1,18),valuesVec[1:18,2])
+
+colnames(plotdataf)<-c('s1','s2','s3','s4','Sim.','seq','fulldistr')
+
+p<-ggplot(plotdataf,aes(x=seq*10,y=s1*100))
+p+geom_line(stat='identity',color='#4f54a4',size=2)+theme_bw(base_size = 26)+
+geom_line(aes(x=seq*10,y=s2*100),size=2,color='#01b7c9',stat='identity')+
+geom_line(aes(x=seq*10,y=s3*100),size=2,color='#9dc941',stat='identity')+
+geom_line(aes(x=seq*10,y=s4*100),stat='identity',size=2,color='#f2ea30')+
+geom_line(aes(x=seq*10,y=Sim.*100),stat='identity',size=2,color='gray50')+
+scale_x_continuous(limits=(c(0,190)))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_blank(),legend.position='none')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_blank(),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_blank(), panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+scale_y_continuous(breaks=seq(2,12),limits=c(2.2,12),oob = scales::rescale_none)
+
 ```
 
 

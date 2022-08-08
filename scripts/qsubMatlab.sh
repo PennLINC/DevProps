@@ -1,1 +1,1 @@
-matlab -nodisplay -r "OpFl_Sph_fs4_SIM('${1}')"
+matlab -nodisplay -r "fc_matrix_gen"

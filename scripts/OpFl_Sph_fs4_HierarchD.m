@@ -106,7 +106,8 @@ for kappas=1:4;
 	kappa=kappaList(kappas);
 	% generate alphas and s vectors for this number of k components
 	alpha=repmat(1,[kappa,1]);
-	s=repmat(1,[kappa,1]);
+	alpha = 1000*pow2(-(0:kappa-1));
+	s = linspace(1, -1, kappa);
 	% initialize TRP counter: for plopping u outputs into master struct w/o/r/t their segment
 	% note trp = tr pair
 	TRPC=1;

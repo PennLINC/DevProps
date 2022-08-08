@@ -3,8 +3,6 @@
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 % set fs dir
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
-% set output dir
-vizdir='/cbica/projects/pinesParcels/results/viz/waves/';
 % subtight plot - thank you Felipe G Nievinski!
 make_it_tight = true;
 subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.01], [0.1 0.01]);
@@ -382,4 +380,55 @@ c.FontName='Arial'
 view(280,185);
 fn=['Simfigure' num2str(i) '.png'];
 print(fn,'-dpng')
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%% HIERARCHICAL DECOMPOSITON VIZ
+custommap=colormap('inferno'); %or whatever
+% reduce just a little bit on the close-to-white coloring
+custommap=custommap(1:240,:);
+parentfp=['/cbica/projects/hcpd/data/motMasked_contSegs/'];
+CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
+CSI=readtable(CSIfp);
+% get index of last TR in cont seg
+lastInSegs=CSI{:,1}+CSI{:,2}-1;
+% set diff between these lastInSegs and sequence of 1:#trs (-1 because of inclusivity of second column)
+% go to motion masking scripts for more detail on that
+numTrs=CSI{end,1}+CSI{end,2}-1;
+% invalid TR pairs are those after the last TR in segments
+validTRs=setdiff([1:numTrs],lastInSegs);
+for i=217:220
+OpFlVecofInt=i;
+TRofInt=validTRs(OpFlVecofInt);
+uO=OpFl.vf_right{OpFlVecofInt};
+for k=1:32
+	u=uO(:,:,k);
+	vATTR=fr.TRs{TRofInt};
+	% z-score
+	vATTR=zscore(vATTR);
+	% normalize vectors, pull em in
+	figure('units','pixels','position',[0 0 2500 2500])
+	axis([-1, 1, -1, 1, 0, 1]);
+	% dividing all coordinates by scaling factor because vector size is fixed too small relative to coordinate space otherwise
+	scalingfactor=5;
+	% convert vectors to unit vectors for plotting independent of magnitude
+	% thank you https://stackoverflow.com/questions/40778629/matlab-convert-vector-to-unit-vector
+	ret = bsxfun(@rdivide, u, sqrt(sum(u'.^2))');
+	quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[ret(g_noMW_combined_R,1), ret(g_noMW_combined_R,2), ret(g_noMW_combined_R,3)],'w',.7,'arrowRadius',.05)
+	hold on
+	% for OpFl Vecs on PG
+	trisurf(faces_r, vx_r(:, 1)./scalingfactor, vx_r(:, 2)./scalingfactor, vx_r(:, 3)./scalingfactor, PG_RH, 'EdgeColor','none');
+	caxis([-5.5,6.5]);
+	axis equal
+	daspect([1, 1, 1]);
+	colormap(custommap);
+	c=colorbar
+	c.FontSize=55
+	c.LineWidth=3
+	c.Location='southoutside'
+	c.FontName='Arial'
+	view(280,185);
+	fn=['~/PWs/scripts/Yourfigure' num2str(i) '_k' num2str(k) '.png'];
+	print(fn,'-dpng')
+end
 end

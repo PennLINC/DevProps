@@ -84,9 +84,17 @@ write.table(youngins,'Y:/PWs/young_subs.csv')
 #geezers
 geezers=masterdf$SubjID[masterdf$interview_age>high_tertile_age]
 write.table(geezers,'Y:/PWs/old_subs.csv')
+#mids
+mids=masterdf$SubjID[masterdf$interview_age<high_tertile_age & masterdf$interview_age>low_tertile_age]
+write.table(mids,'Y:/PWs/mid_subs.csv')
 
+# write in matlab-friendly format
+write.table(youngins,'Y:/PWs/young_subs.txt',col.names = F,row.names = F,quote=F)
+write.table(geezers,'Y:/PWs/old_subs.txt',col.names = F,row.names = F,quote=F)
+write.table(mids,'Y:/PWs/mid_subs.txt',col.names = F,row.names = F,quote=F)
+```
 
-
+```{r}
 ##### make subject lists for RS w/ good _carit task runs ( > 300 TRs retained)
 
 ###### 388

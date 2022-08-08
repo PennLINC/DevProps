@@ -9,23 +9,19 @@ import tables
 from scipy.io import loadmat
 from sklearn.metrics import pairwise_distances
 
-# call with "s number" as only argument
+# call with tertile name as only argument
+tert = sys.argv[1]
 
-snum = int(sys.argv[1])
-
-# Load in subjects for filepaths
-s_file = open("/cbica/projects/pinesParcels/data/bblids.txt")
-sfile_contents = s_file. read()
-scontents_split = sfile_contents. splitlines()
-# get this specific subject
-sid=scontents_split[snum]
 # filepath of fcmat is
-fcfp = "/cbica/projects/pinesParcels/data/CombinedData/" + str(sid) + "/vertexwise_fc_mat.csv"
+fcfp = "/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_" + str(tert) + ".csv"
+
 # load in the mat file
 fcmatrix= np.genfromtxt(fcfp,delimiter=',')
 
-# Get number of nodes
-N = fcmatrix.shape[0]
+# remove nans
+nanInd=~np.isnan(fcmatrix[:,0])
+fcmatrix=fcmatrix[:,nanInd]
+fcmatrix=fcmatrix[nanInd,:]
 
 # Generate percentile thresholds for 90th percentile
 perc = np.array([np.percentile(x, 90) for x in fcmatrix])
@@ -39,6 +35,7 @@ for i in range(fcmatrix.shape[0]):
 print("Minimum value is %f" % fcmatrix.min())
 
 # how many nodes have negative values
+N = fcmatrix.shape[0]
 # Count negative values per row
 neg_values = np.array([sum(fcmatrix[i,:] < 0) for i in range(N)])
 print("Negative values occur in %d rows" % sum(neg_values > 0))
@@ -46,6 +43,7 @@ print("Negative values occur in %d rows" % sum(neg_values > 0))
 
 # example subject 1 had no negative values survive, but imagine other subjects might we set these to zero
 fcmatrix[fcmatrix < 0] = 0
+
 
 # Now we are dealing with sparse vectors. Cosine similarity is used as affinity metric
 aff = 1 - pairwise_distances(fcmatrix, metric = 'cosine')
@@ -61,8 +59,14 @@ aff = 1 - pairwise_distances(fcmatrix, metric = 'cosine')
 from mapalign import embed
 emb, res = embed.compute_diffusion_map(aff, alpha = 0.5, return_result=True)
 
-savepathe= "/cbica/projects/pinesParcels/data/CombinedData/" + str(sid) + "/vertexwise_emb.npy"
-savepathr= "/cbica/projects/pinesParcels/data/CombinedData/" + str(sid) + "/vertexwise_res.npy"
+savepathe= "/cbica/projects/pinesParcels/results/PWs/FC/" + str(tert) + "_vertexwise_emb.npy"
+savepathr= "/cbica/projects/pinesParcels/results/PWs/FC/" + str(tert) + "_vertexwise_res.npy"
 
 np.save(savepathe, emb)
 np.save(savepathr, res)
+
+# save pg1 spatial distribution with mw verts included as 0s
+pg1=np.zeros(20484)
+pg1[nanInd]=emb[:,0]
+savepath_PG="/cbica/projects/pinesParcels/results/PWs/FC/" + str(tert) + "_PG1.csv"
+np.savetxt(savepath_PG,pg1,delimiter=',')
