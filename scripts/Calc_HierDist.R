@@ -1,0 +1,71 @@
+#################################################################
+# Calculate HierarchD, scatterplot Distances (FC vs. CFC, Yo vs. Old, Euc D vs. HierarchD)
+#################################################################
+#################################################################
+###### load in Hierarchy, Calculate Distance, save to RDS for local loadin
+vertPG_L<-read.csv('~/results/PWs/vertPG_left.csv')
+vertPG_R<-read.csv('~/results/PWs/vertPG_right.csv')
+# faces
+facePG_L<-read.csv('~/results/PWs/facePG_left.csv')
+facePG_R<-read.csv('~/results/PWs/facePG_right.csv')
+# Initialize HierarchD matrices
+HD_v_l<-matrix(nrow=dim(vertPG_L)[1],ncol=dim(vertPG_L)[1])
+HD_v_r<-matrix(nrow=dim(vertPG_R)[1],ncol=dim(vertPG_R)[1])
+HD_f_l<-matrix(nrow=dim(facePG_L)[1],ncol=dim(facePG_L)[1])
+HD_f_r<-matrix(nrow=dim(facePG_R)[1],ncol=dim(facePG_R)[1])
+##### Calculate HierarchD
+
+# vertices
+
+# L
+for (i in 1:dim(vertPG_L)[1]){
+  for (j in 1:dim(vertPG_L)[1]){
+    # absolute valued distance
+    HD_v_l[i,j]<-abs(vertPG_L[i,1]-vertPG_L[j,1])
+  }
+}
+
+# saveout
+saveRDS(HD_v_l,'~/data/HD_v_l.rds')
+
+# R
+
+for (i in 1:dim(vertPG_R)[1]){
+  print('right')
+  for (j in 1:dim(vertPG_R)[1]){
+    # absolute valued distance
+    HD_v_r[i,j]<-abs(vertPG_R[i,1]-vertPG_R[j,1])
+  }
+}
+
+print('done with faces')
+
+# saveout
+saveRDS(HD_v_r,'~/data/HD_v_r.rds')
+
+# faces
+
+# L
+for (i in 1:dim(facePG_L)[1]){
+  for (j in 1:dim(facePG_L)[1]){
+    # absolute valued distance
+    HD_f_l[i,j]<-abs(facePG_L[i,1]-facePG_L[j,1])
+  }
+}
+
+# saveout
+saveRDS(HD_f_l,'~/data/HD_f_l.rds')
+HD_f_l=readRDS('Y:/data/HD_f_l.rds')
+
+# R 
+
+for (i in 1:dim(facePG_R)[1]){
+  print(i)
+  for (j in 1:dim(facePG_R)[1]){
+    # absolute valued distance
+    HD_f_r[i,j]<-abs(facePG_R[i,1]-facePG_R[j,1])
+  }
+}
+
+# saveout
+saveRDS(HD_f_r,'~/data/HD_f_r.rds')

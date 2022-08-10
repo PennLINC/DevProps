@@ -11,6 +11,8 @@ ri.m
 scripts/sub-*.sh
 hcpd_subj_list.txt
 *core.*
+*.R.o*
+*.R.e*
 *.sh.e*
 *.sh.o*
 ThreshDirec/*

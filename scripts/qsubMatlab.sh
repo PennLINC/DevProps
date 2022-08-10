@@ -1,1 +1,1 @@
-matlab -nodisplay -r "fc_matrix_gen"
+matlab -nodisplay -r "preProc_PW('${1}')"

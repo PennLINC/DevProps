@@ -17,15 +17,10 @@ subj
 %system(dsCommand)
 
 % make a "Proced" dir
-%direcString=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj];
+%direcString=['/cbica/irojects/pinesParcels/results/PWs/Proced/' subj];
 %mkdirCommand=['mkdir ' direcString];
 %system(mkdirCommand)
 
-%%%%%%%%%%%%%%%
-% don't mess about with OpFl if it's already been ran
-%OFfp=['/cbica/projects/pinesParcels/results/Proced/' subj '/' subj '_OpFl_fs5.mat'];
-%if ~exist(OFfp)
-%%%%%%%%%%%%%%%
 
 %%% RUN 1
 %%% Run Spherical Optical flow
@@ -66,10 +61,35 @@ subj
 
 %%% RUN 5
 %%% Run Spherical Optical flow with parameter sweeps (4x the runs, intended for subset of subjs)
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_paramSweep.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh'], 'w');
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_paramSweep.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh']);
+
+%%%% RUN 6
+%%%% Run angular distance calculation on altertative reference hierarchy
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=11G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh']);
+
+%%%% RUN 7
+%%%%% above with spins
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh'], 'w');
 fprintf(fid,cmd);
-system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh']);
+system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh']);
+
+
+%%%% RUN 8
+%%%% Run angular distance calculation using participant's own tertile-derived PG
+%tertiles=['young','mid','old'];
+%tertilecodes=['y','Mi','o'];
+%for T=1:3
+%tertile=tertiles(T)
+% load in tertile names
+%subjs=readtable(['~/' tertile '_subs.txt'],'ReadVariableNames',false;
+%for s=1:length(subjs)
 
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)
