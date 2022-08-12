@@ -18,26 +18,20 @@ output: html_document
 
 vertPG_L<-read.csv('~/results/PWs/vertPG_left.csv')
 vertPG_R<-read.csv('~/results/PWs/vertPG_right.csv')
-
 # faces
-
 facePG_L<-read.csv('~/results/PWs/facePG_left.csv')
 facePG_R<-read.csv('~/results/PWs/facePG_right.csv')
-
 # Initialize HierarchD matrices
-
 HD_v_l<-matrix(nrow=dim(vertPG_L)[1],ncol=dim(vertPG_L)[1])
 HD_v_r<-matrix(nrow=dim(vertPG_R)[1],ncol=dim(vertPG_R)[1])
 HD_f_l<-matrix(nrow=dim(facePG_L)[1],ncol=dim(facePG_L)[1])
 HD_f_r<-matrix(nrow=dim(facePG_R)[1],ncol=dim(facePG_R)[1])
-
 ##### Calculate HierarchD
 
 # vertices
 
 # L
 for (i in 1:dim(vertPG_L)[1]){
-  print(i)
   for (j in 1:dim(vertPG_L)[1]){
     # absolute valued distance
     HD_v_l[i,j]<-abs(vertPG_L[i,1]-vertPG_L[j,1])
@@ -50,13 +44,14 @@ saveRDS(HD_v_l,'~/data/HD_v_l.rds')
 # R
 
 for (i in 1:dim(vertPG_R)[1]){
-  print(i)
   print('right')
   for (j in 1:dim(vertPG_R)[1]){
     # absolute valued distance
     HD_v_r[i,j]<-abs(vertPG_R[i,1]-vertPG_R[j,1])
   }
 }
+
+print('done with vertices')
 
 # saveout
 saveRDS(HD_v_r,'~/data/HD_v_r.rds')
@@ -73,7 +68,6 @@ for (i in 1:dim(facePG_L)[1]){
 
 # saveout
 saveRDS(HD_f_l,'~/data/HD_f_l.rds')
-HD_f_l=readRDS('Y:/data/HD_f_l.rds')
 
 # R 
 
@@ -87,6 +81,32 @@ for (i in 1:dim(facePG_R)[1]){
 
 # saveout
 saveRDS(HD_f_r,'~/data/HD_f_r.rds')
+
+```
+
+```{r}
+# take upper triangle of euclidean distances, save for chance at mount loading
+ED_v_l=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_left.csv')
+write.csv(ED_v_l[upper.tri(ED_v_l)],'/cbica/projects/pinesParcels/results/PWs/vert_EucD_left.csv')
+ED_v_r=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
+write.csv(ED_v_r[upper.tri(ED_v_r)],'/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
+ED_f_l=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_left.csv')
+write.csv(ED_f_l[upper.tri(ED_f_l)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_left.csv')
+ED_f_r=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_right.csv')
+write.csv(ED_f_r[upper.tri(ED_f_r)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_right.csv')
+```
+
+```{r}
+# take upper triangle of fc, save for chance at mount loading
+```
+
+```{r}
+library(vroom)
+# take upper triangle of CFC, save for chance at mount loading
+cfc_l=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv')
+write.csv(cfc_l[upper.tri(cfc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv')
+cfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv')
+write.csv(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv')
 ```
 
 ```{r}
@@ -96,27 +116,61 @@ HD_v_r=readRDS('Y:/data/HD_v_r.rds')
 HD_f_l=readRDS('Y:/data/HD_f_l.rds')
 HD_f_r=readRDS('Y:/data/HD_f_r.rds')
 
+#### Load in Euclidean distances
 
+ED_v_l=vroom('Y:/results/PWs/vert_EucD_left.csv')
+ED_v_r=vroom('Y:/results/PWs/vert_EucD_right.csv')
+ED_f_l=vroom('Y:/results/PWs/face_EucD_left.csv')
+ED_f_r=vroom('Y:/results/PWs/face_EucD_right.csv')
+
+### Load in CFC
+
+cfc_l=vroom('Y:/results/PWs/FC/gro_CFC_l.csv',col_names=FALSE)
+cfc_r=vroom('Y:/results/PWs/FC/gro_CFC_r.csv',col_names=FALSE)
+
+### Load in Verts
+
+
+
+```
+
+```{r}
+# will need sep. runs for young and old
 ##### load in FC
 
 # young
-yfc=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_young.csv')
-  
+yfc=vroom('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_young.csv',col_names=FALSE)
+ycfc_l=vroom('Y:/results/PWs/FC/gro_CFC_young_l.csv',col_names=FALSE)
+ycfc_r=vroom('Y:/results/PWs/FC/gro_CFC_young_r.csv',col_names=FALSE)
+```
+
+```{r}
 # old
 ofc=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_old.csv')
 
 ##### load in CFC
 
-# young
-ycfc_l=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_young_l.csv',header=F)
-ycfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_young_r.csv',header=F)
 # old
+ocfc_l=vroom('Y:/results/PWs/FC/gro_CFC_old_l.csv',col_names=FALSE)
+ocfc_r=vroom('Y:/results/PWs/FC/gro_CFC_old_r.csv',col_names=FALSE)
+
 ocfc_l=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_old_l.csv',header=F)
 ocfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_old_r.csv',header=F)
 
-#### Load in Euclidean distances
+
 
 
 ##### combine all into dataframe
-df<-data.frame(ycfc_l[upper.tri(ycfc_l)],ocfc_l[upper.tri(ocfc_l)],HD_f_l[upper.tri(HD_f_l)])
+df<-data.frame(ED_f_l[upper.tri(ED_f_l)],ocfc_l[upper.tri(ocfc_l)],HD_f_l)
+colnames(df)<-c('Distance','CFC_o','HierarchD')
+```
+
+```{r}
+library(ggplot2)
+ggplot(df, aes(y = CFC_o, x = Distance)) +
+  geom_hex(bins = 200)
+ggplot(df, aes(y = CFC_o, x = HierarchD)) +
+  geom_hex(bins = 200)
+ggplot(df, aes(y = Distance, x = HierarchD)) +
+  geom_hex(bins = 200)
 ```

@@ -13,7 +13,11 @@ surfR = [SubjectsFolder '/surf/rh.sphere'];
 % +1 the faces: begins indexing at 0
 faces_l = faces_l + 1;
 faces_r = faces_r + 1;
-
+% initialize group-level CFC matrix
+gCFC_matrix_l=zeros(4589,4589);
+gCFC_matrix_r=zeros(4595,4595);
+% initialize subject counter
+SubjNum=0;
 % for each tertile
 for T=1:3;
 	tertile=tertiles{T}
@@ -26,12 +30,15 @@ for T=1:3;
 	CFCmatrix_r=zeros(4595,4595);
 	for s=1:length(subjs);
 		subj=subjs(s)
+		SubjNum=SubjNum+1;
 		% load circular FC matrix
 		fw_CFCfp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj{:} '/' subj{:} '_CircFC.mat'];
 		fw_CFC=load(fw_CFCfp);
 		% add em in
 		CFCmatrix_l=CFCmatrix_l+fw_CFC.adjMats.L;
 		CFCmatrix_R=CFCmatrix_r+fw_CFC.adjMats.R;	
+		gCFC_matrix_l=gCFC_matrix_l+fw_CFC.adjMats.L;
+		gCFC_matrix_r=gCFC_matrix_r+fw_CFC.adjMats.R;
 	end
 	% divide by subject number to average
 	CFCmatrix_l=CFCmatrix_l./length(subjs);
@@ -43,3 +50,12 @@ for T=1:3;
 	csvwrite(outdirgp_t_l,CFCmatrix_l)
 	csvwrite(outdirgp_t_r,CFCmatrix_r)
 end
+% group average
+gCFC_matrix_l=gCFC_matrix_l./SubjNum;
+gCFC_matrix_r=gCFC_matrix_r./SubjNum;
+fp_l=['/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv'];
+fp_r=['/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv'];
+% save CFC average
+csvwrite(fp_l,CFCmatrix_l);
+csvwrite(fp_r,CFCmatrix_r);
+

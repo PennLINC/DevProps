@@ -14,6 +14,10 @@ mw_L=ones(1,10242);
 mw_L(mwIndVec_l)=0;
 mw_R=ones(1,10242);
 mw_R(mwIndVec_r)=0;
+% initialize All-FC matrix
+FCmatrix=zeros(20484,20484);
+% initialize subj count
+SubjNum=0;
 % for each tertile
 for T=1:3;
 	tertile=tertiles{T}
@@ -24,6 +28,7 @@ for T=1:3;
 	% Make empty vertex-level FC data matrix (# vert in mask,fsaverage5)
 	FCmatrices=zeros(20484,20484);
 	for s=1:length(subjs);
+		SubjNum=SubjNum+1;
 		subj=subjs(s)
 	        vw_ts_l_p=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_L_10k.mgh'];
 		vw_ts_r_p=['/cbica/projects/pinesParcels/results/PWs/PreProc/' subj '/' subj '_AggTS_R_10k.mgh'];
@@ -46,7 +51,8 @@ for T=1:3;
 		end
 		% bigass connectivity matrix, takes 5 seconds or so to calc
 		ba_conmat=corrcoef(vw_ts_bothrw);
-		FCmatrices=FCmatrices+ba_conmat;	
+		FCmatrices=FCmatrices+ba_conmat;
+		FCmatrix=FCmatrix+ba_conmat;	
 	end
 	% divide by subject number to average
 	FCmatrices=FCmatrices./length(subjs);
@@ -54,3 +60,7 @@ for T=1:3;
 	% save tertile FC average to subjdir
 	csvwrite(outdirgp_t,FCmatrices)
 end
+% average group FC matrix
+FCmatrix=FCmatrix./SubjNum;
+csvwrite('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC.csv',FCmatrix);
+

@@ -50,11 +50,12 @@ for (s in 1:dim(subjList)[1]){
     subj=subjList[s,1]
     ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
     # if output exists
-    if (file.exists(paste0(ResFp,subj,'_ShufDips4.csv'))) {
-      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_ShufDips4.csv'),header=F)
-      ObsDip<-as.numeric(SpunDips[2,101])
+    if (file.exists(paste0(ResFp,subj,'_SpunDips4_My.csv'))) {
+      print(s)
+      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
+      ObsDip<-as.numeric(SpunDips[2,1001])
       RealDips[s]<-ObsDip
-      SpunDips<-as.numeric(SpunDips[2,1:100])
+      SpunDips<-as.numeric(SpunDips[2,1:1000])
       SpunSD=sd(SpunDips)
       SpunMean=mean(SpunDips)
       #print(ObsDip)
@@ -102,7 +103,7 @@ ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(b
 ```{r, fig.width=6,fig.height=3}
 # individual level, set subj manually
 
-SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
+SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
 ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)

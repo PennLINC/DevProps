@@ -1,1 +1,1 @@
-matlab -nodisplay -r "Native_Dip_P_aggreg"
+matlab -nodisplay -r "fc_matrix_gen"
