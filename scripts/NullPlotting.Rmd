@@ -138,6 +138,30 @@ ggplot(plotdf,aes(sd))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$sd_
 
 ```
 
+```{r}
+# repeat for parameter sweep
+# individual level, set subj manually
+paramList=c('VeryLow','Low','High','VeryHigh')
+for (p in 1:length(paramList)){
+SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_',paramList[p],'.csv'),header=F)
+ObsDip<-as.numeric(SpunDips[2,1001])
+SpunDips<-as.numeric(SpunDips[2,1:1000])
+plotdf<-data.frame(ObsDip,SpunDips)
+
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab(paste0('Dip Stats:    = ',paramList[p]))+guides(y="none")+scale_x_continuous(limits =c(0,0.00823),breaks=c(0,0.004,0.008))+theme(axis.text = element_text(size=22))
+
+}
+
+# saved out at 350 x 250
+
+# try one as SD insead of raw
+plotdf$sd<-(plotdf$SpunDips-mean(plotdf$SpunDips))/sd(plotdf$SpunDips)
+plotdf$sd_o<-(plotdf$ObsDip-mean(plotdf$SpunDips))/sd(plotdf$SpunDips)
+
+ggplot(plotdf,aes(sd))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$sd_o,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")
+
+```
+
 ```{r, fig.width=6,fig.height=3}
 # repeat for temporal
 SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_ShufDips4.csv'),header=F)

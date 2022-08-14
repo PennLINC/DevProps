@@ -110,27 +110,36 @@ write.csv(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/g
 ```
 
 ```{r}
+library(vroom)
 #### Load in distances, plot
-HD_v_l=readRDS('Y:/data/HD_v_l.rds')
-HD_v_r=readRDS('Y:/data/HD_v_r.rds')
+#HD_v_l=readRDS('Y:/data/HD_v_l.rds')
+#HD_v_r=readRDS('Y:/data/HD_v_r.rds')
 HD_f_l=readRDS('Y:/data/HD_f_l.rds')
 HD_f_r=readRDS('Y:/data/HD_f_r.rds')
 
 #### Load in Euclidean distances
 
-ED_v_l=vroom('Y:/results/PWs/vert_EucD_left.csv')
-ED_v_r=vroom('Y:/results/PWs/vert_EucD_right.csv')
-ED_f_l=vroom('Y:/results/PWs/face_EucD_left.csv')
-ED_f_r=vroom('Y:/results/PWs/face_EucD_right.csv')
+#ED_v_l=vroom('Y:/results/PWs/vert_EucD_left.csv')
+#ED_v_r=vroom('Y:/results/PWs/vert_EucD_right.csv')
+ED_f_l=vroom('Y:/results/PWs/face_EucD_left.csv',delim=',')
+ED_f_r=vroom('Y:/results/PWs/face_EucD_right.csv',delim=',')
 
 ### Load in CFC
 
-cfc_l=vroom('Y:/results/PWs/FC/gro_CFC_l.csv',col_names=FALSE)
-cfc_r=vroom('Y:/results/PWs/FC/gro_CFC_r.csv',col_names=FALSE)
+cfc_l=vroom('Y:/results/PWs/FC/gro_CFC_l.csv',delim=',')
+cfc_r=vroom('Y:/results/PWs/FC/gro_CFC_r.csv',delim=',')
 
+
+```
+
+```{r}
 ### Load in Verts
+df<-data.frame(cfc_l$x,ED_f_l$x,HD_f_l)
+colnames(df)<-c('cfc','ED','HD')
 
-
+library(ggplot2)
+ggplot(df, aes(y = cfc, x = ED)) +
+  geom_hex(bins = 200)
 
 ```
 

@@ -75,22 +75,41 @@ subj
 
 %%%% RUN 7
 %%%%% above with spins
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh']);
-
+% cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+% fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh']);
 
 %%%% RUN 8
 %%%% Run angular distance calculation using participant's own tertile-derived PG
-%tertiles=['young','mid','old'];
-%tertilecodes=['y','Mi','o'];
+%tertiles=["young" "mid" "old"];
+%tertilecodes=["Y" "Mi" "O"];
 %for T=1:3
 %tertile=tertiles(T)
+%tertilecode=tertilecodes(T)
 % load in tertile names
-%subjs=readtable(['~/' tertile '_subs.txt'],'ReadVariableNames',false;
-%for s=1:length(subjs)
+%subjs=readtable(['~/PWs/' tertile{:} '_subs.txt'],'ReadVariableNames',false);
+%sizesubjs=size(subjs);
+%lsubjs=sizesubjs(1)
+% for each subject
+%for s=1:lsubjs
+%subj=subjs{s,1}
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_' tertilecode{:} 'PG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj{:}];
+% run tert ang dist calc
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=11G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh']);
+%pause(7)
+%end
+%end
 
+%%%% RUN 9
+%%%% extract Myelin features
+
+Extract_BUTD_ResultantVecs_My(subj)
+
+%%% run 10:
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)
-%mask_mw_faces_4curv(subj)
+
+% aggregate Bu TD prop for tert PG?
