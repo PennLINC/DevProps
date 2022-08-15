@@ -231,9 +231,9 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-%c=colorbar;
+c=colorbar;
 %c=colorbar('XTickLabel',{'.45', '.50', '.55'},'XTick', .45:.05:.55)
-%c.Location='southoutside'
+c.Location='southoutside'
 %colormap(custommap)
 
 print(Fn,'-dpng')

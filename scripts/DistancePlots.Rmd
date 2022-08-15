@@ -86,14 +86,10 @@ saveRDS(HD_f_r,'~/data/HD_f_r.rds')
 
 ```{r}
 # take upper triangle of euclidean distances, save for chance at mount loading
-ED_v_l=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_left.csv')
-write.csv(ED_v_l[upper.tri(ED_v_l)],'/cbica/projects/pinesParcels/results/PWs/vert_EucD_left.csv')
-ED_v_r=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
-write.csv(ED_v_r[upper.tri(ED_v_r)],'/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
 ED_f_l=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_left.csv')
-write.csv(ED_f_l[upper.tri(ED_f_l)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_left.csv')
+saveRDS(ED_f_l[upper.tri(ED_f_l)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_left_vec.rds')
 ED_f_r=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_right.csv')
-write.csv(ED_f_r[upper.tri(ED_f_r)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_right.csv')
+saveRDS(ED_f_r[upper.tri(ED_f_r)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_right_vec.rds')
 ```
 
 ```{r}
@@ -104,44 +100,101 @@ write.csv(ED_f_r[upper.tri(ED_f_r)],'/cbica/projects/pinesParcels/results/PWs/fa
 library(vroom)
 # take upper triangle of CFC, save for chance at mount loading
 cfc_l=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv')
-write.csv(cfc_l[upper.tri(cfc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv')
+saveRDS(cfc_l[upper.tri(cfc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l_vec.rds')
 cfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv')
-write.csv(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv')
+saveRDS(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r_vec.rds')
+```
+```{r}
+
 ```
 
 ```{r}
-library(vroom)
-#### Load in distances, plot
-#HD_v_l=readRDS('Y:/data/HD_v_l.rds')
-#HD_v_r=readRDS('Y:/data/HD_v_r.rds')
+#### Load in distances, plot (FACES)
 HD_f_l=readRDS('Y:/data/HD_f_l.rds')
 HD_f_r=readRDS('Y:/data/HD_f_r.rds')
 
 #### Load in Euclidean distances
-
-#ED_v_l=vroom('Y:/results/PWs/vert_EucD_left.csv')
-#ED_v_r=vroom('Y:/results/PWs/vert_EucD_right.csv')
-ED_f_l=vroom('Y:/results/PWs/face_EucD_left.csv',delim=',')
-ED_f_r=vroom('Y:/results/PWs/face_EucD_right.csv',delim=',')
+ED_f_l=readRDS('Y:/results/PWs/face_EucD_left_vec.rds')
+ED_f_r=readRDS('Y:/results/PWs/face_EucD_right_vec.rds')
 
 ### Load in CFC
 
-cfc_l=vroom('Y:/results/PWs/FC/gro_CFC_l.csv',delim=',')
-cfc_r=vroom('Y:/results/PWs/FC/gro_CFC_r.csv',delim=',')
-
+cfc_l=readRDS('Y:/results/PWs/FC/gro_CFC_l_vec.rds')
+cfc_r=readRDS('Y:/results/PWs/FC/gro_CFC_r_vec.rds')
 
 ```
 
 ```{r}
-### Load in Verts
-df<-data.frame(cfc_l$x,ED_f_l$x,HD_f_l)
+df<-data.frame(cfc_l,ED_f_l,HD_f_l)
 colnames(df)<-c('cfc','ED','HD')
 
 library(ggplot2)
 ggplot(df, aes(y = cfc, x = ED)) +
-  geom_hex(bins = 200)
+  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black')+theme_classic()
 
 ```
+
+```{r}
+### read medial wall for vertices
+mw_l_verts=as.logical(read.csv('~/data/mw_boolean_l.csv'))
+mw_r_verts=as.logical(read.csv('~/data/mw_boolean_r.csv'))
+
+# VERT FC
+fc=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC.csv',header=F)
+#mask out medial wall
+fc_l=fc[1:10242,1:10242]
+fc_l=fc_l[mw_l_verts,mw_l_verts]
+# mask out lower triangle
+saveRDS(fc_l[upper.tri(fc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_l_vec.rds')
+
+# right
+#mask out medial wall
+# add 10242 to mw r
+fc_r=fc[10243:20484,10243:20484]
+# mask out medial wall
+fc_r=fc[mw_r_verts,mw_r_verts]
+# mask out lower triangle
+saveRDS(fc_r[upper.tri(fc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_r_vec.rds')
+
+# EUC D
+ED_v_l=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_left.csv')
+#mask out medial wall
+ED_v_l=ED_v_l[mw_l_verts,mw_l_verts]
+# mask out lower triangle
+saveRDS(ED_v_l[upper.tri(ED_v_l)],'/cbica/projects/pinesParcels/results/PWs/FC/vert_EucD_left_vec.rds')
+
+
+# right
+ED_v_r=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
+# mask out medial wall
+ED_v_r=ED_v_r[mw_r_verts,mw_r_verts]
+# mask out lower triangle
+saveRDS(ED_v_r[upper.tri(ED_v_r)],'/cbica/projects/pinesParcels/results/PWs/FC/vert_EucD_right_vec.rds')
+```
+
+```{r}
+### Load in Vertex data
+HD_v_l=readRDS('Y:/data/HD_v_l.rds')
+#HD_v_r=readRDS('Y:/data/HD_v_r.rds')
+ED_v_l=readRDS('Y:/results/PWs/FC/vert_EucD_left_vec.rds')
+#ED_v_r=readRDS('Y:/results/PWs/FC/vert_EucD_right_vec.rds')
+fc_l=readRDS('Y:/results/PWs/FC/gro_FC_l_vec.rds')
+#fc_r=readRDS('Y:/results/PWs/FC/gro_FC_r_vec.rds')
+```
+
+```{r}
+df<-data.frame(fc_l,ED_v_l,HD_v_l)
+colnames(df)<-c('fc','ED','HD')
+
+library(ggplot2)
+library(ggExtra)
+ggplot(df, aes(y = fc, x = ED)) +
+  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black',limits=c(900000))+theme_classic()
+# plot just for marginal
+Marginal<-ggplot(df, aes(y = fc, x = HD)) +geom_point(alpha=0,size=0)+theme_classic()
+ggMarginal(Marginal,type='histogram')
+```
+
 
 ```{r}
 # will need sep. runs for young and old

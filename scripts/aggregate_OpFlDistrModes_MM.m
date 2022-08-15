@@ -34,8 +34,8 @@ for s = 1:height(Subjs)
 		AngsL=Angs.AngDist.gLeft;
 		AngsR=Angs.AngDist.gRight;
 		% and BUTD vecs
-		outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:} '/' Subj{:} '_BUTD_L_resultantVecs.mat'];
-		outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:} '/' Subj{:} '_BUTD_R_resultantVecs.mat'];
+		outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:} '/' Subj{:} '_BUTD_L_resultantVecs_My.mat'];
+		outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' Subj{:} '/' Subj{:} '_BUTD_R_resultantVecs_My.mat'];
 		% load in L
 		BUTD_L=load(outFP_L);
 		BUTD_L=cell2mat(BUTD_L.OutDf_L);

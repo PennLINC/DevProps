@@ -73,8 +73,8 @@ data=zeros(1,5120);
 data(g_noMW_combined_L)=FaceVecL;
 
 % fixed colorscale
-mincol=.39;
-maxcol=.61;
+mincol=.4;
+maxcol=.6;
 
 % parula for TD Prop.
 custommap=colormap(parula);

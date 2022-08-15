@@ -106,9 +106,17 @@ subj
 %%%% RUN 9
 %%%% extract Myelin features
 
-Extract_BUTD_ResultantVecs_My(subj)
+%Extract_BUTD_ResultantVecs_My(subj)
 
-%%% run 10:
+%%% RUN 10
+% run angular distance on myelin over tasks
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_c_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh']);
+
+
+%%% run 11:
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)
 

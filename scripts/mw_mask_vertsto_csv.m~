@@ -1,0 +1,15 @@
+% add paths
+addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
+
+%%% load in surface data - verts and faces
+% for surface data
+SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
+
+% read in mwvecs
+surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+mwIndVec_l = read_medial_wall_label(surfML);
+surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+mwIndVec_r = read_medial_wall_label(surfMR);
+% binary mask
+%saveout 
+%writetable
