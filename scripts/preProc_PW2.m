@@ -49,4 +49,4 @@ addpath(genpath('/cbica/projects/hcpd/scripts/tools'));
 
 % RUN 3
 %%% mask medial wall and extract R-friendly face data
-mask_mw_faces_4(subj)
+mask_mw_faces_4_tertSpecific(subj)

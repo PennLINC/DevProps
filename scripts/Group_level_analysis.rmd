@@ -85,7 +85,7 @@ write.table(youngins,'Y:/PWs/young_subs.csv')
 geezers=masterdf$SubjID[masterdf$interview_age>high_tertile_age]
 write.table(geezers,'Y:/PWs/old_subs.csv')
 #mids
-mids=masterdf$SubjID[masterdf$interview_age<high_tertile_age & masterdf$interview_age>low_tertile_age]
+mids=masterdf$SubjID[masterdf$interview_age<=high_tertile_age & masterdf$interview_age>=low_tertile_age]
 write.table(mids,'Y:/PWs/mid_subs.csv')
 
 # write in matlab-friendly format
@@ -330,6 +330,63 @@ TDProp_lm<-lm(TDProp~FD+sex+RemainingTRs,data=BuMerge)
 BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
 
 ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4)+ggtitle('Whole-Cortex') + geom_point(size=3,alpha=.5) + xlab("Age (Years)") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), plot.title=element_text(size=30,face="bold"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
+```
+
+```{r}
+# TERTILE RUNS
+
+# checkup on how BuProp from hists (and rs_subs_Tert.csv) maps onto bimodality
+BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp_Tert.csv'))
+Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
+BuPropdf<-data.frame(BuProp,Subjs)
+colnames(BuPropdf)<-c('BuProp','SubjID')
+BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
+# convert to prop TD
+BuMerge$TDProp_tert=1-BuMerge$BuProp
+
+#plotting : NOTE BU PROP IS NOT -1'ED, HIGH INTENSITY = LOWER ORDER FOR MYELIN
+BuDs<-ggplot(BuMerge,aes(x=Ds,y=BuProp))+geom_point(size=3,alpha=.5)+theme_classic(base_size=28)+geom_smooth(method='lm',color='black')
+BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent_format(accuracy = 1))+scale_x_continuous(breaks=c(.002,.006,.01))
+
+
+# dev analyses
+devMod<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs,data=BuMerge)
+ndevMod<-gam(TDProp~FD+sex+RemainingTRs,data=BuMerge)
+anovaRes<-anova.gam(devMod,ndevMod,test='Chisq')
+anovaRes$`Pr(>Chi)`
+# difference in adjusted r2
+summary(devMod)$r.sq-summary(ndevMod)$r.sq
+
+
+# get residuals of model for plotting
+TDProp_lm<-lm(TDProp~FD+sex+RemainingTRs,data=BuMerge)
+BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
+
+ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4)+ggtitle('Whole-Cortex: Tert.-Specific') + geom_point(size=3,alpha=.5) + xlab("Age (Years)") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), plot.title=element_text(size=30,face="bold"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
+
+```
+
+
+```{r}
+# including control for tertile-fit
+# og td proportion
+BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp.csv'))
+Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
+BuPropdf<-data.frame(BuProp,Subjs)
+colnames(BuPropdf)<-c('BuProp','SubjID')
+BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
+BuMerge$TDProp=1-BuMerge$BuProp
+
+# tertile-specific
+BuProp_tert=t(read.csv('Y:/results/PWs/rs_subsBuProp_Tert.csv'))
+BuPropdf_tert<-data.frame(BuProp_tert,Subjs)
+colnames(BuPropdf_tert)<-c('BuProp_tert','SubjID')
+BuMerge<-merge(BuMerge,BuPropdf_tert,by='SubjID')
+# convert to prop TD
+BuMerge$TDProp_tert=1-BuMerge$BuProp_tert
+
+
+summary(gam(TDProp~s(interview_age,k=4)+FD+sex+TDProp_tert,data=BuMerge))
 ```
 
 ```{r}

@@ -1,1 +1,1 @@
-matlab -nodisplay -r "mask_allsubs"
+matlab -nodisplay -r "fc_matrix_gen"

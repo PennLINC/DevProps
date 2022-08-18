@@ -1,1 +1,2 @@
-matlab -nodisplay -r " cc_matrix_gen"
+matlab -nodisplay -r "preProc_PW2('${1}')"
+

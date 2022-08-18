@@ -39,6 +39,11 @@ for T=1:3;
 		CFCmatrix_R=CFCmatrix_r+fw_CFC.adjMats.R;	
 		gCFC_matrix_l=gCFC_matrix_l+fw_CFC.adjMats.L;
 		gCFC_matrix_r=gCFC_matrix_r+fw_CFC.adjMats.R;
+		% save csv version
+		fw_CFCfp_csv=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj{:} '/' subj{:} '_CircFC_L.csv'];
+		csvwrite(fw_CFCfp_csv,fw_CFC.adjMats.L);
+		fw_CFCfp_csv2=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj{:} '/' subj{:} '_CircFC_R.csv'];
+                csvwrite(fw_CFCfp_csv2,fw_CFC.adjMats.R);
 	end
 	% divide by subject number to average
 	CFCmatrix_l=CFCmatrix_l./length(subjs);
@@ -56,6 +61,6 @@ gCFC_matrix_r=gCFC_matrix_r./SubjNum;
 fp_l=['/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv'];
 fp_r=['/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv'];
 % save CFC average
-csvwrite(fp_l,CFCmatrix_l);
-csvwrite(fp_r,CFCmatrix_r);
+csvwrite(fp_l,gCFCmatrix_l);
+csvwrite(fp_r,gCFCmatrix_r);
 

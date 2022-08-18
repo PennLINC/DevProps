@@ -53,6 +53,9 @@ for T=1:3;
 		ba_conmat=corrcoef(vw_ts_bothrw);
 		FCmatrices=FCmatrices+ba_conmat;
 		FCmatrix=FCmatrix+ba_conmat;	
+		% save subject specific fc matrix
+		outfn=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj{:} '/' subj{:} '_FC.csv'];
+		csvwrite(outfn,ba_conmat);
 	end
 	% divide by subject number to average
 	FCmatrices=FCmatrices./length(subjs);

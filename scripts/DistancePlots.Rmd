@@ -152,7 +152,7 @@ saveRDS(fc_l[upper.tri(fc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_F
 # add 10242 to mw r
 fc_r=fc[10243:20484,10243:20484]
 # mask out medial wall
-fc_r=fc[mw_r_verts,mw_r_verts]
+fc_r=fc_r[mw_r_verts,mw_r_verts]
 # mask out lower triangle
 saveRDS(fc_r[upper.tri(fc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_r_vec.rds')
 

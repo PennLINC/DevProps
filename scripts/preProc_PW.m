@@ -82,42 +82,46 @@ subj
 
 %%%% RUN 8
 %%%% Run angular distance calculation using participant's own tertile-derived PG
-%tertiles=["young" "mid" "old"];
-%tertilecodes=["Y" "Mi" "O"];
-%for T=1:3
-%tertile=tertiles(T)
-%tertilecode=tertilecodes(T)
+tertiles=["young" "mid" "old"];
+tertilecodes=["Y" "Mi" "O"];
+for T=1:3
+tertile=tertiles(T)
+tertilecode=tertilecodes(T)
 % load in tertile names
-%subjs=readtable(['~/PWs/' tertile{:} '_subs.txt'],'ReadVariableNames',false);
-%sizesubjs=size(subjs);
-%lsubjs=sizesubjs(1)
+subjs=readtable(['~/PWs/' tertile{:} '_subs.txt'],'ReadVariableNames',false);
+sizesubjs=size(subjs);
+lsubjs=sizesubjs(1)
 % for each subject
-%for s=1:lsubjs
-%subj=subjs{s,1}
+for s=1:lsubjs
+subj=subjs{s,1};
+mask_mw_faces_4_tertSpecific(subj{:})
+% if file doesn't exist
+%if ~isfile(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj{:} '/' subj{:} '_tertSpecific_AngDistMat4.mat']);
 %cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_' tertilecode{:} 'PG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj{:}];
 % run tert ang dist calc
 %fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh'], 'w');
 %fprintf(fid,cmd);
-%system(['qsub -l h_vmem=11G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh']);
+%system(['qsub -l h_vmem=15G,s_vmem=14G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh']);
 %pause(7)
 %end
-%end
+end
+end
 
 %%%% RUN 9
 %%%% extract Myelin features
 
-%Extract_BUTD_ResultantVecs_My(subj)
+%Extract_BUTD_ResultantVecs_My_c(subj)
 
 %%% RUN 10
 % run angular distance on myelin over tasks
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_c_CompVer.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_c_CompVer.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh']);
 
 
 %%% run 11:
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)
-
+%mask_mw_faces_4_tertSpecific(subj)
 % aggregate Bu TD prop for tert PG?
