@@ -6,9 +6,6 @@ function us = OpFl_Sph_fs4_paramSweep(subj)
 
 % https://www.csc.univie.ac.at/paper/KirLanSch14.pdf
 
-
-% set to run independently on each pair of temporally adjacent frames... yikes
-
 %%% convert to mgh before input!
 %%% squeeze(hemiTS.mgh.vol) before input!
 

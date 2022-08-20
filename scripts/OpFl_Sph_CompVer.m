@@ -5,8 +5,6 @@ function us = OpFl_Sph(subj)
 % adapted from Decomposition of Optical Flow on the Sphere, by Kirisits, Lang, and Scherzer (2014)
 % https://www.csc.univie.ac.at/paper/KirLanSch14.pdf
 
-% set to run independently on each pair of temporally adjacent frames... yikes
-
 %%% squeeze(hemiTS.mgh.vol) before input!
 
 %%%%%%%%%%%%%%%%%%%% Set parameters.

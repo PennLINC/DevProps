@@ -104,9 +104,6 @@ saveRDS(cfc_l[upper.tri(cfc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro
 cfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv')
 saveRDS(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r_vec.rds')
 ```
-```{r}
-
-```
 
 ```{r}
 #### Load in distances, plot (FACES)
@@ -170,16 +167,29 @@ ED_v_r=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
 ED_v_r=ED_v_r[mw_r_verts,mw_r_verts]
 # mask out lower triangle
 saveRDS(ED_v_r[upper.tri(ED_v_r)],'/cbica/projects/pinesParcels/results/PWs/FC/vert_EucD_right_vec.rds')
+
+# HIER D
+HD_v_l=readRDS('/cbica/projects/pinesParcels/data/HD_v_l.rds')
+HD_v_r=readRDS('/cbica/projects/pinesParcels/data/HD_v_r.rds')
+
+# left
+HD_v_l=HD_v_l[mw_l_verts,mw_l_verts]
+saveRDS(HD_v_l[upper.tri(HD_v_l)],'/cbica/projects/pinesParcels/data/HD_v_l.rds')
+
+# right
+HD_v_r=HD_v_r[mw_r_verts,mw_r_verts]
+saveRDS(HD_v_r[upper.tri(HD_v_r)],'/cbica/projects/pinesParcels/data/HD_v_r.rds')
+
 ```
 
 ```{r}
 ### Load in Vertex data
 HD_v_l=readRDS('Y:/data/HD_v_l.rds')
-#HD_v_r=readRDS('Y:/data/HD_v_r.rds')
+HD_v_r=readRDS('Y:/data/HD_v_r.rds')
 ED_v_l=readRDS('Y:/results/PWs/FC/vert_EucD_left_vec.rds')
-#ED_v_r=readRDS('Y:/results/PWs/FC/vert_EucD_right_vec.rds')
+ED_v_r=readRDS('Y:/results/PWs/FC/vert_EucD_right_vec.rds')
 fc_l=readRDS('Y:/results/PWs/FC/gro_FC_l_vec.rds')
-#fc_r=readRDS('Y:/results/PWs/FC/gro_FC_r_vec.rds')
+fc_r=readRDS('Y:/results/PWs/FC/gro_FC_r_vec.rds')
 ```
 
 ```{r}

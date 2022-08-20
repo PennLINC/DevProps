@@ -20,6 +20,20 @@ mw_r_verts=as.logical(read.csv('~/data/mw_boolean_r.csv'))
 
 # vertices
 
+vertPG_L<-read.csv('~/results/PWs/vertPG_left.csv')
+vertPG_R<-read.csv('~/results/PWs/vertPG_right.csv')
+# faces
+facePG_L<-read.csv('~/results/PWs/facePG_left.csv')
+facePG_R<-read.csv('~/results/PWs/facePG_right.csv')
+# Initialize HierarchD matrices
+HD_v_l<-matrix(nrow=dim(vertPG_L)[1],ncol=dim(vertPG_L)[1])
+HD_v_r<-matrix(nrow=dim(vertPG_R)[1],ncol=dim(vertPG_R)[1])
+HD_f_l<-matrix(nrow=dim(facePG_L)[1],ncol=dim(facePG_L)[1])
+HD_f_r<-matrix(nrow=dim(facePG_R)[1],ncol=dim(facePG_R)[1])
+##### Calculate HierarchD
+
+# vertices
+
 # L
 for (i in 1:dim(vertPG_L)[1]){
   for (j in 1:dim(vertPG_L)[1]){
@@ -28,12 +42,8 @@ for (i in 1:dim(vertPG_L)[1]){
   }
 }
 
-# mask medial wall
-HD_v_l=HD_v_l[mw_l_verts,mw_l_verts]
-# upper tri is only hope of shrinking file enough to load into mount for plotting
-HD_v_l=HD_v_l[upper.tri(HD_v_l)]
 # saveout
-saveRDS(HD_v_l,'/cbica/projects/pinesParcels/data/HD_v_l.rds')
+saveRDS(HD_v_l,'~/data/HD_v_l.rds')
 
 # R
 
@@ -47,13 +57,8 @@ for (i in 1:dim(vertPG_R)[1]){
 
 print('done with vertices')
 
-# mask medial wall
-HD_v_r=HD_v_r[mw_r_verts,mw_r_verts]
-# upper tri is only hope of shrinking file enough to load into mount for plotting
-HD_v_r=HD_v_r[upper.tri(HD_v_r)]
 # saveout
-HD_v_r=HD_v_r[upper.tri(HD_v_r)]
-saveRDS(HD_v_r,'/cbica/projects/pinesParcels/data/HD_v_r.rds')
+saveRDS(HD_v_r,'~/data/HD_v_r.rds')
 
 # faces
 
@@ -65,9 +70,8 @@ for (i in 1:dim(facePG_L)[1]){
   }
 }
 
-HD_f_l=HD_f_l[upper.tri(HD_f_l)]
 # saveout
-saveRDS(HD_f_l,'/cbica/projects/pinesParcels/data/HD_f_l.rds')
+saveRDS(HD_f_l,'~/data/HD_f_l.rds')
 
 # R 
 
@@ -79,6 +83,6 @@ for (i in 1:dim(facePG_R)[1]){
   }
 }
 
-HD_f_r=HD_f_r[upper.tri(HD_f_r)]
 # saveout
-saveRDS(HD_f_r,'/cbica/projects/pinesParcels/data/HD_f_r.rds')
+saveRDS(HD_f_r,'~/data/HD_f_r.rds')
+

@@ -71,8 +71,8 @@ data(g_noMW_combined_L)=FaceVecL;
 %%%%%%% fixed colorscale varities
 
 %%% circular
-mincol=-10;
-maxcol=10;
+mincol=-.7;
+maxcol=.7;
 
 
 %%% for red/blue 0-centered

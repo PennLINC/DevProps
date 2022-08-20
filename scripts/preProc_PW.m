@@ -61,10 +61,10 @@ subj
 
 %%% RUN 5
 %%% Run Spherical Optical flow with parameter sweeps (4x the runs, intended for subset of subjs)
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_paramSweep.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh']);
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_paramSweep.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh']);
 
 %%%% RUN 6
 %%%% Run angular distance calculation on altertative reference hierarchy
@@ -82,19 +82,19 @@ subj
 
 %%%% RUN 8
 %%%% Run angular distance calculation using participant's own tertile-derived PG
-tertiles=["young" "mid" "old"];
-tertilecodes=["Y" "Mi" "O"];
-for T=1:3
-tertile=tertiles(T)
-tertilecode=tertilecodes(T)
+%tertiles=["young" "mid" "old"];
+%tertilecodes=["Y" "Mi" "O"];
+%for T=1:3
+%tertile=tertiles(T)
+%tertilecode=tertilecodes(T)
 % load in tertile names
-subjs=readtable(['~/PWs/' tertile{:} '_subs.txt'],'ReadVariableNames',false);
-sizesubjs=size(subjs);
-lsubjs=sizesubjs(1)
+%subjs=readtable(['~/PWs/' tertile{:} '_subs.txt'],'ReadVariableNames',false);
+%sizesubjs=size(subjs);
+%lsubjs=sizesubjs(1)
 % for each subject
-for s=1:lsubjs
-subj=subjs{s,1};
-mask_mw_faces_4_tertSpecific(subj{:})
+%for s=1:lsubjs
+%subj=subjs{s,1};
+%mask_mw_faces_4_tertSpecific(subj{:})
 % if file doesn't exist
 %if ~isfile(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj{:} '/' subj{:} '_tertSpecific_AngDistMat4.mat']);
 %cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_' tertilecode{:} 'PG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj{:}];
@@ -104,8 +104,8 @@ mask_mw_faces_4_tertSpecific(subj{:})
 %system(['qsub -l h_vmem=15G,s_vmem=14G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh']);
 %pause(7)
 %end
-end
-end
+%end
+%end
 
 %%%% RUN 9
 %%%% extract Myelin features
