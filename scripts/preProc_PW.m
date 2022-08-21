@@ -61,10 +61,10 @@ subj
 
 %%% RUN 5
 %%% Run Spherical Optical flow with parameter sweeps (4x the runs, intended for subset of subjs)
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_OpFl_Sph_fs4_paramSweep.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh'], 'w');
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer_paramSweep.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh'], 'w');
 fprintf(fid,cmd);
-system(['qsub -l h_vmem=25G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pS.sh']);
+system(['qsub -l h_vmem=29G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh']);
 
 %%%% RUN 6
 %%%% Run angular distance calculation on altertative reference hierarchy

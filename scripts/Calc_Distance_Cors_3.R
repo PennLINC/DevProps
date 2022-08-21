@@ -11,15 +11,9 @@ FD_TRs=read.csv('/cbica/projects/pinesParcels/PWs/Subj_FD_RemTRs.csv')
 colnames(FD_TRs)[1]<-'SubjID'
 colnames(FD_TRs)[2]<-'FD'
 colnames(FD_TRs)[3]<-'RemainingTRs'
-# FD for carit runs
-FD_TRs_c=read.csv('/cbica/projects/pinesParcels/PWs/Subj_FD_RemTRs_c.csv')
-colnames(FD_TRs_c)[1]<-'SubjID'
-colnames(FD_TRs_c)[2]<-'FDc'
-colnames(FD_TRs_c)[3]<-'RemainingTRsc'
 
 # merge by subjID
 mergeddf<-merge(demo,FD_TRs,by='SubjID')
-mergeddf<-merge(mergeddf,FD_TRs_c,by='SubjID')
 
 # exclude subjects with less than 600 TRs remaining (in rest)
 inclusionVec<-mergeddf$RemainingTRs>600
@@ -48,10 +42,10 @@ mw_l_verts=as.logical(read.csv('~/data/mw_boolean_l.csv'))
 mw_r_verts=as.logical(read.csv('~/data/mw_boolean_r.csv'))
 
 # initialize output vectors
-mergeddf$EucxFc<-NULL
-mergeddf$HDxFc<-NULL
-mergeddf$EucxCFc<-NULL
-mergeddf$HDxCFc<-NULL
+mergeddf$EucxFc<-rep(99,388)
+mergeddf$HDxFc<-rep(99,388)
+mergeddf$EucxCFc<-rep(99,388)
+mergeddf$HDxCFc<-rep(99,388)
 
 # loop over every subj
 for (s in 101:150){

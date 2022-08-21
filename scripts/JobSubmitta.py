@@ -20,7 +20,7 @@ while len(subjects)>0:
   qstat = subprocess.check_output(['qstat'],shell=True).decode().split('/bin/python')[0]
   que = len(qstat.split('\n'))-3
   # if we are using less than 7 job slots (one is occupied by this script)
-  if que < 42:
+  if que < 45:
     # see if it is the weekend, 0, 1, 2, 3, and 4 are weekday, 5 and 6 are weekend
     weekno = datetime.datetime.today().weekday()
     # see if it is before 9 or after 5 
@@ -30,15 +30,15 @@ while len(subjects)>0:
     if weekno > 4 or Hour < 9 or Hour > 17 :
       newsub = subjects.pop()
       # submit job (if conditions are met)
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_OpFl_fs4_Low.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_OpFl_fs4_Low_spoon.mat'
       if not os.path.exists(OpFile):
         print(newsub)
-        subprocess.run(["qsub","-l","h_vmem=26G,s_vmem=25G","qsubMatlab.sh",newsub])
+        subprocess.run(["qsub","-l","h_vmem=12G,s_vmem=11G","qsubMatlab.sh",newsub])
       # added this to run 3 subjs (1 slot for this job) during ON hours
-    elif que < 32:
+    elif que < 33:
       newsub = subjects.pop()
-      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_OpFl_fs4_Low.mat'
+      OpFile='/cbica/projects/pinesParcels/results/PWs/Proced/' + str(newsub) + '/' + str(newsub) + '_OpFl_fs4_Low_spoon.mat'
       if not os.path.exists(OpFile):
       # submit job (if conditions are met)
         print(newsub)
-        subprocess.run(["qsub","-l","h_vmem=26G,s_vmem=25G","qsubMatlab.sh",newsub])
+        subprocess.run(["qsub","-l","h_vmem=12G,s_vmem=11G","qsubMatlab.sh",newsub])

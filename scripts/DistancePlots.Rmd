@@ -106,6 +106,14 @@ saveRDS(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro
 ```
 
 ```{r}
+# take upper triangle of hierarchical distance, save for chance at mount loading
+HD_f_l=HD_f_l=readRDS('/cbica/projects/pinesParcels/data/HD_f_l.rds')
+saveRDS(HD_f_l[upper.tri(HD_f_l)],'/cbica/projects/pinesParcels/data/HD_f_l.rds')
+HD_f_r=HD_f_r=readRDS('/cbica/projects/pinesParcels/data/HD_f_r.rds')
+saveRDS(HD_f_r[upper.tri(HD_f_r)],'/cbica/projects/pinesParcels/data/HD_f_r.rds')
+```
+
+```{r}
 #### Load in distances, plot (FACES)
 HD_f_l=readRDS('Y:/data/HD_f_l.rds')
 HD_f_r=readRDS('Y:/data/HD_f_r.rds')
@@ -245,4 +253,18 @@ ggplot(df, aes(y = CFC_o, x = HierarchD)) +
   geom_hex(bins = 200)
 ggplot(df, aes(y = Distance, x = HierarchD)) +
   geom_hex(bins = 200)
+```
+
+
+```{r}
+# for running on cluster
+.libPaths('~/Rlibs')
+library(ggplot2)
+fc_l=readRDS('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_l_vec.rds')
+HD_v_l=readRDS('/cbica/projects/pinesParcels/data/HD_v_l.rds')
+df=data.frame(fc_l,HD_v_l)
+colnames(df)<-c('FC','HierarchD')
+theplot<-ggplot(df, aes(y = FC, x = HierarchD)) +
+  geom_hex(bins = 200)+geom_line()
+ggsave('~/test.png',theplot)
 ```
