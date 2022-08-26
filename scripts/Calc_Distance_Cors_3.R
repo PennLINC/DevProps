@@ -93,4 +93,4 @@ for (s in 101:150){
         mergeddf$HDxCFc[s]=mean(c(hdcfc_s_l$estimate,hdcfc_s_r$estimate))	
 }
 # saveout dataframe
-saveRDS(mergeddf[101:151,],'~/data/mergedDF_withDistanceCorrs_3.rds')
+saveRDS(mergeddf[101:150,],'~/data/mergedDF_withDistanceCorrs_3.rds')

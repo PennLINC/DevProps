@@ -14,7 +14,6 @@ colnames(FD_TRs)[3]<-'RemainingTRs'
 
 # merge by subjID
 mergeddf<-merge(demo,FD_TRs,by='SubjID')
-mergeddf<-merge(mergeddf,FD_TRs_c,by='SubjID')
 
 # exclude subjects with less than 600 TRs remaining (in rest)
 inclusionVec<-mergeddf$RemainingTRs>600

@@ -1,2 +1,2 @@
-Rscript Calc_Distance_Cors_1.R
+Rscript CFC_L_EdgeDR2s.R 1
 

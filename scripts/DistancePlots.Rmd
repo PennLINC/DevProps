@@ -255,16 +255,31 @@ ggplot(df, aes(y = Distance, x = HierarchD)) +
   geom_hex(bins = 200)
 ```
 
-
 ```{r}
 # for running on cluster
 .libPaths('~/Rlibs')
 library(ggplot2)
+library(hexbin)
 fc_l=readRDS('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_l_vec.rds')
 HD_v_l=readRDS('/cbica/projects/pinesParcels/data/HD_v_l.rds')
 df=data.frame(fc_l,HD_v_l)
 colnames(df)<-c('FC','HierarchD')
 theplot<-ggplot(df, aes(y = FC, x = HierarchD)) +
-  geom_hex(bins = 200)+geom_line()
+  geom_hex(bins = 80)+geom_smooth(method='gam',formula = y~s(x,k=4))+theme_classic()
 ggsave('~/test.png',theplot)
+```
+
+```{r}
+# load participant-specific associations
+df1<-readRDS('Y:/data/mergedDF_withDistanceCorrs_1.rds')
+df2<-readRDS('Y:/data/mergedDF_withDistanceCorrs_2.rds')
+df3<-readRDS('Y:/data/mergedDF_withDistanceCorrs_3.rds')
+df4<-readRDS('Y:/data/mergedDF_withDistanceCorrs_4.rds')
+df5<-readRDS('Y:/data/mergedDF_withDistanceCorrs_5.rds')
+#df6<-readRDS('Y:/data/mergedDF_withDistanceCorrs_6.rds')
+df7<-readRDS('Y:/data/mergedDF_withDistanceCorrs_7.rds')
+df8<-readRDS('Y:/data/mergedDF_withDistanceCorrs_8.rds')
+
+# merge it back together from sep. processing chunks
+df<-rbind(df1,df2,df3,df4,df5,df6,df7,df8)
 ```

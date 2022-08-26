@@ -29,6 +29,7 @@ mergeddf<-merge(demo,FD_TRs,by='SubjID')
 
 # initialize D
 Ds=rep(0,dim(subjList)[1])
+Dt=rep(0,dim(subjList)[1])
 Ps=rep(0,dim(subjList)[1])
 remTRs=rep(0,dim(subjList)[1])
 
@@ -41,11 +42,13 @@ for (s in 1:dim(subjList)[1]){
     subj=subjList[s,1]
     ResFp=paste0('Y:/results/PWs/Proced/',subj,'/')
     # if output exists
-    if (file.exists(paste0(ResFp,subj,'_gDipTest.rds'))) {
+    if (file.exists(paste0(ResFp,subj,'_tertDipTest.rds'))) {
       # load in dip test
       dipstat=readRDS(paste0(ResFp,subj,'_gDipTest.rds'))
       Ds[s]=dipstat$statistic
       Ps[s]=dipstat$p.value
+      dipstatTert=readRDS(paste0(ResFp,subj,'_tertDipTest.rds'))
+      Dt[s]=dipstatTert$statistic
       # and to record same order of subj loading and prevent funny biz
       Subjvec[s]=subj
       # and remaining TRs
@@ -54,7 +57,7 @@ for (s in 1:dim(subjList)[1]){
 }
 
 # merge populated vecs
-popDf=data.frame(Subjvec,Ds,remTRs)
+popDf=data.frame(Subjvec,Ds,Dt,remTRs)
 colnames(popDf)[1]<-'SubjID'
 
 # remaining TRs thresh
@@ -340,9 +343,11 @@ BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp_Tert.csv'))
 Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
 BuPropdf<-data.frame(BuProp,Subjs)
 colnames(BuPropdf)<-c('BuProp','SubjID')
-BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
+BuPropdf$TDProp_tert=1-BuPropdf$BuProp
+BuMerge<-merge(BuMerge,BuPropdf,by='SubjID')
+#BuMerge<-merge(BuPropdf,masterdf,by='SubjID')
 # convert to prop TD
-BuMerge$TDProp_tert=1-BuMerge$BuProp
+
 
 #plotting : NOTE BU PROP IS NOT -1'ED, HIGH INTENSITY = LOWER ORDER FOR MYELIN
 BuDs<-ggplot(BuMerge,aes(x=Ds,y=BuProp))+geom_point(size=3,alpha=.5)+theme_classic(base_size=28)+geom_smooth(method='lm',color='black')

@@ -1,2 +1,2 @@
-matlab -nodisplay -r "preProc_PW2('${1}')"
+matlab -nodisplay -r "fc_matrix_gen_fs4"
 
