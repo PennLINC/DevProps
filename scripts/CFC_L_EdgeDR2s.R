@@ -109,6 +109,7 @@ for (e in 1:length(templatefile)){
 	outdf[1,e]=DeltaR2EstVec(masterdf[,(ncol(mergeddf)+e)])	
 	# extract Pvalue
 	outdf[2,e]=DeltaPEstVec(masterdf[,(ncol(mergeddf)+e)])
+	print(e)
 }
 
 ### print out dr2 vector

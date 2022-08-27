@@ -48,7 +48,7 @@ for r=1:10
 		if exist(masfp,'file')
 			mask=load(masfp);
 			% get to FD_thresh of .3 mm, corresponds to threshold 31
-			maskp2mm=mask.motion_data{31}.frame_removal;
+			maskp2mm=mask.motion_data{51}.frame_removal;
 			TRwise_mask=logical(maskp2mm);
 			% length of mask corresponds to number of TRs
 			% 1 indicates flagged for FD over selected threshold, reverse 'em so 0 indicates removal
@@ -59,7 +59,7 @@ for r=1:10
 			newciftiSize=size(masked_trs);
 			newTRnum=newciftiSize(2);
 			% setting continuous frame threshold to 10 TRs in a row
-			Threshold=10			% find changepoints in binary bask
+			Threshold=10;			% find changepoints in binary bask
 			% find changepoints in binary bask
 			d = [true, diff(TRwise_mask') ~= 0];
 			% index of changepoints
@@ -89,8 +89,8 @@ for r=1:10
 				error('dcan/midb remaining combined count does not match internal representation')
 			end
 			% save remaining_combined_count
-			remaining_combined_count=mask.motion_data{21}.remaining_frame_count;
-			mask.motion_data{21}.remaining_frame_count
+			remaining_combined_count=mask.motion_data{51}.remaining_frame_count;
+			mask.motion_data{51}.remaining_frame_count
 			remaining_cmb_fn=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_remainingTRs_run_' runstring '.mat'];
 			save(remaining_cmb_fn, 'remaining_combined_count');
         	        % find segments with more continuous TRs than threshold
@@ -114,7 +114,7 @@ for r=1:10
 			end	
 			% save 2-column df indicating start of valid segments and length: matches dtseries at derive_wave
 			segmentfnTr=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Trunc_run_' runstring];
-			writetable(cell2table(ValidSegCell_Trunc),segmentfnTr,'WriteVariableNames',0)
+			writetable(cell2table(ValidSegCell_Trunc),segmentfnTr,'WriteVariableNames',1)
 			% make binary mask for continuous segments
 			TRwise_mask_cont=zeros(1,newTRnum);
 			for seg=1:length(OverThreshSegments);

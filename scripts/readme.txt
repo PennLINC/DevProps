@@ -1,4 +1,4 @@
-OpFl_Sph_fs4_runSweep_msc Executable
+PGG_AngDistCalc4_CompVer_msc Executable
 
 1. Prerequisites for Deployment 
 
@@ -23,12 +23,12 @@ in the MathWorks Documentation Center.
 
 Files to Package for Standalone 
 ================================
--OpFl_Sph_fs4_runSweep_msc 
--run_OpFl_Sph_fs4_runSweep_msc.sh (shell script for temporarily setting environment 
-                                   variables and executing the application)
+-PGG_AngDistCalc4_CompVer_msc 
+-run_PGG_AngDistCalc4_CompVer_msc.sh (shell script for temporarily setting environment 
+                                      variables and executing the application)
    -to run the shell script, type
    
-       ./run_OpFl_Sph_fs4_runSweep_msc.sh <mcr_directory> <argument_list>
+       ./run_PGG_AngDistCalc4_CompVer_msc.sh <mcr_directory> <argument_list>
        
     at Linux or Mac command prompt. <mcr_directory> is the directory 
     where version 9.4 of the MATLAB Runtime is installed or the directory where 
@@ -38,12 +38,12 @@ Files to Package for Standalone
     If you have version 9.4 of the MATLAB Runtime installed in 
     /mathworks/home/application/v94, run the shell script as:
     
-       ./run_OpFl_Sph_fs4_runSweep_msc.sh /mathworks/home/application/v94
+       ./run_PGG_AngDistCalc4_CompVer_msc.sh /mathworks/home/application/v94
        
     If you have MATLAB installed in /mathworks/devel/application/matlab, 
     run the shell script as:
     
-       ./run_OpFl_Sph_fs4_runSweep_msc.sh /mathworks/devel/application/matlab
+       ./run_PGG_AngDistCalc4_CompVer_msc.sh /mathworks/devel/application/matlab
 -MCRInstaller.zip
     Note: if end users are unable to download the MATLAB Runtime using the
     instructions in the previous section, include it when building your 
@@ -91,7 +91,7 @@ ${LD_LIBRARY_PATH}:MR/v94/runtime/glnxa64:MR/v94/bin/glnxa64:MR/v94/sys/os/glnxa
         NOTE: The environment variable syntax utilizes forward 
               slashes (/), delimited by colons (:).  
         NOTE: When deploying standalone applications, you can
-              run the shell script file run_OpFl_Sph_fs4_runSweep_msc.sh 
+              run the shell script file run_PGG_AngDistCalc4_CompVer_msc.sh 
               instead of setting environment variables. See 
               section 2 "Files to Deploy and Package".    
 

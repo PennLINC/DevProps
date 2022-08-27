@@ -15,9 +15,9 @@ subj
 %system(dsCommand)
 
 % make a "Proced" dir
-direcString=['/cbica/irojects/pinesParcels/results/PWs/Proced/' subj];
-mkdirCommand=['mkdir ' direcString];
-system(mkdirCommand)
+% direcString=['/cbica/irojects/pinesParcels/results/PWs/Proced/' subj];
+% mkdirCommand=['mkdir ' direcString];
+% system(mkdirCommand)
 
 
 %%% RUN 1
@@ -40,10 +40,10 @@ system(['qsub -l h_vmem=35G ' '/cbica/projects/pinesParcels/data/CombinedData/' 
 
 % RUN 3
 % Spatial Nulls: PGG
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer_runSweep_msc.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
 % CG
 %cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
 %fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');

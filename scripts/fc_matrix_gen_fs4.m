@@ -10,9 +10,9 @@ mwIndVec_l = read_medial_wall_label(surfML);
 surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
 mwIndVec_r = read_medial_wall_label(surfMR);
 % make binary "isn't medial wall" vector for vertices
-mw_L=ones(1,10242);
+mw_L=ones(1,2562);
 mw_L(mwIndVec_l)=0;
-mw_R=ones(1,10242);
+mw_R=ones(1,2562);
 mw_R(mwIndVec_r)=0;
 % initialize All-FC matrix
 FCmatrix=zeros(5124,5124);
