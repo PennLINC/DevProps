@@ -1,2 +1,2 @@
-Rscript CFC_L_EdgeDR2s.R 5
+Rscript CFC_R_EdgeDR2s.R 10
 

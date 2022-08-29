@@ -47,8 +47,8 @@ for r=1:10
 		masfp=['/cbica/projects/pinesParcels/data/msc/' sname '/ses-func' runstring '/files/DCANBOLDProc_v4.0.0/analyses_v2/motion/task-' task '_power_2014_FD_only.mat'];
 		if exist(masfp,'file')
 			mask=load(masfp);
-			% get to FD_thresh of .3 mm, corresponds to threshold 31
-			maskp2mm=mask.motion_data{51}.frame_removal;
+			% get to FD_thresh of .4 mm, corresponds to threshold 31
+			maskp2mm=mask.motion_data{41}.frame_removal;
 			TRwise_mask=logical(maskp2mm);
 			% length of mask corresponds to number of TRs
 			% 1 indicates flagged for FD over selected threshold, reverse 'em so 0 indicates removal
@@ -89,8 +89,8 @@ for r=1:10
 				error('dcan/midb remaining combined count does not match internal representation')
 			end
 			% save remaining_combined_count
-			remaining_combined_count=mask.motion_data{51}.remaining_frame_count;
-			mask.motion_data{51}.remaining_frame_count
+			remaining_combined_count=mask.motion_data{41}.remaining_frame_count;
+			mask.motion_data{41}.remaining_frame_count
 			remaining_cmb_fn=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_remainingTRs_run_' runstring '.mat'];
 			save(remaining_cmb_fn, 'remaining_combined_count');
         	        % find segments with more continuous TRs than threshold

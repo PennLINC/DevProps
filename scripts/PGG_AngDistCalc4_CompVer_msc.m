@@ -8,7 +8,7 @@ function PGG_AngDistCalc(subj)
 %addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 %%%% Load in fsav4 opflow calc
-OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_run01.mat'];
+OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_concat.mat'];
 data=load(OpFlFp)
 
 %%% Load in surface data
@@ -173,5 +173,5 @@ end
 AngDist=struct;
 AngDist.gLeft=gangDist_L;
 AngDist.gRight=gangDist_R;
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4_run01.mat'];
+AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4_concat.mat'];
 save(AngDistFP,'AngDist')

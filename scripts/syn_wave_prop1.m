@@ -14,7 +14,7 @@ cifti = cifti_read('~/data/exemplar_dtseries.dtseries.nii'); % just need this fi
 
 %% create wavepropagation only
 wave_dir = 2; %x=1, y=2, z=3; todo - angle
-wave_width = 1000;
+wave_width = 4000
 wave_bin = normpdf(linspace(-wave_width,wave_width,2*wave_width+1),0,wave_width/3);
 wave_amp = 10000;
 wave_step = round(length(wave_bin)/10);% reduce wave_step for longer duration files

@@ -1,7 +1,7 @@
 subj=sub-Sim
 
 # subject's aggregated time series
-AgTS=/cbica/projects/hcpd/data/motMasked_contSegs/${subj}/SimulatedPropagations.dtseries.nii
+AgTS=~/data/ciftiout_AntPost_Sym.dtseries.nii
 
 # separate hemispheres - left
 /cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox/workbench/workbench-1.2.3/exe_rh_linux64/wb_command -cifti-separate $AgTS COLUMN -metric CORTEX_LEFT /cbica/projects/pinesParcels/results/PWs/PreProc/${subj}/${subj}_L_AggTS.func.gii 
