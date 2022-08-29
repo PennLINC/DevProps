@@ -18,8 +18,8 @@ for s=1:length(Subjs)
 		runDur=length(OpFlMat.vf_left);
 		% yes, loop over every volumn because cells
 		for c=1:runDur
-			us.vf_left{c+totesLength}={OpFlMat.vf_left{c}};
-			us.vf_right{c+totesLengthi}={OpFlMat.vf_right{c}};
+			us.vf_left{c+totesLength}=OpFlMat.vf_left{c};
+			us.vf_right{c+totesLength}=OpFlMat.vf_right{c};
 		end
 	totesLength=totesLength+runDur;
 	end

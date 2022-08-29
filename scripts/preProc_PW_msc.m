@@ -40,7 +40,7 @@ system(['qsub -l h_vmem=35G ' '/cbica/projects/pinesParcels/data/CombinedData/' 
 
 % RUN 3
 % Spatial Nulls: PGG
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer_runSweep_msc.sh $MATLAB_DIR ' subj];
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer_msc.sh $MATLAB_DIR ' subj];
 fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh'], 'w');
 fprintf(fid,cmd);
 system(['qsub -l h_vmem=33G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
