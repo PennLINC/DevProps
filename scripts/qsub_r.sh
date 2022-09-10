@@ -1,3 +1,3 @@
-Rscript FC_R_EdgeDR2s.R 5
+Rscript FC_L_EdgeDR2s.R 2
 
 

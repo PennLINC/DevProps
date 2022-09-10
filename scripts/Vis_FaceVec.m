@@ -71,34 +71,34 @@ data(g_noMW_combined_L)=FaceVecL;
 %%%%%%% fixed colorscale varities
 
 %%% circular
-mincol=-.7;
-maxcol=.7;
+mincol=-10;
+maxcol=10;
 
 
 %%% for red/blue 0-centered
 %mincol=0;
 %maxcol=10;
-custommap=colormap(b2r(mincol,maxcol));
+%custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
-custommap(126,:)=[.5 .5 .5];
+%custommap(126,:)=[.5 .5 .5];
 
 % blue-orange color scheme
-%BO_cm=inferno(9);
-%BO_cm(1,:)=[49 197 244];
-%BO_cm(2,:)=[71 141 203];
-%BO_cm(3,:)=[61 90 168];
-%BO_cm(4,:)=[64 104 178];
-%BO_cm(5,:)=[126 126 126];
-%BO_cm(6,:)=[240 74 35];
-%BO_cm(7,:)=[243 108 33];
-%BO_cm(8,:)=[252 177 11];
-%BO_cm(9,:)=[247 236 31];
+BO_cm=inferno(9);
+BO_cm(1,:)=[49 197 244];
+BO_cm(2,:)=[71 141 203];
+BO_cm(3,:)=[61 90 168];
+BO_cm(4,:)=[64 104 178];
+BO_cm(5,:)=[126 126 126];
+BO_cm(6,:)=[240 74 35];
+BO_cm(7,:)=[243 108 33];
+BO_cm(8,:)=[252 177 11];
+BO_cm(9,:)=[247 236 31];
 % scale to 1
-%BO_cm=BO_cm.*(1/255);
+BO_cm=BO_cm.*(1/255);
 % interpolate color gradient
-%interpsteps=[0 .125 .25 .375 .5 .625 .75 .875 1];
-%BO_cm=interp1(interpsteps,BO_cm,linspace(0,1,255));
-%custommap=BO_cm;
+interpsteps=[0 .125 .25 .375 .5 .625 .75 .875 1];
+BO_cm=interp1(interpsteps,BO_cm,linspace(0,1,255));
+custommap=BO_cm;
 %custommap=colormap(inferno);
 
 %%% matches circular hist

@@ -141,8 +141,8 @@ ggplot(df, aes(y = cfc, x = ED)) +
 
 ```{r}
 ### read medial wall for vertices
-mw_l_verts=as.logical(read.csv('~/data/mw_boolean_l.csv'))
-mw_r_verts=as.logical(read.csv('~/data/mw_boolean_r.csv'))
+mw_l_verts=as.logical(read.csv('~/data/mw_boolean_lfs4.csv'))
+mw_r_verts=as.logical(read.csv('~/data/mw_boolean_rfs4.csv'))
 
 # VERT FC
 fc=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC.csv',header=F)
@@ -190,6 +190,7 @@ saveRDS(HD_v_r[upper.tri(HD_v_r)],'/cbica/projects/pinesParcels/data/HD_v_r.rds'
 
 ```
 
+
 ```{r}
 ### Load in Vertex data
 HD_v_l=readRDS('Y:/data/HD_v_l.rds')
@@ -201,13 +202,30 @@ fc_r=readRDS('Y:/results/PWs/FC/gro_FC_r_vec.rds')
 ```
 
 ```{r}
-df<-data.frame(fc_l,ED_v_l,HD_v_l)
-colnames(df)<-c('fc','ED','HD')
+# drs by distance
+
+######################
+############ VERTICES
+######################
+# load in DR2s
+v_L_dr2_1=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_1.rds')
+v_L_dr2_2=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_2.rds')
+v_L_dr2_3=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_3.rds')
+v_L_dr2_4=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_4.rds')
+v_L_dr2_5=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_5.rds')
+# combine
+v_L_dr2=rbind(t(v_L_dr2_1),t(v_L_dr2_2),t(v_L_dr2_3),t(v_L_dr2_4),t(v_L_dr2_5))
+
+```
+
+```{r}
+df<-data.frame(v_L_dr2,ED_v_l,HD_v_l)
+colnames(df)<-c('dr2','p','ED','HD')
 
 library(ggplot2)
 library(ggExtra)
-ggplot(df, aes(y = fc, x = ED)) +
-  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black',limits=c(900000))+theme_classic()
+ggplot(df2, aes(y = dr2, x = ED)) +
+  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black',limits=c(3000))+theme_classic()
 # plot just for marginal
 Marginal<-ggplot(df, aes(y = fc, x = HD)) +geom_point(alpha=0,size=0)+theme_classic()
 ggMarginal(Marginal,type='histogram')
@@ -276,7 +294,7 @@ df2<-readRDS('Y:/data/mergedDF_withDistanceCorrs_2.rds')
 df3<-readRDS('Y:/data/mergedDF_withDistanceCorrs_3.rds')
 df4<-readRDS('Y:/data/mergedDF_withDistanceCorrs_4.rds')
 df5<-readRDS('Y:/data/mergedDF_withDistanceCorrs_5.rds')
-#df6<-readRDS('Y:/data/mergedDF_withDistanceCorrs_6.rds')
+df6<-readRDS('Y:/data/mergedDF_withDistanceCorrs_6.rds')
 df7<-readRDS('Y:/data/mergedDF_withDistanceCorrs_7.rds')
 df8<-readRDS('Y:/data/mergedDF_withDistanceCorrs_8.rds')
 

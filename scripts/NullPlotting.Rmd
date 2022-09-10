@@ -52,7 +52,7 @@ for (s in 1:dim(subjList)[1]){
     # if output exists
     if (file.exists(paste0(ResFp,subj,'_SpunDips4_My.csv'))) {
       print(s)
-      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
+      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_VeryHigh.csv'),header=F)
       ObsDip<-as.numeric(SpunDips[2,1001])
       RealDips[s]<-ObsDip
       SpunDips<-as.numeric(SpunDips[2,1:1000])
@@ -93,7 +93,7 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 #ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,25)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 # for temporal
-ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(-6,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+#ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(-6,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 
 # saved at 510x250
@@ -104,6 +104,8 @@ ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(b
 # individual level, set subj manually
 
 SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
+#SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_cnct.csv'),header=F)
+
 ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)

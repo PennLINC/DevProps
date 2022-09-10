@@ -15,7 +15,7 @@ DeltaR2EstVec<-function(x){
   noAgeGam<-gam(varofint~Sex+Motion,data=scaledf)
   noAgeSum<-summary(noAgeGam)
   # age-included model for measuring difference
-  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=3),data=scaledf)
+  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=4),data=scaledf)
   AgeSum<-summary(AgeGam)
   
   dif<-AgeSum$r.sq-noAgeSum$r.sq
@@ -41,7 +41,7 @@ DeltaPEstVec<-function(x){
   # no-age model (segreg ~ sex + motion)
   noAgeGam<-gam(varofint~Sex+Motion,data=scaledf)
   # age-included model for measuring difference
-  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=3),data=scaledf)
+  AgeGam<-gam(varofint~Sex+Motion+s(Age,k=4),data=scaledf)
   
   # test of dif with anova.gam
   anovaRes<-anova.gam(noAgeGam,AgeGam,test='Chisq')
