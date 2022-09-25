@@ -52,7 +52,7 @@ for (s in 1:dim(subjList)[1]){
     # if output exists
     if (file.exists(paste0(ResFp,subj,'_SpunDips4_My.csv'))) {
       print(s)
-      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_VeryHigh.csv'),header=F)
+      SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
       ObsDip<-as.numeric(SpunDips[2,1001])
       RealDips[s]<-ObsDip
       SpunDips<-as.numeric(SpunDips[2,1:1000])

@@ -1,2 +1,2 @@
-matlab -nodisplay -r "preProc_PW('${1}')"
+matlab -nodisplay -r " CircFC_Vlow('${1}')"
 

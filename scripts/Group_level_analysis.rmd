@@ -230,6 +230,16 @@ ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 
 
 # saved at 790x815
 
+# for head motion effect size
+# HM analyses
+devMod<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs,data=BuMerge)
+ndevMod<-gam(TDProp~s(interview_age,k=4)+FD+sex,data=BuMerge)
+anovaRes<-anova.gam(devMod,ndevMod,test='Chisq')
+anovaRes$`Pr(>Chi)`
+# difference in adjusted r2
+summary(devMod)$r.sq-summary(ndevMod)$r.sq
+
+
 # aaaand combat chunk on it
 library(devtools)
 #install_github("jfortin1/neuroCombatData")
@@ -303,6 +313,8 @@ ggplot(BuMerge,aes(x=(interview_age)/12,y=DMN_lm_resid)) + geom_smooth(method = 
 
 ```
 
+
+
 ```{r}
 # MYELIN RUNS
 
@@ -355,8 +367,8 @@ BuDs+xlab('Dip Statistics')+ylab('Top-Down')+scale_y_continuous(labels = percent
 
 
 # dev analyses
-devMod<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs,data=BuMerge)
-ndevMod<-gam(TDProp~FD+sex+RemainingTRs,data=BuMerge)
+devMod<-gam(TDProp_tert~s(interview_age,k=4)+FD+sex+RemainingTRs,data=BuMerge)
+ndevMod<-gam(TDProp_tert~FD+sex+RemainingTRs,data=BuMerge)
 anovaRes<-anova.gam(devMod,ndevMod,test='Chisq')
 anovaRes$`Pr(>Chi)`
 # difference in adjusted r2

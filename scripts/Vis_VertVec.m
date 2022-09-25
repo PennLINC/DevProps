@@ -97,16 +97,16 @@ data=zeros(1,2562);
 data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
-mincol=-70;
-maxcol=70;
+mincol=-.5;
+maxcol=.5;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
-custommap=colormap('inferno');
+% custommap=colormap('inferno');
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
 %mincol=-3;
 %maxcol=3;
-%custommap=colormap(b2r(mincol,maxcol));
+custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 %custommap(126,:)=[.5 .5 .5];
 
@@ -128,7 +128,7 @@ custommap=colormap('inferno');
 
 
 figure
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.pial');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
 asub = subaxis(2,2,1, 'sh', 0, 'sv', 0, 'padding', 0, 'margin', 0);
 
@@ -172,7 +172,7 @@ set(gca,'CLim',[mincol,maxcol]);
 data=zeros(1,2562);
 data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.pial');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
 asub = subaxis(2,2,2, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0,'Holdaxis');
 aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
