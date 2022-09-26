@@ -230,6 +230,25 @@ ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 
 
 # saved at 790x815
 
+# plot controlling for dmn seg
+# dev analyses
+devMod<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs+DMNsegGro,data=BuMerge)
+ndevMod<-gam(TDProp~FD+sex+RemainingTRs+DMNsegGro,data=BuMerge)
+anovaRes<-anova.gam(devMod,ndevMod,test='Chisq')
+anovaRes$`Pr(>Chi)`
+# difference in adjusted r2
+summary(devMod)$r.sq-summary(ndevMod)$r.sq
+
+
+# get residuals of model for plotting
+TDProp_lm<-lm(TDProp~FD+sex+RemainingTRs+DMNsegGro,data=BuMerge)
+BuMerge$TDProp_resid<-TDProp_lm$residuals+mean(BuMerge$TDProp)
+
+ggplot(BuMerge,aes(x=(interview_age)/12,y=TDProp_resid)) + geom_smooth(method = 'gam', formula = y~s(x,k=4), colour=('black'), fill = "#ed2224", alpha = .4)+ geom_point(size=3,alpha=.5) + xlab("Age (Years)") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), plot.title=element_text(size=30,face="bold"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
+
+# and equiv cor
+ggplot(BuMerge,aes(x=DMNsegGro,y=TDProp_resid))+ geom_point(size=3,alpha=.5) + xlab("Average DMN Connectivity") +ylab("Top-Down Propagations") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2), axis.ticks.length = unit(.25, "cm"), plot.title=element_text(size=30,face="bold"), axis.text = element_text(face="bold",size=30), axis.title = element_text(size=30, face="bold"), axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0))) +scale_y_continuous(labels = percent_format(accuracy = 1))
+
 # for head motion effect size
 # HM analyses
 devMod<-gam(TDProp~s(interview_age,k=4)+FD+sex+RemainingTRs,data=BuMerge)

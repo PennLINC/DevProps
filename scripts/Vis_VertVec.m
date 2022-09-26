@@ -23,8 +23,8 @@ addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/
 
 %%% Load in surface data
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
-surfL = [SubjectsFolder '/surf/lh.sphere'];
-surfR = [SubjectsFolder '/surf/rh.sphere'];
+surfL = [SubjectsFolder '/surf/lh.pial']
+surfR = [SubjectsFolder '/surf/rh.pial'];
 % surface topography
 [vx_l, faces_l] = read_surf(surfL);
 [vx_r, faces_r] = read_surf(surfR);
@@ -41,8 +41,8 @@ F_R=faces_r;
 V_R=vx_r;
 
 % now load in medial wall VERTICES
-%mw_v_l=read_medial_wall_label([SubjectsFolder '/label/lh.Medial_wall.label']);
-%mw_v_r=read_medial_wall_label([SubjectsFolder '/label/rh.Medial_wall.label']);
+mw_v_l=read_medial_wall_label([SubjectsFolder '/label/lh.Medial_wall.label']);
+mw_v_r=read_medial_wall_label([SubjectsFolder '/label/rh.Medial_wall.label']);
 
 % all faces that touch a medial wall vertex to be masked
 %MW_f1_L=find(ismember(F_L(:,1),mw_v_l));
@@ -79,6 +79,29 @@ gPGg_R0=find(gPG_RH==0);
 %gPGg_R0=[];
 
 
+% make binary "is medial wall" vector for vertices
+mw_L=zeros(1,2562);
+mw_L(mw_v_l)=1;
+mw_R=zeros(1,2562);
+mw_R(mw_v_r)=1;
+% convert to faces
+F_MW_L=sum(mw_L(faces_l),2)./3;
+F_MW_R=sum(mw_R(faces_r),2)./3;
+% convert "partial" medial wall to medial wall
+F_MW_L=ceil(F_MW_L);
+F_MW_R=ceil(F_MW_R);
+
+% face mask indices
+%fmwIndVec_l=find(F_MW_L);
+%fmwIndVec_r=find(F_MW_R);
+% make medial wall vector
+%g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
+%g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
+
+
+
+
+
 % continue to get unions
 %gro_MW_combined_L=union(MW_combined_L,gPGg_L0);
 % and right hemi
@@ -97,16 +120,16 @@ data=zeros(1,2562);
 data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
-mincol=-.5;
-maxcol=.5;
+mincol=-60;
+maxcol=60;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
-% custommap=colormap('inferno');
+custommap=colormap('inferno');
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
 %mincol=-3;
 %maxcol=3;
-custommap=colormap(b2r(mincol,maxcol));
+%custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 %custommap(126,:)=[.5 .5 .5];
 
@@ -128,7 +151,7 @@ custommap=colormap(b2r(mincol,maxcol));
 
 
 figure
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.pial');
 
 asub = subaxis(2,2,1, 'sh', 0, 'sv', 0, 'padding', 0, 'margin', 0);
 
@@ -172,7 +195,7 @@ set(gca,'CLim',[mincol,maxcol]);
 data=zeros(1,2562);
 data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.pial');
 
 asub = subaxis(2,2,2, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0,'Holdaxis');
 aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
@@ -214,10 +237,11 @@ set(gcf,'Color','w')
 
 
 set(gca,'CLim',[mincol,maxcol]);
-%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
+%%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
 colorbar
-%c=colorbar
-%c.Location='southoutside'
-%colormap(custommap)
+c=colorbar
+c.Location='southoutside'
+
+colormap(custommap)
 
 print(Fn,'-dpng')

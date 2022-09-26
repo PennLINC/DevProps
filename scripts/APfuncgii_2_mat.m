@@ -9,7 +9,7 @@ surfR = [SubjectsFolder '/surf/rh.pial'];
 % initialize compile-friendly struct, same struct naming as PG
 gpg=struct;
 % second coordinate set in vx_* is a->p, tested with vis_vertvec
-gpg.gPG_RH=vx_l(:,2);
-gpg.gPG_LH=vx_r(:,2);
+gpg.gPG_LH=vx_l(:,2);
+gpg.gPG_RH=vx_r(:,2);
 % saveout
 save('~/data/fs4_ap.mat','gpg')

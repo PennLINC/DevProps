@@ -103,14 +103,14 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 ```{r, fig.width=6,fig.height=3}
 # individual level, set subj manually
 
-SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
-#SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_cnct.csv'),header=F)
+#SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
+SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_cnct.csv'),header=F)
 
 ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)
 
-ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")+scale_x_continuous(limits =c(0,0.00823),breaks=c(0,0.004,0.008))+theme(axis.text = element_text(size=22))
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")+theme(axis.text = element_text(size=22))
 
 # saved out at 350 x 250
 
@@ -150,7 +150,18 @@ ObsDip<-as.numeric(SpunDips[2,1001])
 SpunDips<-as.numeric(SpunDips[2,1:1000])
 plotdf<-data.frame(ObsDip,SpunDips)
 
-ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab(paste0('Dip Stats:    = ',paramList[p]))+guides(y="none")+scale_x_continuous(limits =c(0,0.00823),breaks=c(0,0.004,0.008))+theme(axis.text = element_text(size=22))
+
+# calculate distance from null
+SpunSD=sd(SpunDips)
+SpunMean=mean(SpunDips)
+#print(ObsDip)
+# insert into df
+NullDips[s,]=SpunDips
+#print(SpunMean)
+DipSDs[s]=(ObsDip-SpunMean)/SpunSD
+
+
+ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab(paste0('Dip Stats: ',paramList[p]))+guides(y="none")+scale_x_continuous(,breaks=c(0,0.004,0.008))+theme(axis.text = element_text(size=22))
 
 }
 

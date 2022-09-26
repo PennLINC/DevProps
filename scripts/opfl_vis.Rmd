@@ -168,13 +168,27 @@ plotdataf<-data.frame(histoVers1$cnt[1:18]/sum(histoVers1$cnt[1:18]),histoVers2$
 
 colnames(plotdataf)<-c('s1','s2','s3','s4','Sim.','seq','fulldistr')
 
+################################################
+########################
+########################
+########################
+########################
+##### SIMULTED DATA PLOT
+########################
+########################
+########################
+########################
 p<-ggplot(plotdataf,aes(x=seq*10,y=s1*100))
-p+geom_line(stat='identity',color='#4f54a4',size=2)+theme_bw(base_size = 26)+
-geom_line(aes(x=seq*10,y=s2*100),size=2,color='#01b7c9',stat='identity')+
-geom_line(aes(x=seq*10,y=s3*100),size=2,color='#9dc941',stat='identity')+
-geom_line(aes(x=seq*10,y=s4*100),stat='identity',size=2,color='#f2ea30')+
-geom_line(aes(x=seq*10,y=Sim.*100),stat='identity',size=2,color='gray50')+
-scale_x_continuous(limits=(c(0,190)))+theme(plot.title=element_text(vjust=-1),legend.title=element_blank(),legend.text=element_blank(),legend.position='none')+theme(plot.title= element_text(size=30, face="bold"), axis.title = element_blank(),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_blank(), panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+scale_y_continuous(breaks=seq(0,22),limits=c(0,23),oob = scales::rescale_none)
+p+geom_line(aes(x=seq*10,y=Sim.*100),stat='identity',size=2,color='gray50')+
+scale_x_continuous(limits=(c(0,190)))+theme_classic()+theme(plot.title=element_text(size=30,vjust=-1))+
+theme(axis.title = element_text(size=30), axis.text= element_text(face="bold",size=30))+
+theme(panel.grid.major = element_line(color='gray80'),panel.grid.minor=element_line(color='gray80'))+ggtitle(paste0('Simulated Data-\u2207PA Angular Distances'))+ylab('% of Propagations')+xlab('Distance (Degrees)')
+
+
+
+
+p<-ggplot(plotdataf,aes(x=seq.1..18.*10,y=histoVers.cnt.1.18.*100))
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(0,190)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle(paste0('\u2207PG: Spun'))+theme(legend.title=element_blank(),legend.text=element_text(size=20),legend.position=c(1.05,.41))+ylab('count')+ylab('% of Propagations')+theme(plot.title= element_text(size=20, face="bold"), axis.title = element_blank(),axis.text = element_blank(),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none')+ylab('count')+ylab('% of Propagations')
 
 ```
 
