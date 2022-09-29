@@ -23,8 +23,8 @@ addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/
 
 %%% Load in surface data
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
-surfL = [SubjectsFolder '/surf/lh.pial']
-surfR = [SubjectsFolder '/surf/rh.pial'];
+surfL = [SubjectsFolder '/surf/lh.inflated']
+surfR = [SubjectsFolder '/surf/rh.inflated'];
 % surface topography
 [vx_l, faces_l] = read_surf(surfL);
 [vx_r, faces_r] = read_surf(surfR);
@@ -120,16 +120,16 @@ data=zeros(1,2562);
 data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
-mincol=-60;
-maxcol=60;
+mincol=-0.5;
+maxcol=0.5;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
-custommap=colormap('inferno');
+%custommap=colormap('inferno');
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
 %mincol=-3;
 %maxcol=3;
-%custommap=colormap(b2r(mincol,maxcol));
+custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 %custommap(126,:)=[.5 .5 .5];
 
@@ -151,7 +151,7 @@ custommap=colormap('inferno');
 
 
 figure
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.pial');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/lh.inflated');
 
 asub = subaxis(2,2,1, 'sh', 0, 'sv', 0, 'padding', 0, 'margin', 0);
 
@@ -195,7 +195,7 @@ set(gca,'CLim',[mincol,maxcol]);
 data=zeros(1,2562);
 data(g_noMW_combined_R)=FaceVecR(g_noMW_combined_R);
 
-[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.pial');
+[vertices, faces] = freesurfer_read_surf('/cbica/software/external/freesurfer/scientificlinux6/6.0.0/subjects/fsaverage4/surf/rh.inflated');
 
 asub = subaxis(2,2,2, 'sh', 0.0, 'sv', 0.0, 'padding', 0, 'margin', 0,'Holdaxis');
 aplot = trisurf(faces, vertices(:,1), vertices(:,2), vertices(:,3),data)
@@ -238,10 +238,10 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 %%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-colorbar
-c=colorbar
-c.Location='southoutside'
+%colorbar
+%c=colorbar
+%c.Location='southoutside'
 
-colormap(custommap)
+%colormap(custommap)
 
 print(Fn,'-dpng')
