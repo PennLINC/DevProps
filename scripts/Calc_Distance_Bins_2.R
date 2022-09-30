@@ -56,7 +56,7 @@ outDf_cfc<-data.frame(outMat)
 #mergeddf$HDxCFc<-rep(99,388)
 
 # loop over every subj
-for (s in 1:50){
+for (s in 51:100){
 	subj=mergeddf$SubjID[s]
 	print(subj)
 	age=mergeddf$interview_age[s]
@@ -135,5 +135,5 @@ for (s in 1:50){
 }
 
 # SAVEOUT BINNED FCS AND CFCS
-saveRDS(outDf_fc,'~/data/outDf_fc_1.rds')
-saveRDS(outDf_cfc,'~/data/outDf_cfc_1.rds')
+saveRDS(outDf_fc,'~/data/outDf_fc_2.rds')
+saveRDS(outDf_cfc,'~/data/outDf_cfc_2.rds')

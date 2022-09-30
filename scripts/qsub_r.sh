@@ -1,3 +1,3 @@
-Rscript FC_L_EdgeDR2s.R 2
+Rscript Calc_Distance_Bins_8.R
 
 

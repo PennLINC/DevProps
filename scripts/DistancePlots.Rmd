@@ -12,189 +12,180 @@ output: html_document
 ```
 
 ```{r}
-###### load in Hierarchy, Calculate Distance, save to RDS for local loadin
-
-# vertices
-
-vertPG_L<-read.csv('~/results/PWs/vertPG_left.csv')
-vertPG_R<-read.csv('~/results/PWs/vertPG_right.csv')
-# faces
-facePG_L<-read.csv('~/results/PWs/facePG_left.csv')
-facePG_R<-read.csv('~/results/PWs/facePG_right.csv')
-# Initialize HierarchD matrices
-HD_v_l<-matrix(nrow=dim(vertPG_L)[1],ncol=dim(vertPG_L)[1])
-HD_v_r<-matrix(nrow=dim(vertPG_R)[1],ncol=dim(vertPG_R)[1])
-HD_f_l<-matrix(nrow=dim(facePG_L)[1],ncol=dim(facePG_L)[1])
-HD_f_r<-matrix(nrow=dim(facePG_R)[1],ncol=dim(facePG_R)[1])
-##### Calculate HierarchD
-
-# vertices
-
-# L
-for (i in 1:dim(vertPG_L)[1]){
-  for (j in 1:dim(vertPG_L)[1]){
-    # absolute valued distance
-    HD_v_l[i,j]<-abs(vertPG_L[i,1]-vertPG_L[j,1])
-  }
-}
-
-# saveout
-saveRDS(HD_v_l,'~/data/HD_v_l.rds')
-
-# R
-
-for (i in 1:dim(vertPG_R)[1]){
-  print('right')
-  for (j in 1:dim(vertPG_R)[1]){
-    # absolute valued distance
-    HD_v_r[i,j]<-abs(vertPG_R[i,1]-vertPG_R[j,1])
-  }
-}
-
-print('done with vertices')
-
-# saveout
-saveRDS(HD_v_r,'~/data/HD_v_r.rds')
-
-# faces
-
-# L
-for (i in 1:dim(facePG_L)[1]){
-  for (j in 1:dim(facePG_L)[1]){
-    # absolute valued distance
-    HD_f_l[i,j]<-abs(facePG_L[i,1]-facePG_L[j,1])
-  }
-}
-
-# saveout
-saveRDS(HD_f_l,'~/data/HD_f_l.rds')
-
-# R 
-
-for (i in 1:dim(facePG_R)[1]){
-  print(i)
-  for (j in 1:dim(facePG_R)[1]){
-    # absolute valued distance
-    HD_f_r[i,j]<-abs(facePG_R[i,1]-facePG_R[j,1])
-  }
-}
-
-# saveout
-saveRDS(HD_f_r,'~/data/HD_f_r.rds')
-
-```
-
-```{r}
-# take upper triangle of euclidean distances, save for chance at mount loading
-ED_f_l=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_left.csv')
-saveRDS(ED_f_l[upper.tri(ED_f_l)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_left_vec.rds')
-ED_f_r=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_right.csv')
-saveRDS(ED_f_r[upper.tri(ED_f_r)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_right_vec.rds')
-```
-
-```{r}
-# take upper triangle of fc, save for chance at mount loading
-```
-
-```{r}
-library(vroom)
-# take upper triangle of CFC, save for chance at mount loading
-cfc_l=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv')
-saveRDS(cfc_l[upper.tri(cfc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l_vec.rds')
-cfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv')
-saveRDS(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r_vec.rds')
-```
-
-```{r}
-# take upper triangle of hierarchical distance, save for chance at mount loading
-HD_f_l=HD_f_l=readRDS('/cbica/projects/pinesParcels/data/HD_f_l.rds')
-saveRDS(HD_f_l[upper.tri(HD_f_l)],'/cbica/projects/pinesParcels/data/HD_f_l.rds')
-HD_f_r=HD_f_r=readRDS('/cbica/projects/pinesParcels/data/HD_f_r.rds')
-saveRDS(HD_f_r[upper.tri(HD_f_r)],'/cbica/projects/pinesParcels/data/HD_f_r.rds')
-```
-
-```{r}
-#### Load in distances, plot (FACES)
-HD_f_l=readRDS('Y:/data/HD_f_l.rds')
-HD_f_r=readRDS('Y:/data/HD_f_r.rds')
-
-#### Load in Euclidean distances
-ED_f_l=readRDS('Y:/results/PWs/face_EucD_left_vec.rds')
-ED_f_r=readRDS('Y:/results/PWs/face_EucD_right_vec.rds')
-
-### Load in CFC
-
-cfc_l=readRDS('Y:/results/PWs/FC/gro_CFC_l_vec.rds')
-cfc_r=readRDS('Y:/results/PWs/FC/gro_CFC_r_vec.rds')
-
-```
-
-```{r}
-df<-data.frame(cfc_l,ED_f_l,HD_f_l)
-colnames(df)<-c('cfc','ED','HD')
-
-library(ggplot2)
-ggplot(df, aes(y = cfc, x = ED)) +
-  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black')+theme_classic()
-
-```
-
-```{r}
-### read medial wall for vertices
-mw_l_verts=as.logical(read.csv('~/data/mw_boolean_lfs4.csv'))
-mw_r_verts=as.logical(read.csv('~/data/mw_boolean_rfs4.csv'))
-
-# VERT FC
-fc=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC.csv',header=F)
-#mask out medial wall
-fc_l=fc[1:10242,1:10242]
-fc_l=fc_l[mw_l_verts,mw_l_verts]
-# mask out lower triangle
-saveRDS(fc_l[upper.tri(fc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_l_vec.rds')
-
-# right
-#mask out medial wall
-# add 10242 to mw r
-fc_r=fc[10243:20484,10243:20484]
-# mask out medial wall
-fc_r=fc_r[mw_r_verts,mw_r_verts]
-# mask out lower triangle
-saveRDS(fc_r[upper.tri(fc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_r_vec.rds')
-
-# EUC D
-ED_v_l=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_left.csv')
-#mask out medial wall
-ED_v_l=ED_v_l[mw_l_verts,mw_l_verts]
-# mask out lower triangle
-saveRDS(ED_v_l[upper.tri(ED_v_l)],'/cbica/projects/pinesParcels/results/PWs/FC/vert_EucD_left_vec.rds')
-
-
-# right
-ED_v_r=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
-# mask out medial wall
-ED_v_r=ED_v_r[mw_r_verts,mw_r_verts]
-# mask out lower triangle
-saveRDS(ED_v_r[upper.tri(ED_v_r)],'/cbica/projects/pinesParcels/results/PWs/FC/vert_EucD_right_vec.rds')
-
-# HIER D
-HD_v_l=readRDS('/cbica/projects/pinesParcels/data/HD_v_l.rds')
-HD_v_r=readRDS('/cbica/projects/pinesParcels/data/HD_v_r.rds')
-
-# left
-HD_v_l=HD_v_l[mw_l_verts,mw_l_verts]
-saveRDS(HD_v_l[upper.tri(HD_v_l)],'/cbica/projects/pinesParcels/data/HD_v_l.rds')
-
-# right
-HD_v_r=HD_v_r[mw_r_verts,mw_r_verts]
-saveRDS(HD_v_r[upper.tri(HD_v_r)],'/cbica/projects/pinesParcels/data/HD_v_r.rds')
+####### load in Hierarchy, Calculate Distance, save to RDS for local loadin
+#
+## vertices
+#
+#vertPG_L<-read.csv('~/results/PWs/vertPG_left.csv')
+#vertPG_R<-read.csv('~/results/PWs/vertPG_right.csv')
+## faces
+#facePG_L<-read.csv('~/results/PWs/facePG_left.csv')
+#facePG_R<-read.csv('~/results/PWs/facePG_right.csv')
+## Initialize HierarchD matrices
+#HD_v_l<-matrix(nrow=dim(vertPG_L)[1],ncol=dim(vertPG_L)[1])
+#HD_v_r<-matrix(nrow=dim(vertPG_R)[1],ncol=dim(vertPG_R)[1])
+#HD_f_l<-matrix(nrow=dim(facePG_L)[1],ncol=dim(facePG_L)[1])
+#HD_f_r<-matrix(nrow=dim(facePG_R)[1],ncol=dim(facePG_R)[1])
+###### Calculate HierarchD
+#
+## vertices
+#
+## L
+#for (i in 1:dim(vertPG_L)[1]){
+#  for (j in 1:dim(vertPG_L)[1]){
+#    # absolute valued distance
+#    HD_v_l[i,j]<-abs(vertPG_L[i,1]-vertPG_L[j,1])
+#  }
+#}
+#
+## saveout
+#saveRDS(HD_v_l,'~/data/HD_v_l.rds')
+#
+## R
+#
+#for (i in 1:dim(vertPG_R)[1]){
+#  print('right')
+#  for (j in 1:dim(vertPG_R)[1]){
+#    # absolute valued distance
+#    HD_v_r[i,j]<-abs(vertPG_R[i,1]-vertPG_R[j,1])
+#  }
+#}
+#
+#print('done with vertices')
+#
+## saveout
+#saveRDS(HD_v_r,'~/data/HD_v_r.rds')
+#
+## faces
+#
+## L
+#for (i in 1:dim(facePG_L)[1]){
+#  for (j in 1:dim(facePG_L)[1]){
+#    # absolute valued distance
+#    HD_f_l[i,j]<-abs(facePG_L[i,1]-facePG_L[j,1])
+#  }
+#}
+#
+## saveout
+#saveRDS(HD_f_l,'~/data/HD_f_l.rds')
+#
+## R 
+#
+#for (i in 1:dim(facePG_R)[1]){
+#  print(i)
+#  for (j in 1:dim(facePG_R)[1]){
+#    # absolute valued distance
+#    HD_f_r[i,j]<-abs(facePG_R[i,1]-facePG_R[j,1])
+#  }
+#}
+#
+## saveout
+#saveRDS(HD_f_r,'~/data/HD_f_r.rds')
+#
+#```
+#
+#```{r}
+## take upper triangle of euclidean distances, save for chance at mount loading
+#ED_f_l=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_left.csv')
+#saveRDS(ED_f_l[upper.tri(ED_f_l)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_left_vec.rds')
+#ED_f_r=read.csv('/cbica/projects/pinesParcels/results/PWs/face_EucD_right.csv')
+#saveRDS(ED_f_r[upper.tri(ED_f_r)],'/cbica/projects/pinesParcels/results/PWs/face_EucD_right_vec.rds')
+#```
+#
+#```{r}
+## take upper triangle of fc, save for chance at mount loading
+#```
+#
+#```{r}
+#library(vroom)
+## take upper triangle of CFC, save for chance at mount loading
+#cfc_l=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l.csv')
+#saveRDS(cfc_l[upper.tri(cfc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_l_vec.rds')
+#cfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r.csv')
+#saveRDS(cfc_r[upper.tri(cfc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_r_vec.rds')
+#```
+#
+#```{r}
+## take upper triangle of hierarchical distance, save for chance at mount loading
+#HD_f_l=HD_f_l=readRDS('/cbica/projects/pinesParcels/data/HD_f_l.rds')
+#saveRDS(HD_f_l[upper.tri(HD_f_l)],'/cbica/projects/pinesParcels/data/HD_f_l.rds')
+#HD_f_r=HD_f_r=readRDS('/cbica/projects/pinesParcels/data/HD_f_r.rds')
+#saveRDS(HD_f_r[upper.tri(HD_f_r)],'/cbica/projects/pinesParcels/data/HD_f_r.rds')
+#```
+#
+#```{r}
+##### Load in distances, plot (FACES)
+#HD_f_l=readRDS('Y:/data/HD_f_l.rds')
+#HD_f_r=readRDS('Y:/data/HD_f_r.rds')
+#
+#```
+#
+#```{r}
+#df<-data.frame(cfc_l,ED_f_l,HD_f_l)
+#colnames(df)<-c('cfc','ED','HD')
+#
+#library(ggplot2)
+#ggplot(df, aes(y = cfc, x = ED)) +
+#  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black')+theme_classic()
+#
+#```
+#
+#```{r}
+#### read medial wall for vertices
+#mw_l_verts=as.logical(read.csv('~/data/mw_boolean_lfs4.csv'))
+#mw_r_verts=as.logical(read.csv('~/data/mw_boolean_rfs4.csv'))
+#
+## VERT FC
+#fc=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_fs4.csv',header=F)
+##mask out medial wall
+#fc_l=fc[1:2562,1:2562]
+#fc_l=fc_l[mw_l_verts,mw_l_verts]
+## mask out lower triangle
+#saveRDS(fc_l[upper.tri(fc_l)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_l_vec.rds')
+#
+## right
+##mask out medial wall
+## add 10242 to mw r
+#fc_r=fc[2563:5124,2563:5124]
+## mask out medial wall
+#fc_r=fc_r[mw_r_verts,mw_r_verts]
+## mask out lower triangle
+#saveRDS(fc_r[upper.tri(fc_r)],'/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_r_vec.rds')
+#
+## EUC D
+#ED_v_l=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_left.csv')
+##mask out medial wall
+#ED_v_l=ED_v_l[mw_l_verts,mw_l_verts]
+## mask out lower triangle
+#saveRDS(ED_v_l[upper.tri(ED_v_l)],'/cbica/projects/pinesParcels/results/PWs/FC/vert_EucD_left_vec.rds')
+#
+#
+## right
+#ED_v_r=read.csv('/cbica/projects/pinesParcels/results/PWs/vert_EucD_right.csv')
+## mask out medial wall
+#ED_v_r=ED_v_r[mw_r_verts,mw_r_verts]
+## mask out lower triangle
+#saveRDS(ED_v_r[upper.tri(ED_v_r)],'/cbica/projects/pinesParcels/results/PWs/FC/vert_EucD_right_vec.rds')
+#
+## HIER D
+#HD_v_l=readRDS('/cbica/projects/pinesParcels/data/HD_v_l.rds')
+#HD_v_r=readRDS('/cbica/projects/pinesParcels/data/HD_v_r.rds')
+#
+## left
+#HD_v_l=HD_v_l[mw_l_verts,mw_l_verts]
+#saveRDS(HD_v_l[upper.tri(HD_v_l)],'/cbica/projects/pinesParcels/data/HD_v_l.rds')
+#
+## right
+#HD_v_r=HD_v_r[mw_r_verts,mw_r_verts]
+#saveRDS(HD_v_r[upper.tri(HD_v_r)],'/cbica/projects/pinesParcels/data/HD_v_r.rds')
 
 ```
 
 
 ```{r}
 ### Load in Vertex data
-HD_v_l=readRDS('Y:/data/HD_v_l.rds')
-HD_v_r=readRDS('Y:/data/HD_v_r.rds')
+#HD_v_l=readRDS('Y:/data/HD_v_l.rds')
+#HD_v_r=readRDS('Y:/data/HD_v_r.rds')
 ED_v_l=readRDS('Y:/results/PWs/FC/vert_EucD_left_vec.rds')
 ED_v_r=readRDS('Y:/results/PWs/FC/vert_EucD_right_vec.rds')
 fc_l=readRDS('Y:/results/PWs/FC/gro_FC_l_vec.rds')
@@ -202,11 +193,130 @@ fc_r=readRDS('Y:/results/PWs/FC/gro_FC_r_vec.rds')
 ```
 
 ```{r}
+fc=c(fc_l,fc_r)
+euc=c(ED_v_l,ED_v_r)
+df<-data.frame(fc,euc)
+colnames(df)<-c('FC','Euclidean_Distance')
+
+library(ggplot2)
+library(ggExtra)
+library(dplyr)
+library(reshape2)
+
+### try binning pos and neg at each distance
+# initialize bins
+DistBin=matrix(0,8000000,10)
+Threshs=seq(0,180,6)
+Threshs=c(0,10,20,30,180)
+for (i in 2:length(Threshs)){
+  ThreshL=Threshs[i-1]
+  ThreshU=Threshs[i]
+  subset=filter(df, (Euclidean_Distance < ThreshU) & (Euclidean_Distance > ThreshL))
+  DistBin[1:length(subset$FC),i]<-subset$FC
+}
+
+plotdf<-melt(data.frame(DistBin))
+plotdf$Coupling='Magnitude'
+plotdfPos<-plotdf[plotdf$value>0,]
+plotdfNeg<-plotdf[plotdf$value<0,]
+
+bp <- ggplot(plotdfPos, aes(x=variable, y=value))+geom_boxplot()+xlab('Distance Bin')+ylab('FC')
+
+# new approach
+CorThreshs=seq(-1,1,.05)
+DistThreshs=seq(0,180,4.5)
+PlotBins=matrix(data=NA,nrow=41,ncol=41,dimnames=list(CorThreshs,DistThreshs))
+for (i in 2:41){
+  DistThreshL=DistThreshs[i-1]
+  DistThreshU=DistThreshs[i]
+  subsetCors=filter(df, (Euclidean_Distance < DistThreshU) & (Euclidean_Distance > DistThreshL))
+  for (j in 2:41){
+      CorThreshL=CorThreshs[j-1]
+      CorThreshU=CorThreshs[j]
+      subsetsubsetCors=filter(subsetCors, (FC < CorThreshU) & (FC > CorThreshL))
+      PlotBins[i,j]<-dim(subsetsubsetCors)[1]/dim(df)[1]
+  }
+}
+
+# convert it to dataframe
+PlotBins.df <- data.frame(x=rep(as.numeric(dimnames(PlotBins)[[1]]),each=ncol(PlotBins)),y=rep(as.numeric(dimnames(PlotBins)[[2]]),times=nrow(PlotBins)),z=as.vector(PlotBins))
+
+# plot with geom_tiles
+ggplot(data=PlotBins.df,aes(x=y,y=x,fill=z))+
+  geom_tile()
+```
+
+
+
+```{r}
+
+FCED<-ggplot(df, aes(y = FC, x = Euclidean_Distance)) +
+  geom_density_2d_filled()+scale_fill_gradient2(mid='gray90',high='black',limits=c(0,8600))+theme_classic()+geom_point(alpha=0)
+# plot just for marginal
+
+```
+
+```{r}
+#### Load in Euclidean distances
+ED_f_l=readRDS('Y:/results/PWs/face_EucD_left_vec.rds')
+ED_f_r=readRDS('Y:/results/PWs/face_EucD_right_vec.rds')
+
+
+### Load in CFC
+cfc_l=readRDS('Y:/results/PWs/FC/gro_CFC_l_vec.rds')
+cfc_r=readRDS('Y:/results/PWs/FC/gro_CFC_r_vec.rds')
+
+cfc=c(cfc_l,cfc_r)
+euc=c(ED_f_l,ED_f_r)
+
+df<-data.frame(cfc,euc)
+colnames(df)<-c('CFC','Euclidean_Distance')
+
+
+DistBin=matrix(0,80000000,6)
+Threshs=seq(0,180,30)
+Threshs=c(0,10,20,30,180)
+for (i in 2:length(Threshs)){
+  ThreshL=Threshs[i-1]
+  ThreshU=Threshs[i]
+  subset=filter(df, (Euclidean_Distance < ThreshU) & (Euclidean_Distance > ThreshL))
+  DistBin[1:length(subset$CFC),i]<-subset$CFC
+}
+
+plotdfC<-melt(data.frame(DistBin))
+plotdfC$Coupling='Directional'
+plotdfPosC<-plotdfC[plotdfC$value>0,]
+plotdfNegC<-plotdfC[plotdfC$value<0,]
+
+# merge functional conn and directional coup
+PlotdfPoses<-rbind(plotdf,plotdfC)
+
+##################
+### BIG BOXPLOT  #
+#  ________      #
+###|__--__|####### 
+#  #####|_--__|### 
+### BIG BOXPLOT ##
+##################
+
+bgbp <- ggplot(PlotdfPoses, aes(x=variable, y=value,fill=Coupling))+geom_boxplot(outlier.alpha=0)+theme_minimal(base_size=24)+xlab('Euclidean Distance')+ylab('Positive Correlations')+scale_x_discrete(labels=c("0-15mm","15-30mm","30-45mm","45-60mm","60-75mm","75-90mm","90-105mm","105-120mm","120-135mm","135-150mm","150-165mm","165-180mm"))+theme(axis.text.x=element_text(angle = 55))
+
+bgbp <- ggplot(PlotdfPoses, aes(x=variable, y=value,fill=Coupling))+geom_boxplot(outlier.alpha=0)+theme_minimal(base_size=24)+xlab('Euclidean Distance')+ylab('Positive Correlations')+scale_x_discrete(labels=c("0-20mm","20-40mm","40-60mm","60-80mm","80-100mm","100-120mm","120-140mm","140-160mm","160-180mm"))+theme(axis.text.x=element_text(angle = 55))
+
+# saved at 1400 x 1400
+```
+
+```{r}
+
+FCED<-ggplot(df, aes(y = CFC, x = Euclidean_Distance)) +
+  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black',limits=c(0,12600))+theme_classic()+geom_point(alpha=0)
+# plot just for marginal
+ggMarginal(FCED)
+```
+
+```{r}
 # drs by distance
 
-######################
-############ VERTICES
-######################
 # load in DR2s
 v_L_dr2_1=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_1.rds')
 v_L_dr2_2=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_2.rds')
@@ -225,52 +335,10 @@ colnames(df)<-c('dr2','p','ED','HD')
 library(ggplot2)
 library(ggExtra)
 ggplot(df, aes(y = dr2, x = ED)) +
-  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='blue',limits=c(0,30000))+theme_classic()
+  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black',limits=c(3000))+theme_classic()
 # plot just for marginal
 Marginal<-ggplot(df, aes(y = fc, x = HD)) +geom_point(alpha=0,size=0)+theme_classic()
 ggMarginal(Marginal,type='histogram')
-```
-
-
-```{r}
-# will need sep. runs for young and old
-##### load in FC
-
-# young
-yfc=vroom('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_young.csv',col_names=FALSE)
-ycfc_l=vroom('Y:/results/PWs/FC/gro_CFC_young_l.csv',col_names=FALSE)
-ycfc_r=vroom('Y:/results/PWs/FC/gro_CFC_young_r.csv',col_names=FALSE)
-```
-
-```{r}
-# old
-ofc=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_FC_old.csv')
-
-##### load in CFC
-
-# old
-ocfc_l=vroom('Y:/results/PWs/FC/gro_CFC_old_l.csv',col_names=FALSE)
-ocfc_r=vroom('Y:/results/PWs/FC/gro_CFC_old_r.csv',col_names=FALSE)
-
-ocfc_l=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_old_l.csv',header=F)
-ocfc_r=read.csv('/cbica/projects/pinesParcels/results/PWs/FC/gro_CFC_old_r.csv',header=F)
-
-
-
-
-##### combine all into dataframe
-df<-data.frame(ED_f_l[upper.tri(ED_f_l)],ocfc_l[upper.tri(ocfc_l)],HD_f_l)
-colnames(df)<-c('Distance','CFC_o','HierarchD')
-```
-
-```{r}
-library(ggplot2)
-ggplot(df, aes(y = CFC_o, x = Distance)) +
-  geom_hex(bins = 200)
-ggplot(df, aes(y = CFC_o, x = HierarchD)) +
-  geom_hex(bins = 200)
-ggplot(df, aes(y = Distance, x = HierarchD)) +
-  geom_hex(bins = 200)
 ```
 
 ```{r}
