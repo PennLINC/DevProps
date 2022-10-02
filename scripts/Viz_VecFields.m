@@ -144,6 +144,26 @@ roybigbl_cm=flipud(roybigbl_cm);
 roybigbl_cm=roybigbl_cm(15:240,:);
 % pulled from https://github.com/Washington-University/workbench/blob/master/src/Files/PaletteFile.cxx
 
+% VIDEEN CMAP
+roybigbl_cm=inferno(11);
+roybigbl_cm(1,:)=[255, 0, 0 ];
+roybigbl_cm(2,:)=[255, 105, 0];
+roybigbl_cm(3,:)=[255, 153, 0];
+roybigbl_cm(4,:)=[255, 255, 0 ];
+roybigbl_cm(5,:)=[16, 176, 16 ];
+roybigbl_cm(6,:)=[0, 255, 0 ];
+roybigbl_cm(7,:)=[127, 127, 204 ];
+roybigbl_cm(8,:)=[76, 76, 127 ];
+roybigbl_cm(9,:)=[51, 51, 76 ];
+roybigbl_cm(10,:)=[102, 0, 76];
+roybigbl_cm(11,:)=[0, 0, 0];
+% scale to out of 1
+roybigbl_cm=roybigbl_cm.*(1/255);
+% interpolate in-between values
+interpsteps=[0 .1 .2 .3 .4 .5 .6 .7 .8 .9 1];
+roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
+
+
 %%% Load in subject time series indices
 parentfp=['/cbica/projects/hcpd/data/motMasked_contSegs/'];
 CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];

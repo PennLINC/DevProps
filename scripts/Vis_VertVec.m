@@ -120,16 +120,16 @@ data=zeros(1,2562);
 data(g_noMW_combined_L)=FaceVecL(g_noMW_combined_L);
 
 % fixed colorscale
-mincol=-0.5;
-maxcol=0.5;
+mincol=-6;
+maxcol=6;
 % circular
 %custommap= vertcat(flipud(inferno),inferno);
-%custommap=colormap('inferno');
+custommap=colormap('inferno');
 %custommap=flipud(colormap('inferno'));
 % for red/blue 0-centered
 %mincol=-3;
 %maxcol=3;
-custommap=colormap(b2r(mincol,maxcol));
+%custommap=colormap(b2r(mincol,maxcol));
 % abscense of color to gray to accom. lighting "none"
 %custommap(126,:)=[.5 .5 .5];
 
@@ -238,10 +238,10 @@ set(gcf,'Color','w')
 
 set(gca,'CLim',[mincol,maxcol]);
 %%set(aplot,'FaceColor','flat','FaceVertexCData',data','CDataMapping','scaled');
-%colorbar
-%c=colorbar
-%c.Location='southoutside'
+colorbar
+c=colorbar
+c.Location='southoutside'
 
-%colormap(custommap)
+colormap(custommap)
 
 print(Fn,'-dpng')

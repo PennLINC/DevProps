@@ -223,14 +223,14 @@ plotdfNeg<-plotdf[plotdf$value<0,]
 bp <- ggplot(plotdfPos, aes(x=variable, y=value))+geom_boxplot()+xlab('Distance Bin')+ylab('FC')
 
 # new approach
-CorThreshs=seq(-1,1,.05)
-DistThreshs=seq(0,180,4.5)
-PlotBins=matrix(data=NA,nrow=41,ncol=41,dimnames=list(CorThreshs,DistThreshs))
-for (i in 2:41){
+CorThreshs=seq(-1,1,.025)
+DistThreshs=seq(0,180,2.25)
+PlotBins=matrix(data=NA,nrow=81,ncol=81,dimnames=list(CorThreshs,DistThreshs))
+for (i in 2:81){
   DistThreshL=DistThreshs[i-1]
   DistThreshU=DistThreshs[i]
   subsetCors=filter(df, (Euclidean_Distance < DistThreshU) & (Euclidean_Distance > DistThreshL))
-  for (j in 2:41){
+  for (j in 2:81){
       CorThreshL=CorThreshs[j-1]
       CorThreshU=CorThreshs[j]
       subsetsubsetCors=filter(subsetCors, (FC < CorThreshU) & (FC > CorThreshL))
@@ -250,8 +250,8 @@ ggplot(data=PlotBins.df,aes(x=y,y=x,fill=z))+
 
 ```{r}
 
-FCED<-ggplot(df, aes(y = FC, x = Euclidean_Distance)) +
-  geom_density_2d_filled()+scale_fill_gradient2(mid='gray90',high='black',limits=c(0,8600))+theme_classic()+geom_point(alpha=0)
+ggplot(df, aes(y = FC, x = Euclidean_Distance)) +
+  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray80',high='black',limits=c(0,8600))+theme_classic(base_size=28)+geom_point(alpha=0)+ylab('FC')+xlab('Euclidean Distance (mm)')
 # plot just for marginal
 
 ```
@@ -288,8 +288,29 @@ plotdfC$Coupling='Directional'
 plotdfPosC<-plotdfC[plotdfC$value>0,]
 plotdfNegC<-plotdfC[plotdfC$value<0,]
 
+
+# new approach
+PlotBinsC=matrix(data=NA,nrow=81,ncol=81,dimnames=list(CorThreshs,DistThreshs))
+for (i in 2:81){
+  DistThreshL=DistThreshs[i-1]
+  DistThreshU=DistThreshs[i]
+  subsetCors=filter(df, (Euclidean_Distance < DistThreshU) & (Euclidean_Distance > DistThreshL))
+  for (j in 2:81){
+      CorThreshL=CorThreshs[j-1]
+      CorThreshU=CorThreshs[j]
+      subsetsubsetCors=filter(subsetCors, (CFC < CorThreshU) & (CFC > CorThreshL))
+      PlotBinsC[i,j]<-dim(subsetsubsetCors)[1]/dim(df)[1]
+  }
+}
+
+PlotBinsC.df <- data.frame(x=rep(as.numeric(dimnames(PlotBinsC)[[1]]),each=ncol(PlotBinsC)),y=rep(as.numeric(dimnames(PlotBinsC)[[2]]),times=nrow(PlotBinsC)),z=as.vector(PlotBinsC))
+
+DifBins=PlotBinsC-PlotBins
+
+PlotBinsD.df <- data.frame(x=rep(as.numeric(dimnames(DifBins)[[1]]),each=ncol(DifBins)),y=rep(as.numeric(dimnames(DifBins)[[2]]),times=nrow(DifBins)),z=as.vector(DifBins))
+
 # merge functional conn and directional coup
-PlotdfPoses<-rbind(plotdf,plotdfC)
+#PlotdfPoses<-rbind(plotdf,plotdfC)
 
 ##################
 ### BIG BOXPLOT  #
@@ -309,9 +330,8 @@ bgbp <- ggplot(PlotdfPoses, aes(x=variable, y=value,fill=Coupling))+geom_boxplot
 ```{r}
 
 FCED<-ggplot(df, aes(y = CFC, x = Euclidean_Distance)) +
-  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray90',high='black',limits=c(0,12600))+theme_classic()+geom_point(alpha=0)
+  geom_hex(bins = 100)+scale_fill_gradient2(mid='gray80',high='black',limits=c(0,760000))+theme_classic(base_size=28)+geom_point(alpha=0)+ylab('Directional Coupling')+xlab('Euclidean Distance (mm)')
 # plot just for marginal
-ggMarginal(FCED)
 ```
 
 ```{r}
@@ -357,15 +377,37 @@ ggsave('~/test.png',theplot)
 
 ```{r}
 # load participant-specific associations
-df1<-readRDS('Y:/data/mergedDF_withDistanceCorrs_1.rds')
-df2<-readRDS('Y:/data/mergedDF_withDistanceCorrs_2.rds')
-df3<-readRDS('Y:/data/mergedDF_withDistanceCorrs_3.rds')
-df4<-readRDS('Y:/data/mergedDF_withDistanceCorrs_4.rds')
-df5<-readRDS('Y:/data/mergedDF_withDistanceCorrs_5.rds')
-df6<-readRDS('Y:/data/mergedDF_withDistanceCorrs_6.rds')
-df7<-readRDS('Y:/data/mergedDF_withDistanceCorrs_7.rds')
-df8<-readRDS('Y:/data/mergedDF_withDistanceCorrs_8.rds')
-
+df1<-readRDS('Y:/data/outDf_fc_1.rds')
+df2<-readRDS('Y:/data/outDf_fc_2.rds')
+df3<-readRDS('Y:/data/outDf_fc_3.rds')
+df4<-readRDS('Y:/data/outDf_fc_4.rds')
+df5<-readRDS('Y:/data/outDf_fc_5.rds')
+df6<-readRDS('Y:/data/outDf_fc_6.rds')
+df7<-readRDS('Y:/data/outDf_fc_7.rds')
+df8<-readRDS('Y:/data/outDf_fc_8.rds')
 # merge it back together from sep. processing chunks
-df<-rbind(df1,df2,df3,df4,df5,df6,df7,df8)
+df<-rbind(df1[1:50,],df2[51:100,],df3[101:150,],df4[151:200,],df5[201:250,],df6[251:300,],df7[301:350,],df8[351:388,])
+# Cfc
+cdf1<-readRDS('Y:/data/outDf_cfc_1.rds')
+cdf2<-readRDS('Y:/data/outDf_cfc_2.rds')
+cdf3<-readRDS('Y:/data/outDf_cfc_3.rds')
+cdf4<-readRDS('Y:/data/outDf_cfc_4.rds')
+cdf5<-readRDS('Y:/data/outDf_cfc_5.rds')
+cdf6<-readRDS('Y:/data/outDf_cfc_6.rds')
+cdf7<-readRDS('Y:/data/outDf_cfc_7.rds')
+cdf8<-readRDS('Y:/data/outDf_cfc_8.rds')
+cdf<-rbind(cdf1[1:50,],cdf2[51:100,],cdf3[101:150,],cdf4[151:200,],cdf5[201:250,],cdf6[251:300,],cdf7[301:350,],cdf8[351:388,])
+# add coupling labels
+df$coupling<-"FC"
+cdf$coupling<-"CFC"
+masterdf<-rbind(df,cdf)
+# melt df
+melted<-melt(masterdf,id.vars = c("coupling","X17","X18","X19"))
+colnames(melted)<-c("CouplingType","subjID","Age","FD","Distance","Coupling")
+# convert to factors
+melted$CouplingType<-ordered(melted$CouplingType,levels=c('FC','CFC'))
+levels(melted$Distance)<-c(5,15,25,35,45,55,65,75,85,95,105,115,125,135,145,155)
+melted$Distance<-as.numeric(melted$Distance)
+# model
+model<-gam(Coupling~te(Age,Distance)+CouplingType+te(Age,Distance,by=CouplingType),data=melted)
 ```

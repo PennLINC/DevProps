@@ -135,5 +135,5 @@ for (s in 251:300){
 }
 
 # SAVEOUT BINNED FCS AND CFCS
-saveRDS(outDf_fc,'~/data/outDf_fc_5.rds')
-saveRDS(outDf_cfc,'~/data/outDf_cfc_5.rds')
+saveRDS(outDf_fc,'~/data/outDf_fc_6.rds')
+saveRDS(outDf_cfc,'~/data/outDf_cfc_6.rds')
