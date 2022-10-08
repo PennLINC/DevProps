@@ -13,7 +13,7 @@ subj
 
 %%% already ran on subjs
 % downsample aggregated TS 
-%dsCommand=['~/PWs/scripts/downsample_TS.sh ' subj];
+%dsCommand=['~/PWs/scripts/downsample_TSfs4.sh ' subj];
 %system(dsCommand)
 
 % make a "Proced" dir
