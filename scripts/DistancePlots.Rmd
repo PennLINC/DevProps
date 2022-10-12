@@ -345,7 +345,34 @@ v_L_dr2_4=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_4.rds')
 v_L_dr2_5=readRDS('Y:/results/PWs/Age_EdgeLeve_FC_L_DR2_5.rds')
 # combine
 v_L_dr2=rbind(t(v_L_dr2_1),t(v_L_dr2_2),t(v_L_dr2_3),t(v_L_dr2_4),t(v_L_dr2_5))
-
+# load distances
+ED_v_l=readRDS('Y:/results/PWs/FC/vert_EucD_left_vec.rds')
+ED_v_r=readRDS('Y:/results/PWs/FC/vert_EucD_Right_vec.rds')
+# fdr age-edge associations
+v_L_Pfdr<-p.adjust(v_L_dr2[,2],metho='fdr')
+# isolate edges changing with age
+sig_L<-v_L_dr2[v_L_Pfdr<0.05,1]
+sig_L_euc<-ED_v_l[v_L_Pfdr<0.05]
+# isolate those increasing with age vs. those decreasing
+DecreaseEdges<-sig_L_euc[sig_L<0]
+IncreaseEdges<-sig_L_euc[sig_L>0]
+DecreaseDF<-data.frame(DecreaseEdges,rep('Decrease',length(DecreaseEdges)))
+IncreaseDF<-data.frame(IncreaseEdges,rep('Increase',length(IncreaseEdges)))
+colnames(DecreaseDF)<-c('Distance','Developmental')
+colnames(IncreaseDF)<-c('Distance','Developmental')
+plotdf<-rbind(IncreaseDF,DecreaseDF)
+# ggplot
+library(ggdist)
+ggplot(plotdf, aes(x = Distance, y = Developmental, color = Developmental)) +
+  stat_halfeye(
+    point_color = NA, .width = 0, height = 0.6,
+    position = position_nudge(y = 0.3)
+  ) +
+  geom_boxplot(
+    position = position_nudge(y = 0.2),
+    width = 0.1, outlier.shape = NA
+  ) +
+  geom_point(alpha=.01,position = position_jitter(width = 0, height = 0.1, seed = 1))+theme_classic()+ggtitle('Functional Connectivity Changes By Distance')
 ```
 
 ```{r}

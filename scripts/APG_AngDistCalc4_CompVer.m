@@ -5,10 +5,11 @@ function APG_AngDistCalc(subj)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Add OFD toolbox to path
-%addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
+addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 %%%% Load in fsav4 opflow calc
 OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
+%OpFlFp=['~/data/ciftiout_AntPost_Sym.dtseries.nii'];
 data=load(OpFlFp)
 
 %%% Load in surface data
