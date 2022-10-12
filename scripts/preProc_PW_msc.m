@@ -44,81 +44,14 @@ cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer
 fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh'], 'w');
 fprintf(fid,cmd);
 system(['qsub -l h_vmem=33G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_PGG_AngD_snull.sh']);
-% CG
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_CG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_CG_AngD_snull.sh']);
 
-% RUN 4
-% temporal nulls: optical flow
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_tnull_comb_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=150G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OF_tnull.sh']);
-
-%%% RUN 5
-%%% Run Spherical Optical flow with parameter sweeps (4x the runs, intended for subset of subjs)
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer_paramSweep.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=29G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh']);
-
-%%%% RUN 6
-%%%% Run angular distance calculation on altertative reference hierarchy
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=11G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh']);
-
-%%%% RUN 7
+%%%% RUN 4
 %%%%% above with spins
 % cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
 % fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh'], 'w');
 %fprintf(fid,cmd);
 %system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh']);
 
-%%%% RUN 8
-%%%% Run angular distance calculation using participant's own tertile-derived PG
-%tertiles=["young" "mid" "old"];
-%tertilecodes=["Y" "Mi" "O"];
-%for T=1:3
-%tertile=tertiles(T)
-%tertilecode=tertilecodes(T)
-% load in tertile names
-%subjs=readtable(['~/PWs/' tertile{:} '_subs.txt'],'ReadVariableNames',false);
-%sizesubjs=size(subjs);
-%lsubjs=sizesubjs(1)
-% for each subject
-%for s=1:lsubjs
-%subj=subjs{s,1};
-%mask_mw_faces_4_tertSpecific(subj{:})
-% if file doesn't exist
-%if ~isfile(['/cbica/projects/pinesParcels/results/PWs/Proced/' subj{:} '/' subj{:} '_tertSpecific_AngDistMat4.mat']);
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_' tertilecode{:} 'PG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj{:}];
-% run tert ang dist calc
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=15G,s_vmem=14G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj{:} '_tertPG.sh']);
-%pause(7)
-%end
-%end
-%end
-
-%%%% RUN 9
-%%%% extract Myelin features
-
-%Extract_BUTD_ResultantVecs_My_c(subj)
-
-%%% RUN 10
-% run angular distance on myelin over tasks
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_c_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=13G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG_c.sh']);
-
-
-%%% run 11:
 %%% mask medial wall and extract R-friendly face data
 %mask_mw_faces_4(subj)
 %mask_mw_faces_4_tertSpecific(subj)
