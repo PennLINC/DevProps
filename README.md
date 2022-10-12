@@ -74,6 +74,17 @@ Here, we create the permuted old - young PGG angular distance difference histogr
 # 7. Simulated posterior-anterior data
 Here, we simulate a posterior-to-anterior traveling wave across the cortical sheet, and recover the directionality of this wave with optical flow. First, to generate the wave, we use [syn_wave_prop1](https://github.com/PennLINC/PWs/blob/main/scripts/syn_wave_prop1.m) (thank you Manish!) to generate the wave. This script pulls from On the Stability of BOLD fMRI Correlations by [Laumann et al., 2017](https://cpb-us-w2.wpmucdn.com/sites.wustl.edu/dist/7/1080/files/2018/06/simulate_BOLD_timecourse_func_v2-1eoyny0.m) to ensure simulated data resembles real BOLD signal. Second, we downsample this data to fsaverage4 resolution with [downsample_SIM_TSfs4.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_SIM_TSfs4.sh). Third, we run optical flow on this downsampled data with [OpFl_Sph_fs4_SIM](https://github.com/PennLINC/PWs/blob/main/scripts/OpFl_Sph_fs4_SIM.m) : note that the subject "name" is "sub-Sim", as set in the downsample script. Fourth, we calculate the posterior-anterior directionality by use of the 3d coordinate system innate to freesurfer. The coordinates are extracted and converted to a .mat file in [APfuncgii_2_mat.m](https://github.com/PennLINC/PWs/blob/main/scripts/APfuncgii_2_mat.m). Fifth, the surface gradient (i.e., nabla Posterior Anterior) is extracted and angular distance between said gradient and the synthetic data is calculated in [APG_AngDistCalc4_CompVer.m](https://github.com/PennLINC/PWs/blob/main/scripts/APG_AngDistCalc4_CompVer.m). Sixth, the face-wise medial wall mask is dropped from this data in [mask_mw_faces_4_ap](https://github.com/PennLINC/PWs/blob/main/scripts/mask_mw_faces_4_ap.m). Seventh (lastly!), we visualize the angular distribution output. More specifically, we observe the angular distance between nabla posterior anterior and the intended wave direction for each point on the cortex. This is done in R, see [lines 157-191](https://github.com/PennLINC/PWs/blob/main/scripts/opfl_vis.Rmd).
 
+# 8.1 Midnight scan club replication: Preprocessing
+
+Here we're going to run the midnight scan club data through an analagous pipeline. The only real difference is a TR of 2.2 seconds rather than 0.8 seconds, but we'll concatenate across resting-state scans so we'll still have plenty of TRs for each participant.
+
+The parent script for this step (8.1) is [preProc_PWs_msc](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW_msc.m).
+
+
+
+# 8.2 Midnight scan club replication: Post-processing
+
+
 
 
 
