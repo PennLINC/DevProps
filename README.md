@@ -78,7 +78,7 @@ Here, we simulate a posterior-to-anterior traveling wave across the cortical she
 
 Here we're going to run the midnight scan club data through an analagous pipeline. The only real difference is a TR of 2.2 seconds rather than 0.8 seconds, but we'll concatenate across resting-state scans so we'll still have plenty of TRs for each participant.
 
-The parent script for this step (8.1) is [preProc_PWs_msc](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW_msc.m).
+The parent script for this step (8.1) is [preProc_PWs_msc](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW_msc.m). The first script called within is [apply_motion_mask_msc](https://github.com/PennLINC/PWs/blob/main/scripts/apply_motion_mask_msc.m), which applies and records the extended temporal censoring used to only analyze continuous segments of uninterrupted fMR images. The only distinct between this script and the motion masking used for HCPD is the FD threshold. Because longer TRs yield higher FDs, the FD threshold was relaxed.
 
 
 
