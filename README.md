@@ -88,8 +88,21 @@ The downsampled time series are then ready for optical flow. This [script](https
 
 [This script](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc4_CompVer_msc.m) will calculate angular distances on MSC data (angular distances from nabla PG). However, the stats we get and report come from [comparing angular sitances among msc optical flow output to null models (snull)](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc_snull_CompVer_msc.m), which is all lumped together for computational efficiency. Note that as for other CompVer scripts, the above script is meant to be [run as its c-compiled version](https://github.com/PennLINC/PWs/blob/main/scripts/run_PGG_AngDistCalc_snull_CompVer_msc.sh). You will have to uncomment the addpath command up at the top of .m file for line-by-line use. Also note that more virtual memory is needed for qsubbing MSC snull jobs, as the concatenated time series is longer.
 
-That's about it for MSC. Now we get to return to the warm comfort of r/rstudio to plot the output, labeled as SpunDips4_cnct.csv for each MSC participant. This only takes a few lines of code from [NullPlotting](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.Rmd). Specifically, lines 107-113.
+That's about it for MSC. Now we get to return to the warm comfort of r/rstudio to plot the output, labeled as SpunDips4_cnct.csv for each MSC participant. This only takes a few lines of code from [NullPlotting](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.Rmd). Specifically, lines 102-108.
 
+# 9.1 Alternative Hierarchy: Dip statistics versus null
+
+Here we use an independently-derived hierarchy (nabla myelin) to substantiate the claim that alignment of propgagtions with nabla PG reflect bottom-up and top-down directions. The original myelin map is downloaded from [BALSA](https://balsa.wustl.edu/study/show/mDBP0), which was uploaded as part of the efforts behind [this paper](https://www.sciencedirect.com/science/article/pii/S1053811922004797). Specifically, we used the transmit-bias corrected map from HCP-D. This processing stream is almost entirely parallel to that described above using the principal gradient: the exception is that whereas higher loadings are higher-order cortices for the principal gradient, lower values are higher-order for the myelin map. This only requires a trivial adjustment later on.
+
+The first step to using this map is to downsample it to fsaverage4 space with [downsample_gMM.sh](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_gMM.sh). Next, this downsampled version [is converted to a .mat file](https://github.com/PennLINC/PWs/blob/main/scripts/myGfuncgii_2_mat.m) for easy loading within the compiled scripts below. 
+
+Because we are only changing the set of _reference_ directions for measurement of hierarchical directionality, optical flow does not need to be recalculated. The next steps then becomes to measure angular distance relative to the alternative hierarchy rather than the originally utilized one. This is done in [MyG (Myelin gradient) AngDistCalc4_CompVer.m](https://github.com/PennLINC/PWs/blob/main/scripts/MyG_AngDistCalc4_CompVer.m). As prior, this script will calculate the angular distances, but we are more immediately concerned with the angular distances relative to conservative spatial null models. That is conducted with the compiled version of [this script](https://github.com/PennLINC/PWs/blob/main/scripts/MyG_AngDistCalc_snull_CompVer.m), using [this script](https://github.com/PennLINC/PWs/blob/main/scripts/run_MyG_AngDistCalc_snull_CompVer.sh).
+
+After running spatiall null testing on all participants, we can use r code to plot the observed values and null distributions at the subject and group-level. For a single subject lines 101-113 of [NullPlotting](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.Rmd) will do the trick, but to plot at the group-level we have to go through and load each subject's data, null distribution, and distance of the observed dip statistic from the null distribution. This can be accomplished with lines 7-88 of [NullPlotting](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.Rmd).
+
+# 9.2 Alternative Hierarchy: Task effects
+
+# 9.3 Alternative Hierarchy: Developmental effects
 
 
 
