@@ -78,11 +78,18 @@ Here, we simulate a posterior-to-anterior traveling wave across the cortical she
 
 Here we're going to run the midnight scan club data through an analagous pipeline. The only real difference is a TR of 2.2 seconds rather than 0.8 seconds, but we'll concatenate across resting-state scans so we'll still have plenty of TRs for each participant.
 
-The parent script for this step (8.1) is [preProc_PWs_msc](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW_msc.m). The first script called within is [apply_motion_mask_msc](https://github.com/PennLINC/PWs/blob/main/scripts/apply_motion_mask_msc.m), which applies and records the extended temporal censoring used to only analyze continuous segments of uninterrupted fMR images. The only distinct between this script and the motion masking used for HCPD is the FD threshold. Because longer TRs yield higher FDs, the FD threshold was relaxed.
+The parent script for this step (8.1) is [preProc_PWs_msc](https://github.com/PennLINC/PWs/blob/main/scripts/preProc_PW_msc.m). The first script called within is [apply_motion_mask_msc](https://github.com/PennLINC/PWs/blob/main/scripts/apply_motion_mask_msc.m), which applies and records the extended temporal censoring used to only analyze continuous segments of uninterrupted fMR images (> 10 TRs). The only distinct between this script and the motion masking used for HCPD is the FD threshold. Because longer TRs yield higher FDs, the FD threshold was relaxed to .4mm FD.
 
+After motion masking and saving out the valid TR indices, the time series are downsampled with [downsample_TSfs4_msc](https://github.com/PennLINC/PWs/blob/main/scripts/downsample_TSfs4_msc.sh).
 
+The downsampled time series are then ready for optical flow. This [script](https://github.com/PennLINC/PWs/blob/main/scripts/OpFl_Sph_fs4_runSweep_msc.m) will run optical flow on individual scans (preproc_PWs leverages the C-compiled verison, see section 3 for more info on how matlab code was compiled). Concatenation of resting-state data is performed _after_ optical flow with this [script](https://github.com/PennLINC/PWs/blob/main/scripts/Concat_mscFl.m).
 
 # 8.2 Midnight scan club replication: Post-processing
+
+[This script](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc4_CompVer_msc.m) will calculate angular distances on MSC data (angular distances from nabla PG). However, the stats we get and report come from [comparing angular sitances among msc optical flow output to null models (snull)](https://github.com/PennLINC/PWs/blob/main/scripts/PGG_AngDistCalc_snull_CompVer_msc.m), which is all lumped together for computational efficiency. Note that as for other CompVer scripts, the above script is meant to be [run as its c-compiled version](https://github.com/PennLINC/PWs/blob/main/scripts/run_PGG_AngDistCalc_snull_CompVer_msc.sh). You will have to uncomment the addpath command up at the top of .m file for line-by-line use. Also note that more virtual memory is needed for qsubbing MSC snull jobs, as the concatenated time series is longer.
+
+That's about it for MSC. Now we get to return to the warm comfort of r/rstudio to plot the output, labeled as SpunDips4_cnct.csv for each MSC participant. This only takes a few lines of code from [NullPlotting](https://github.com/PennLINC/PWs/blob/main/scripts/NullPlotting.Rmd). Specifically, lines 107-113.
+
 
 
 
