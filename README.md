@@ -102,6 +102,21 @@ After running spatiall null testing on all participants, we can use r code to pl
 
 # 9.2 Alternative Hierarchy: Task effects
 
+As prior, we need to calculate angular distances on optical flow from the carit task sessions. That is done with [the compiled version of this script](https://github.com/PennLINC/PWs/blob/main/scripts/MyG_AngDistCalc_c_CompVer.m) using [this script](https://github.com/PennLINC/PWs/blob/main/scripts/run_MyG_AngDistCalc_c_CompVer.sh) 
+
+Second, we need to extract the proportion of propagations noted to be top-down at each point on the cortex over this task. We can do this with [Extract_BUTD_ResultantVecs_My_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/Extract_BUTD_ResultantVecs_My_c.m). Note that this script is NOT compiled; you will be subjected to license limitations when using it. Fortunately it is quick, so even though you can only run it on ~6 participants at a time, it's not a big rate-limiting step.
+
+Third, we need to convert the output of Extract_BUTD_ResultantVecs_My_c.m to .csv's rather than .m files so R can use 'em. This is what [BUTD_to_Rformat_My_c.m](https://github.com/PennLINC/PWs/blob/main/scripts/BUTD_to_Rformat_My_c.m) is for.
+
+Fourth, we run facewise t-tests to look at rest vs. task proportions. This is seperated into 2, qsubable scripts ([left](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_ttest_L_My.R) and [right](https://github.com/PennLINC/PWs/blob/main/scripts/facewise_ttest_R_My.R) hemispheres).
+
+Fifth, use [FDR_facewise_t_My.R](https://github.com/PennLINC/PWs/blob/main/scripts/FDR_facewise_t_My.R) to correct for multiple comparisons.
+
+Sixth, visualize the output with the general-purpose [Vis_Facevec.m script](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec.m). Use readtable to load in the output of FDR-correction. Note there's no header to these files! Accordingly, 'ReadVariableNames` should be set to false. Finally, recall that where higher loadings are higher-order cortices for the principal gradient, lower values are higher-order for the myelin map. Correct for this flip of hierarchical directionality with a simple (*-1) to the corrected t-test vectors prior to inputting into the visualization script.
+
+Within [Vis_Facevec.m](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_FaceVec.m), mincol should be set to -10 and maxcol should be set to 10. See line 85 for the blue-orange colormapping specifically.
+
+
 # 9.3 Alternative Hierarchy: Developmental effects
 
 
