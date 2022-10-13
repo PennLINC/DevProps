@@ -128,9 +128,9 @@ for r=1:10
 			ts_cif.diminfo{2}.length=newTRnumcont;
 			% overwrite TRs for new file
 			ts_cif.cdata=masked_trs_cont;
-			% set output filepath
+			% set output filepath - note p2mm is for equivalent naming, but technically it's .4 for msc
 			ofp=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_p2mm_masked_run_' runstring  '.dtseries.nii'];
-			% There is no reason this should be a requried step
+			% jump through the matlab hoop
 			ofp=convertStringsToChars(ofp);
 			% write out motion masked cifti
 			write_cifti(ts_cif,ofp);
