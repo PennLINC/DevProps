@@ -12,7 +12,6 @@ function us = OpFl_Sph_fs4_runSweep_msc(subj)
 %%%%%%%%%%%%%%%%%%%% Set parameters.
 N = 10; % Vector spherical harmonics degree
 h = 1; % finite-difference height vector of triangles 
-% ALPHA SET BELOW ITERATIVELY FOR PARAMETER SWEEP
 alpha = 1; % scales Tikhonov regularization, > alpha = > spatiotemporal smoothness
 s = 1; % R(u), regularizing functional, scales Tikhonov regularization more rapidly via penalization of first spatial and first temporal derivative
 %%%%%%%%%%%%%%%%%%%%
