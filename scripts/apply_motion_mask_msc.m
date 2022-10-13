@@ -47,7 +47,7 @@ for r=1:10
 		masfp=['/cbica/projects/pinesParcels/data/msc/' sname '/ses-func' runstring '/files/DCANBOLDProc_v4.0.0/analyses_v2/motion/task-' task '_power_2014_FD_only.mat'];
 		if exist(masfp,'file')
 			mask=load(masfp);
-			% get to FD_thresh of .4 mm, corresponds to threshold 31
+			% get to FD_thresh of .4 mm, corresponds to threshold 41
 			maskp2mm=mask.motion_data{41}.frame_removal;
 			TRwise_mask=logical(maskp2mm);
 			% length of mask corresponds to number of TRs
@@ -77,7 +77,7 @@ for r=1:10
 			for i=1:UTSegNum
 				UTSegCell(i,2)=num2cell(ContSegments(i));
 			end
-			% make 1st column start position in .2mm outlier masked sequence
+			% make 1st column start position in .4mm outlier masked sequence
 			% (just the start where prev. segment left off, no masked TRs in gaps b/w)
 			UTSegCell(1,1)=num2cell(1);
 			for i=2:UTSegNum
@@ -85,7 +85,7 @@ for r=1:10
 			end
 			% check that sum of TRs matches field from dcan/midb mask
 			allRetainedSegmentTRLengths=UTSegCell(:,2);
-			if (sum([allRetainedSegmentTRLengths{:}])==~mask.motion_data{21}.remaining_frame_count)
+			if (sum([allRetainedSegmentTRLengths{:}])==~mask.motion_data{41}.remaining_frame_count)
 				error('dcan/midb remaining combined count does not match internal representation')
 			end
 			% save remaining_combined_count
