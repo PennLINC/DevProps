@@ -341,7 +341,7 @@ ggplot(data=BuMerge,aes(x=DMNsegGro,y=TDProp))+geom_point(size=2,alpha=.5)+theme
 ```{r}
 # MYELIN RUNS
 
-# checkup on how BuProp from hists (and rs_subs_My.csv) maps onto bimodality
+# load in myelin-mapped propagation directionality
 BuProp=t(read.csv('Y:/results/PWs/rs_subsBuProp_My.csv'))
 Subjs=read.delim('Y:/PWs/rs_subs.csv',sep=' ')
 BuPropdf<-data.frame(BuProp,Subjs)
