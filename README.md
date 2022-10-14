@@ -118,7 +118,9 @@ Within [Vis_Facevec.m](https://github.com/PennLINC/PWs/blob/main/scripts/Vis_Fac
 
 
 # 9.3 Alternative Hierarchy: Developmental effects
+If 9.1 and 9.2 have been completed, most of the processing for this analysis is already complete. We just need to average the proportion of propagations that are bottom-up versus top-down across the cortex for individuals. We can perform this operation with [Bin_And_Aggregate_BuProp_180_My](https://github.com/PennLINC/PWs/blob/3429aee13d6e467152bbee3eb40a1c8d8d6eed2b/scripts/Bin_And_Aggregate_BuProp_180_My.m). The output of this script is rs_subsBuProp_My.csv, which can then be loaded into R.
 
+Specifically, lines 342-370 of [group_level_analysis.rmd](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) can be used to evalaute effect size, significance, and plot the developmental effect. Just note that you will need to run the first chunk (for libraries) and the second chunk (for covariate information) first. As for other rmd's, they are currently set to run locally on a cluster mount ('Y:/' filepaths) rather than directly on the cluster. 
 
 
 
