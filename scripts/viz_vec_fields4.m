@@ -5,21 +5,12 @@ function viz_vec_fields4(subj)
 
 % 2 is PGG, mag and dir
 
-% 3 is a grayOrd plot: vertices (arranged by PG) over time
 
 %%%%%% Set paths %%%
 % grab tool dir
 addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'));
 % set fs dir
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
-% set output dir
-vizdir='/cbica/projects/pinesParcels/results/viz/waves/';
-
-% subtight plot - thank you Felipe G Nievinski!
-make_it_tight = true;
-subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.01], [0.1 0.01]);
-if ~make_it_tight,  clear subplot;  end
-% https://www.mathworks.com/matlabcentral/fileexchange/39664-subtightplot
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% load op flo from subject %%%
@@ -41,7 +32,7 @@ TRs_r=squeeze(TRs_rf.vol);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%% uptake functional data (on surface) %%%%%%
+%%%%%%% uptake functi nal data (on surface) %%%%%%
 % handle input data
 disp('Size of input data')
 sizeInDl=size(TRs_l)
@@ -81,6 +72,18 @@ P = TR.incenters;
 TRr = TriRep(faces_r, vx_r);
 Pr = TRr.incenters;
 
+%%%% faces-to-vertices converter
+
+% init vertices cell array with []s for each vertex as a cell
+% for each face
+% extract vertices comrpising F
+% append vertex1 cell 
+% append vertex2 cell
+% append vertex3 cell
+% end
+% average vector within each vertex cell for vertex value
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% load in group PG %%%%%
 LPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
@@ -90,14 +93,6 @@ PG_LH=LPGf.cdata(:,1);
 RPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
 RPGf=gifti(RPGfp);
 PG_RH=RPGf.cdata(:,1);
-
-% get sorting order of PG
-[outL,idxL] = sort(iPG_LH);
-[outR, idxR] = sort(iPG_RH);
-
-% mw index (crude)
-mwIndr=find(outR==0);
-goodIndr=setdiff([1:length(outR)],mwIndr);
 
 % calculate PG gradient on sphere
 PGg_L = grad(faces_l, vx_l, PG_LH);
@@ -111,143 +106,42 @@ PGx_R=PGg_R(:,1);
 PGy_R=PGg_R(:,2);
 PGz_R=PGg_R(:,3);
 
-%%% set colormap
-crkerustommap=colormap('inferno'); %or whatever
-% reduce just a little bit on the close-to-white coloring
-custommap=custommap(1:240,:);
-
-%%%% Fig 1: PGG big
-figure('units','pixels','position',[0 0 2500 2500])
-axis([-1, 1, -1, 1, 0, 1]);
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
-hold on
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), PGx_R, PGy_R, PGz_R,'w','LineWidth',2,'AutoScaleFactor',5,'ShowArrowHead','on','MaxHeadSize',20);
-% note the function from https://www.mathworks.com/matlabcentral/answers/354324-how-to-make-the-quiver-arrow-head-size-fixed
-% NEEDS hold on to work
-% broken_arrow's function
-%quiver3addarrowheads(in_quivhandle,3,60);
-axis equal
-daspect([1, 1, 1]);
-colormap(custommap);
-colorbar
-view(280,185);
-print('pggBig.png','-dpng')
-
-
-
-print('pggBig_custArrowheads.png','-dpng')
-
-
-%%% Fig 1: pial PG
-% load in fsaverage4 faces and vertices %%%
-surfL = [SubjectsFolder '/surf/lh.pial'];
-surfR = [SubjectsFolder '/surf/rh.pial'];
-% surface topography
-[vx_l, faces_l] = read_surf(surfL);
-[vx_r, faces_r] = read_surf(surfR);
-% +1 the faces: begins indexing at 0
-faces_l = faces_l + 1;
-faces_r = faces_r + 1;
-% Get incenters of triangles.
-TR = TriRep(faces_l, vx_l);
-P = TR.incenters;
-TRr = TriRep(faces_r, vx_r);
-Pr = TRr.incenters;
-figure('units','pixels','position',[0 0 1500 1500])
-axis([-1, 1, -1, 1, 0, 1]);
-hold on
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
-axis equal
-daspect([1, 1, 1]);
-colorbar
-colormap(custommap)
-view(280,185);
-print('pggPial.png','-dpng')
-
-% Fig S2: CG Big
-cg=load('~/data/fs4curv.mat');
-cG_LH=cg.gpg.gPG_LH;
-cG_RH=cg.gpg.gPG_RH;
-% calculate group curvature gradient on sphere
-cg_L = grad(faces_l, vx_l, cG_LH);
-cg_R = grad(faces_r, vx_r, cG_RH);
-% extract face-wise vector cartesian vector components
-cGx_L=cg_L(:,1);
-cGy_L=cg_L(:,2);
-cGz_L=cg_L(:,3);
-cGx_R=cg_R(:,1);
-cGy_R=cg_R(:,2);
-cGz_R=cg_R(:,3);
-
-figure('units','pixels','position',[0 0 1500 1500])
-axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), cGx_R, cGy_R, cGz_R, 2, 'w','linewidth',2);
-hold on
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), cG_RH, 'EdgeColor','none');
-axis equal
-daspect([1, 1, 1]);
-colormap(custommap);
-colorbar
-view(280,185);
-print('cgBig.png','-dpng')
+surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+mwIndVec_l = read_medial_wall_label(surfML);
+surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+mwIndVec_r = read_medial_wall_label(surfMR);
+% make binary "is medial wall" vector for vertices
+mw_L=zeros(1,2562);
+mw_L(mwIndVec_l)=1;
+mw_R=zeros(1,2562);
+mw_R(mwIndVec_r)=1;
+% convert to faces
+% convert to faces
+F_MW_L=sum(mw_L(faces_l),2)./3;
+F_MW_R=sum(mw_R(faces_r),2)./3;
+% convert "partial" medial wall to medial wall
+F_MW_L=ceil(F_MW_L);
+F_MW_R=ceil(F_MW_R);
+% face mask indices
+fmwIndVec_l=find(F_MW_L);
+fmwIndVec_r=find(F_MW_R);
+% make medial wall vector
+g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
+g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
+% mask angular distances
+goodIndr=g_noMW_combined_R;
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 
-%%%% This chunk is for video: not needed for figs
-% vector field
-DirecsVecs=struct('cdata',[],'colormap',[]);
-speshframes=[209:226];
-for i=1:17
-j=speshframes(i)
-u=OpFl.vf_right{j};
-vATTR=fr.TRs{j};
-vATTR=zscore(vATTR);
-%%%%%%
-figure('units','pixels','position',[0 0 1500 1500])
-subplot(2,2,1)
-axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w','linewidth','3');
-hold on
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
-axis equal
-daspect([1, 1, 1]);
-caxis([-3,3]);
-colorbar
-view(270,200);
-%%%colormap(custommap)
-%%%%
-colorbar
-% medial
-%view(60,190)
-% this is going to be easier to just photoshop out the axes if needed - appears to remove quiver3 coloring
-%axis('off')
-% lateral?
-view(280,185);
-% 3
-subplot(2,2,[2 4])
-limz=[-100 100];
-% get time series org. by PG
-PGts=TRs_r(idxR,:);
-% extract segment of PGts
-PGts=PGts(goodIndr,180:230);
-imagesc(PGts,limz);
-hold on;
-% add formal lookup with pair-TR correspondence established below
-line([224,224], [0,10000], 'Color', 'w');
-DirecsVecs(i)=getframe(gcf);
-end
 
-% create videowriter object
-video = VideoWriter([vizdir 'testDirecVecs_fs4.avi'],'Uncompressed AVI');
-video.FrameRate = 1;
+% dividing all coordinates by scaling factor because vector size is fixed too small relative to coordinate space otherwise
+scalingfactor=4;
 
-% open it, plop Direcs in
-open(video)
-writeVideo(video, DirecsVecs);
-close(video);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
 
 % roy-big-bl palette imitation, inferno is just template
 roybigbl_cm=inferno(16);
@@ -267,37 +161,6 @@ roybigbl_cm(13,:)=[75, 125, 0];
 roybigbl_cm(14,:)=[0, 200, 0];
 roybigbl_cm(15,:)=[0, 255, 0];
 roybigbl_cm(16,:)=[0, 255, 255]; 
-% pulled from https://github.com/Washington-University/workbench/blob/master/src/Files/PaletteFile.cxx
-pen it, plop Direcs in
-%open(video)
-%writeVideo(video, BOLD);
-%close(video);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
-
-%%%% This chunk is for video: not needed for figs
-% vector field
-DirecsVecs=struct('cdata',[],'colormap',[]);
-speshframes=[209:226];
-for i=1:17
-j=speshframes(i)
-u=OpFl.vf_right{j};
-vATTR=fr.TRs{j};
-vATTR=zscore(vATTR);
-%%%%%%
-figure('units','pixels','position',[0 0 1500 1500])
-subplot(2,2,1)
-axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w','linewidth','3');
-hold on
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
-axis equal
-daspect([1, 1, 1]);
-caxis([-3,3]);
-colorbar
-view(270,200);
-%%%colormap(custommap)
-%%%%
-
 % scale to 1
 roybigbl_cm=roybigbl_cm.*(1/255);
 % interpolate color gradient
@@ -307,8 +170,7 @@ roybigbl_cm=interp1(interpsteps,roybigbl_cm,linspace(0,1,255));
 roybigbl_cm=flipud(roybigbl_cm);
 % reduce just a little bit on the close-to-white coloring
 roybigbl_cm=roybigbl_cm(15:240,:);
-colormap(roybigbl_cm);
-print('yourfigure.png','-dpng')
+
 
 
 %%%%% create conversion vector: the aim is to go from included TRs to included TR pairs (valid adjacent frames).
@@ -327,47 +189,43 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=444:452
+for i=188:205
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt);
 u=OpFl.vf_right{OpFlVecofInt};
 vATTR=fr.TRs{TRofInt};
 % z-score
-vATTR=zscore(vATTR);
-figure('units','pixels','position',[0 0 800 800])
+%vATTR=zscore(vATTR);
+figure('units','pixels','position',[0 0 3500 3500])
 axis([-1, 1, -1, 1, 0, 1]);
-quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
+%quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
+%%%% souped up vectors
+ret = bsxfun(@rdivide, u, sqrt(sum(u'.^2))');
+quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[ret(g_noMW_combined_R,1), ret(g_noMW_combined_R,2), ret(g_noMW_combined_R,3)],'w',.7,'arrowRadius',.05)
+%%%%%%
 hold on
 % for OpFl Vecs on PG
 %trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), PG_RH, 'EdgeColor','none');
 %caxis([-5.5,6.5]);
-% for OpFl Vecs on BOLD
-trisurf(faces_r, vx_r(:, 1), vx_r(:, 2), vx_r(:, 3), vATTR, 'EdgeColor','none');
-caxis([-3,3])
+% for OpFl Vecs on BOLD - divide by scaling factor?
+%%% overlay pgg for ref angle clarity
+PGG_ret=bsxfun(@rdivide, PGg_R, sqrt(sum(PGg_R'.^2))');
+quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[PGG_ret(g_noMW_combined_R,1), PGG_ret(g_noMW_combined_R,2), PGG_ret(g_noMW_combined_R,3)],'b',.7,'arrowRadius',.05)
+trisurf(faces_r, vx_r(:, 1)/scalingfactor, vx_r(:, 2)/scalingfactor, vx_r(:, 3)/scalingfactor, vATTR, 'EdgeColor','none');
+caxis([-200,200])
 axis equal
 daspect([1, 1, 1]);
 %colormap(roybigbl_cm);
-colormap(custommap);
-c=colorbar
-c.FontSize=55
-c.LineWidth=3
-c.Ticks=[-3 -2 -1 0 1 2 3]
-c.Location='southoutside'
-c.FontName='Arial'
-view(280,185);
+colormap(roybigbl_cm);
+c=colorbar;
+c.FontSize=55;
+c.LineWidth=3;
+%c.Ticks=[-3 -2 -1 0 1 2 3];
+c.Location='southoutside';
+c.FontName='Arial';
+view(280,185);;
 %view(60,190)
-fn=['yourfigure' num2str(i) '.png'];
+i
+fn=['~/boldvec' num2str(i) '_PGGoverlay.png'];
 print(fn,'-dpng')
 end
-
-%%% and carpet plots redo
-figure('units','pixels','position',[0 0 5600 2600])
-limz=[-100 100];
-% get time series org. by PG
-PGts=TRs_r(idxR,:);
-%PGts=zscore(PGts);
-imagesc(PGts,limz);
-colormap(roybigbl_cm);
-%hold on;
-%line([j,j+2], [0,10000], 'Color', 'r');
-print('carpet2.png','-dpng')

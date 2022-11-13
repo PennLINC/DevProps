@@ -1,2 +1,2 @@
-matlab -nodisplay -r " CircFC_Vlow('${1}')"
+matlab -nodisplay -r "viz_vec_fields4('${1}')"
 

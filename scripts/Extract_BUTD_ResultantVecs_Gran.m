@@ -78,32 +78,38 @@ gPG_RH=gRPGf.cdata(:,1);
 %%% Adding the other 
 %%% B
 B_gLfp=['/cbica/projects/pinesParcels/data/beta3k_L.func.gii'];
-B_gLf=gifti(gLPGfp);
-B_g_LH=gLPGf.cdata(:,1);
+B_gLf=gifti(B_gLfp);
+B_LH=B_gLf.cdata(:,1);
 % right hemi
 B_gRfp=['/cbica/projects/pinesParcels/data/beta3k_R.func.gii'];
-B_gRf=gifti(gRPGfp);
-B_g_RH=gRPGf.cdata(:,1);
+B_gRf=gifti(B_gRfp);
+B_RH=B_gRf.cdata(:,1);
 % G1
 g1_Lfp=['/cbica/projects/pinesParcels/data/gamma1_3k_L.func.gii'];
-g1_Lf=gifti(gLPGfp);
-g1_LH=gLPGf.cdata(:,1);
+g1_Lf=gifti(g1_Lfp);
+g1_LH=g1_Lf.cdata(:,1);
 % right hemi
 g1_Rfp=['/cbica/projects/pinesParcels/data/gamma1_3k_R.func.gii'];
-g1_Rf=gifti(gRPGfp);
-g1_RH=gRPGf.cdata(:,1);
+g1_Rf=gifti(g1_Rfp);
+g1_RH=g1_Rf.cdata(:,1);
 % G2
 g2_Lfp=['/cbica/projects/pinesParcels/data/gamma2_3k_L.func.gii'];
-g2_Lf=gifti(gLPGfp);
-g2_LH=gLPGf.cdata(:,1);
+g2_Lf=gifti(g2_Lfp);
+g2_LH=g2_Lf.cdata(:,1);
 % right hemi
 g2_Rfp=['/cbica/projects/pinesParcels/data/gamma2_3k_R.func.gii'];
-g2_Rf=gifti(gRPGfp);
-g2_RH=gRPGf.cdata(:,1);
+g2_Rf=gifti(g2_Rfp);
+g2_RH=g2_Rf.cdata(:,1);
 
 % calculate group PG gradient on sphere
 gPGg_L = grad(F_L, V_L, gPG_LH);
 gPGg_R = grad(F_R, V_R, gPG_RH);
+BgL = grad(F_L, V_L, B_LH);
+BgR = grad(F_R, V_R, B_RH);
+G1gL = grad(F_L, V_L, g1_LH);
+G1gR = grad(F_R, V_R, g1_RH);
+G2gL = grad(F_L, V_L, g2_LH);
+G2gR = grad(F_R, V_R, g2_RH);
 
 % extract face-wise vector cartesian vector components
 gPGx_L=gPGg_L(:,1);
@@ -114,7 +120,27 @@ gPGy_R=gPGg_R(:,2);
 gPGz_R=gPGg_R(:,3);
 
 %%%% grad of freqs
-
+% B
+gBx_L=BgL(:,1);
+gBy_L=BgL(:,2);
+gBz_L=BgL(:,3);
+gBx_R=BgR(:,1);
+gBy_R=BgR(:,2);
+gBz_R=BgR(:,3);
+% G1
+gG1x_L=G1gL(:,1);
+gG1y_L=G1gL(:,2);
+gG1z_L=G1gL(:,3);
+gG1x_R=G1gR(:,1);
+gG1y_R=G1gR(:,2);
+gG1z_R=G1gR(:,3);
+% G2
+gG2x_L=G2gL(:,1);
+gG2y_L=G2gL(:,2);
+gG2z_L=G2gL(:,3);
+gG2x_R=G2gR(:,1);
+gG2y_R=G2gR(:,2);
+gG2z_R=G2gR(:,3);
 
 % translate xyz spherical coordinates to az/el/r
 [az_L,el_L,r_L]=cart2sph(P_L(:,1),P_L(:,2),P_L(:,3));
@@ -125,10 +151,6 @@ azd_L=rad2deg(az_L);
 eld_L=rad2deg(el_L);
 azd_R=rad2deg(az_R);
 eld_R=rad2deg(el_R);
-
-
-%%%% spherical coords of freq maps
-
 
 % translate xyz vector components at coordinates to az/el/r
 gazes_L=zeros(1,length(azd_L));
@@ -148,18 +170,80 @@ for i=1:length(azd_R)
 end
 
 %%%% populate azes and els of freq maps
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BETA
+% translate xyz vector components at coordinates to az/el/r
+bazes_L=zeros(1,length(azd_L));
+bels_L=zeros(1,length(eld_L));
+for i=1:length(azd_L)
+    bvs_L=cart2sphvec(double([gBx_L(i);gBy_L(i);gBz_L(i)]),azd_L(i),eld_L(i));
+    bazes_L(i)=bvs_L(1);
+    bels_L(i)=bvs_L(2);
+end
+% right hemi
+bazes_R=zeros(1,length(azd_R));
+bels_R=zeros(1,length(eld_R));
+for i=1:length(azd_R)
+    bvs_R=cart2sphvec(double([gBx_R(i);gBy_R(i);gBz_R(i)]),azd_R(i),eld_R(i));
+    bazes_R(i)=bvs_R(1);
+    bels_R(i)=bvs_R(2);
+end
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%5
+% GAMMA 1
+% translate xyz vector components at coordinates to az/el/r
+g1azes_L=zeros(1,length(azd_L));
+g1els_L=zeros(1,length(eld_L));
+for i=1:length(azd_L)
+    g1vs_L=cart2sphvec(double([gG1x_L(i);gG1y_L(i);gG1z_L(i)]),azd_L(i),eld_L(i));
+    g1azes_L(i)=g1vs_L(1);
+    g1els_L(i)=g1vs_L(2);
+end
+% right hemi
+g1azes_R=zeros(1,length(azd_R));
+g1els_R=zeros(1,length(eld_R));
+for i=1:length(azd_R)
+    g1vs_R=cart2sphvec(double([gG1x_R(i);gG1y_R(i);gG1z_R(i)]),azd_R(i),eld_R(i));
+    g1azes_R(i)=g1vs_R(1);
+    g1els_R(i)=g1vs_R(2);
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%5
+% GAMMA 2
+% translate xyz vector components at coordinates to az/el/r
+g2azes_L=zeros(1,length(azd_L));
+g2els_L=zeros(1,length(eld_L));
+for i=1:length(azd_L)
+    g2vs_L=cart2sphvec(double([gG2x_L(i);gG2y_L(i);gG2z_L(i)]),azd_L(i),eld_L(i));
+    g2azes_L(i)=g2vs_L(1);
+    g2els_L(i)=g2vs_L(2);
+end
+% right hemi
+g2azes_R=zeros(1,length(azd_R));
+g2els_R=zeros(1,length(eld_R));
+for i=1:length(azd_R)
+    g2vs_R=cart2sphvec(double([gG2x_R(i);gG2y_R(i);gG2z_R(i)]),azd_R(i),eld_R(i));
+    g2azes_R(i)=g2vs_R(1);
+    g2els_R(i)=g2vs_R(2);
+end
 
 
 
 % load in gPGG angular distances for parsing into top-down and bottom-up in the loops
 AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4.mat'];
 AngDist=load(AngDistFP);
-% just pretend this line doesn't exist
+% collapse redundant 
 AngDist=AngDist.AngDist;
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % initialize output (bu_az,bu_el,td_az,td_el,propBu for each face)
 % and last 2 columns are BU vec length, TD vec length
+%%% CONSIDER ADDING OUTPUT TIME SERIES HERE AS WELL
+%%% PROPOSED: MAGNITUDE, THETA, AZ, EL, AngD from PG, B, G1, G2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 OutDf_L=cell(length(F_L),7);
 OutDf_R=cell(length(F_R),7);
 
@@ -168,6 +252,9 @@ NumTRs=size(AngDist.gLeft);
 NumTRs=NumTRs(1);
 lenOpFl=NumTRs;
 
+% time series
+OutTs_L=cell(length(F_L),8,lenOpFl);
+OutTs_R=cell(length(F_R),8,lenOpFl);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% Starting for the left hemisphere
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -178,18 +265,24 @@ for F=g_noMW_combined_L
 	BU_Trs_L=find(FaceAngDistPGG_L<90);
 	% get inverse indices for top down (broadly, dist > 90)
 	TD_Trs_L=find(FaceAngDistPGG_L>90);
-
 	% get proportion of TRs that are BU for this face
 	propBU_L=(length(BU_Trs_L))/NumTRs;
-
 	% plop prop in output df, 1st column
 	OutDf_L(F,1)=num2cell(propBU_L);	
-	
 	% get angles into needed format
-
+	% note azimuth elevation ordering for atan2d
+    	gPGvec_L=[gazes_L(F) gels_L(F)];
+    	Bvec_L=[bazes_L(F) bels_L(F)];
+    	G1vec_L=[g1azes_L(F) g1els_L(F)];
+    	G2vec_L=[g2azes_L(F) g2els_L(F)];
 	% translate xyz vector fields from opfl to az/el/r to polar angles
 	% note, by not saving rho (just theta), we are discarding magnitude information at this point
 	Thetas_L=zeros(1,lenOpFl);
+	Mags_L=zeros(1,lenOpFl);
+	gangDist_L=zeros(1,lenOpFl);
+	BangDist_L=zeros(1,lenOpFl);
+	G1angDist_L=zeros(1,lenOpFl);
+	G2angDist_L=zeros(1,lenOpFl);
 	for fr=1:lenOpFl
 		% current vector field
 	        relVf_L=vfl{fr};
@@ -199,29 +292,136 @@ for F=g_noMW_combined_L
 	        zComp_L=relVf_L(F,3);
 		% convert to spherical coord system
 	        vs_L=cart2sphvec(double([xComp_L;yComp_L;zComp_L]),azd_L(F),eld_L(F));
+		% convert to spherical coordinates
+        	OpFlVec_L= [vs_L(1) vs_L(2)];
 	        % store in output vector (r is redundant across all vecs, only using az and el)
-		[Thetas_L(fr),rho]=cart2pol(vs_L(1),vs_L(2));
+		[Thetas_L(fr),Mags_L(fr)]=cart2pol(vs_L(1),vs_L(2));
+		% store rho in magnitude series
+		% store az and el
+		OutTs_L(F,3,fr) = {vs_L(1)};
+		OutTs_L(F,4,fr) = {vs_L(2)};	
+		%%%% angular distance calculations
+		% PG ang d
+		OutTs_L(F,5,fr)={acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )))};
+        	% beta g ang d
+		OutTs_L(F,6,fr) ={acosd(min(1,max(-1, Bvec_L(:).' *OpFlVec_L(:) / norm(Bvec_L) / norm(OpFlVec_L) )))};
+        	% g1 ang d
+		OutTs_L(F,7,fr) ={acosd(min(1,max(-1, G1vec_L(:).' *OpFlVec_L(:) / norm(G1vec_L) / norm(OpFlVec_L) )))};
+        	% g2 ang d
+		OutTs_L(F,8,fr) ={acosd(min(1,max(-1, G2vec_L(:).' *OpFlVec_L(:) / norm(G2vec_L) / norm(OpFlVec_L) )))};
 	end
+	% delineate this face's resultant vector angle
+	L_CM=circ_mean(Thetas_L);
+	% circular SD
+	L_CSD=circ_std(Thetas_L);
+	OutDf_L(F,9)=num2cell(L_CSD);
+	% arbitrary but consistent circ_mean
+	OutDf_L(F,10)=num2cell(L_CM);
+	% get angular distance from gPGG
+	PGGang_L=cart2pol(gazes_L(F),gels_L(F));
+	OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
+	% add magnitude time series
+	OutTs_L(F,1,:)=num2cell(Mags_L);
+	% add theta time series
+	OutTs_L(F,2,:)=num2cell(Thetas_L);
+end
 
-%%%%%%%%%%%% all directions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%% Starting for the left hemisphere
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% note we are loopign over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
+for F=g_noMW_combined_L
+        % extract indices of bottom up (broadly, dist < 90)
+        FaceAngDistPGG_L=AngDist.gLeft(:,F);
+        BU_Trs_L=find(FaceAngDistPGG_L<90);
+        % get inverse indices for top down (broadly, dist > 90)
+        TD_Trs_L=find(FaceAngDistPGG_L>90);
+        % get proportion of TRs that are BU for this face
+        propBU_L=(length(BU_Trs_L))/NumTRs;
+        % plop prop in output df, 1st column
+        OutDf_L(F,1)=num2cell(propBU_L);
+        % get angles into needed format
+        % note azimuth elevation ordering for atan2d
+        gPGvec_L=[gazes_L(F) gels_L(F)];
+        Bvec_L=[bazes_L(F) bels_L(F)];
+        G1vec_L=[g1azes_L(F) g1els_L(F)];
+        G2vec_L=[g2azes_L(F) g2els_L(F)];
+        % translate xyz vector fields from opfl to az/el/r to polar angles
+        % note, by not saving rho (just theta), we are discarding magnitude information at this point
+        Thetas_L=zeros(1,lenOpFl);
+        Mags_L=zeros(1,lenOpFl);
+        gangDist_L=zeros(1,lenOpFl);
+        BangDist_L=zeros(1,lenOpFl);
+        G1angDist_L=zeros(1,lenOpFl);
+        G2angDist_L=zeros(1,lenOpFl);
+        for fr=1:lenOpFl
+                % current vector field
+                relVf_L=vfl{fr};
+                % xyz components
+                xComp_L=relVf_L(F,1);
+                yComp_L=relVf_L(F,2);
+                zComp_L=relVf_L(F,3);
+                % convert to spherical coord system
+                vs_L=cart2sphvec(double([xComp_L;yComp_L;zComp_L]),azd_L(F),eld_L(F));
+                % convert to spherical coordinates
+                OpFlVec_L= [vs_L(1) vs_L(2)];
+                % store in output vector (r is redundant across all vecs, only using az and el)
+                [Thetas_L(fr),Mags_L(fr)]=cart2pol(vs_L(1),vs_L(2));
+                % store rho in magnitude series
+                % store az and el
+                OutTs_L(F,3,fr) = {vs_L(1)};
+                OutTs_L(F,4,fr) = {vs_L(2)};
+                %%%% angular distance calculations
+                % PG ang d
+                OutTs_L(F,5,fr)={acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )))};
+                % beta g ang d
+                OutTs_L(F,6,fr) ={acosd(min(1,max(-1, Bvec_L(:).' *OpFlVec_L(:) / norm(Bvec_L) / norm(OpFlVec_L) )))};
+                % g1 ang d
+                OutTs_L(F,7,fr) ={acosd(min(1,max(-1, G1vec_L(:).' *OpFlVec_L(:) / norm(G1vec_L) / norm(OpFlVec_L) )))};
+                % g2 ang d
+                OutTs_L(F,8,fr) ={acosd(min(1,max(-1, G2vec_L(:).' *OpFlVec_L(:) / norm(G2vec_L) / norm(OpFlVec_L) )))};
+        end
+        % delineate this face's resultant vector angle
+        L_CM=circ_mean(Thetas_L);
+        % circular SD
+        L_CSD=circ_std(Thetas_L);
+        OutDf_L(F,9)=num2cell(L_CSD);
+        % arbitrary but consistent circ_mean
+        OutDf_L(F,10)=num2cell(L_CM);
+        % get angular distance from gPGG
+        PGGang_L=cart2pol(gazes_L(F),gels_L(F));
+        OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
+        % add magnitude time series
+        OutTs_L(F,1,:)=num2cell(Mags_L);
+        % add theta time series
+        OutTs_L(F,2,:)=num2cell(Thetas_L);
+end
 
-% delineate this face's resultant vector angle
-L_CM=circ_mean(Thetas_L);
-% circular SD
-L_CSD=circ_std(Thetas_L);
-OutDf_L(F,9)=num2cell(L_CSD);
-% arbitrary but consistent circ_mean
-OutDf_L(F,10)=num2cell(L_CM);
 
-% get angular distance from gPGG
-PGGang_L=cart2pol(gazes_L(F),gels_L(F));
-OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% NEEED TO COPY TO RIGHT, ADD ANG DIST FROM PGG BG G1G and G2G
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%
+%%%%%%%%%%%%
+%%%%%%%%%%
+%%%%%
+%%%%
+%%%
+%%
+%
+%
+%
+%
+
+
 
 %%%%%%%%%%%% Bottom-up
 %%%%%%%%%%%% Granular feature extraction
 
 
-%%% ADD MAGNITUDE
 
 
 % contingent on BU TRs existing. Note this is within the F loop despite indentation.

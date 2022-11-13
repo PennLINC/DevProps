@@ -102,6 +102,13 @@ for r=1:10
 			% index out segments greater than TR thresh from UnThreshSegmentCellstruct
 			ValidSegCell=UTSegCell(OverThreshSegments,:);
 		
+
+			%%%%%%%%%%%%%%%%%%%%%%%
+			%%% added 11/12/22 - prinout motion mask w/r/t original TR indices
+			segmentfnFu=[ResultantFolder sname '/' sname '_ses-baselineYear1Arm1_task-' task '_ValidSegments_Full_run_' runstring];
+                	writetable(cell2table(ValidSegCell),segmentfnFu,'WriteVariableNames',0)
+			%%%%%%%%%%%%%%%%%%%%%%%
+
 			% adjust ValidSegCell_Trunc to describe in terms of retained TRs only
 			% in other words, epoch start points should be one "TR" after 
 			ValidSegCell_Trunc=ValidSegCell;
