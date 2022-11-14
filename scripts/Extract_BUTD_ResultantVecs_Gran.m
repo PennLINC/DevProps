@@ -51,7 +51,7 @@ mw_L=zeros(1,2562);
 mw_L(mwIndVec_l)=1;
 mw_R=zeros(1,2562);
 mw_R(mwIndVec_r)=1;
-% convert to faces
+
 % convert to faces
 F_MW_L=sum(mw_L(faces_l),2)./3;
 F_MW_R=sum(mw_R(faces_r),2)./3;
@@ -64,7 +64,8 @@ fmwIndVec_r=find(F_MW_R);
 % make medial wall vector
 g_noMW_combined_L=setdiff([1:5120],fmwIndVec_l);
 g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
-
+Lvertex_nomw=setdiff([1:2562],mwIndVec_l);
+Rvertex_nomw=setdiff([1:2562],mwIndVec_l);
 
 % load in GROUP PG
 gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
@@ -241,8 +242,7 @@ AngDist=AngDist.AngDist;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % initialize output (bu_az,bu_el,td_az,td_el,propBu for each face)
 % and last 2 columns are BU vec length, TD vec length
-%%% CONSIDER ADDING OUTPUT TIME SERIES HERE AS WELL
-%%% PROPOSED: MAGNITUDE, THETA, AZ, EL, AngD from PG, B, G1, G2
+%%% TS COLUMNS: MAGNITUDE, THETA, AZ, EL, AngD from PG, B, G1, G2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 OutDf_L=cell(length(F_L),7);
 OutDf_R=cell(length(F_R),7);
@@ -327,249 +327,158 @@ for F=g_noMW_combined_L
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%% Starting for the left hemisphere
+%%%%%%%%%%%%%%% Now for the right hemisphere
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note we are loopign over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
-for F=g_noMW_combined_L
+for F=g_noMW_combined_R
         % extract indices of bottom up (broadly, dist < 90)
-        FaceAngDistPGG_L=AngDist.gLeft(:,F);
-        BU_Trs_L=find(FaceAngDistPGG_L<90);
+        FaceAngDistPGG_R=AngDist.gRight(:,F);
+        BU_Trs_R=find(FaceAngDistPGG_R<90);
         % get inverse indices for top down (broadly, dist > 90)
-        TD_Trs_L=find(FaceAngDistPGG_L>90);
+        TD_Trs_R=find(FaceAngDistPGG_R>90);
         % get proportion of TRs that are BU for this face
-        propBU_L=(length(BU_Trs_L))/NumTRs;
+        propBU_R=(length(BU_Trs_R))/NumTRs;
         % plop prop in output df, 1st column
-        OutDf_L(F,1)=num2cell(propBU_L);
+        OutDf_R(F,1)=num2cell(propBU_R);
         % get angles into needed format
         % note azimuth elevation ordering for atan2d
-        gPGvec_L=[gazes_L(F) gels_L(F)];
-        Bvec_L=[bazes_L(F) bels_L(F)];
-        G1vec_L=[g1azes_L(F) g1els_L(F)];
-        G2vec_L=[g2azes_L(F) g2els_L(F)];
+        gPGvec_R=[gazes_R(F) gels_R(F)];
+        Bvec_R=[bazes_L(F) bels_R(F)];
+        G1vec_R=[g1azes_R(F) g1els_R(F)];
+        G2vec_R=[g2azes_R(F) g2els_R(F)];
         % translate xyz vector fields from opfl to az/el/r to polar angles
         % note, by not saving rho (just theta), we are discarding magnitude information at this point
-        Thetas_L=zeros(1,lenOpFl);
-        Mags_L=zeros(1,lenOpFl);
-        gangDist_L=zeros(1,lenOpFl);
-        BangDist_L=zeros(1,lenOpFl);
-        G1angDist_L=zeros(1,lenOpFl);
-        G2angDist_L=zeros(1,lenOpFl);
-        for fr=1:lenOpFl
-                % current vector field
-                relVf_L=vfl{fr};
-                % xyz components
-                xComp_L=relVf_L(F,1);
-                yComp_L=relVf_L(F,2);
-                zComp_L=relVf_L(F,3);
-                % convert to spherical coord system
-                vs_L=cart2sphvec(double([xComp_L;yComp_L;zComp_L]),azd_L(F),eld_L(F));
-                % convert to spherical coordinates
-                OpFlVec_L= [vs_L(1) vs_L(2)];
-                % store in output vector (r is redundant across all vecs, only using az and el)
-                [Thetas_L(fr),Mags_L(fr)]=cart2pol(vs_L(1),vs_L(2));
-                % store rho in magnitude series
-                % store az and el
-                OutTs_L(F,3,fr) = {vs_L(1)};
-                OutTs_L(F,4,fr) = {vs_L(2)};
-                %%%% angular distance calculations
-                % PG ang d
-                OutTs_L(F,5,fr)={acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )))};
-                % beta g ang d
-                OutTs_L(F,6,fr) ={acosd(min(1,max(-1, Bvec_L(:).' *OpFlVec_L(:) / norm(Bvec_L) / norm(OpFlVec_L) )))};
-                % g1 ang d
-                OutTs_L(F,7,fr) ={acosd(min(1,max(-1, G1vec_L(:).' *OpFlVec_L(:) / norm(G1vec_L) / norm(OpFlVec_L) )))};
-                % g2 ang d
-                OutTs_L(F,8,fr) ={acosd(min(1,max(-1, G2vec_L(:).' *OpFlVec_L(:) / norm(G2vec_L) / norm(OpFlVec_L) )))};
-        end
-        % delineate this face's resultant vector angle
-        L_CM=circ_mean(Thetas_L);
-        % circular SD
-        L_CSD=circ_std(Thetas_L);
-        OutDf_L(F,9)=num2cell(L_CSD);
-        % arbitrary but consistent circ_mean
-        OutDf_L(F,10)=num2cell(L_CM);
-        % get angular distance from gPGG
-        PGGang_L=cart2pol(gazes_L(F),gels_L(F));
-        OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
-        % add magnitude time series
-        OutTs_L(F,1,:)=num2cell(Mags_L);
-        % add theta time series
-        OutTs_L(F,2,:)=num2cell(Thetas_L);
-end
-
-
-
-%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% NEEED TO COPY TO RIGHT, ADD ANG DIST FROM PGG BG G1G and G2G
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%
-%%%%%%%%%%%%
-%%%%%%%%%%
-%%%%%
-%%%%
-%%%
-%%
-%
-%
-%
-%
-
-
-
-%%%%%%%%%%%% Bottom-up
-%%%%%%%%%%%% Granular feature extraction
-
-
-
-
-% contingent on BU TRs existing. Note this is within the F loop despite indentation.
-%if length(BU_Trs_L)>0
-	% unfortunately, will require splitting up left and right and making EACH a contingency (4 contg, BULBUR,TDLTDR)
-	% get bottom up TRs (broadly)	
-%	BUAngs_L=Thetas_L(BU_Trs_L);
-
-	% get resVec thetas
-%	BU_L_CM=circ_mean(BUAngs_L);
-
-	% center on angular distance from gPGG
-%	BU_L_CM_rel=PGGang_L-BU_L_CM;
-
-	% get BU resultant vector angle, convert back to cartesian in the proccess (1 as fill-in for rho, discards OpFl magn.)
-%	[BUHorzC_L,BUVertC_L]=pol2cart(BU_L_CM_rel,1);
-
-        % get BU resultant vector length
-%        VL_L=circ_r(BUAngs_L);
-%        OutDf_L(F,6)=num2cell(VL_L);
-
-	% if in valid face, scale x y to vector length and plop in output df
-%	if (std(FaceAngDistPGG_L)~=0)
-%		BUHorzC_L=BUHorzC_L*VL_L;
-%		BUVertC_L=BUVertC_L*VL_L;
-%		OutDf_L(F,2)=num2cell(BUHorzC_L);
-%		OutDf_L(F,3)=num2cell(BUVertC_L);
-%	end
-%end
-% end "if bottom down TRs instances at this face exist" contingency
-
-%%%%%%%%%% Top-down
-%%%%%%%%%% granular feature extraction
-
-% same contingency as above
-%if length(TD_Trs_L)>0
-        % get topdown TRs (broadly)
-%        TDAngs_L=Thetas_L(TD_Trs_L);
-
-         % get resVec thetas
-%        TD_L_CM=circ_mean(TDAngs_L);
-
-        % center on angular distance from gPGG
-%        TD_L_CM_rel=PGGang_L-TD_L_CM;
-
-        % get TD resultant vector angle
-%        [TDHorzC_L,TDVertC_L]=pol2cart(TD_L_CM_rel,1);
-
-        % get TD resultant vector length
-%        VL_L=circ_r(TDAngs_L);
-%        OutDf_L(F,7)=num2cell(VL_L);
-
-        % if in valid face, scale x y to vector length and plop in output df
-%        if (std(FaceAngDistPGG_L)~=0)
-%                TDHorzC_L=TDHorzC_L*VL_L;
-%                TDVertC_L=TDVertC_L*VL_L;
-%                OutDf_L(F,4)=num2cell(TDHorzC_L);
-%                OutDf_L(F,5)=num2cell(TDVertC_L);
-%        end
-%end
-% end looping over every face
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%% the right hemisphere
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-for F=g_noMW_combined_R
-        FaceAngDistPGG_R=AngDist.gRight(:,F);
-	BU_Trs_R=find(FaceAngDistPGG_R<90);
-	TD_Trs_R=find(FaceAngDistPGG_R>90);
-	propBU_R=(length(BU_Trs_R))/NumTRs;
-	OutDf_R(F,1)=num2cell(propBU_R);
-	Thetas_R=zeros(1,lenOpFl);
+        Thetas_R=zeros(1,lenOpFl);
+        Mags_R=zeros(1,lenOpFl);
+        gangDist_R=zeros(1,lenOpFl);
+        BangDist_R=zeros(1,lenOpFl);
+        G1angDist_R=zeros(1,lenOpFl);
+        G2angDist_R=zeros(1,lenOpFl);
         for fr=1:lenOpFl
                 % current vector field
                 relVf_R=vfr{fr};
                 % xyz components
-		xComp_R=relVf_R(F,1);
+                xComp_R=relVf_R(F,1);
                 yComp_R=relVf_R(F,2);
                 zComp_R=relVf_R(F,3);
                 % convert to spherical coord system
                 vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(F),eld_R(F));
-                % store in output vector (r is redundant across all vecs)
-                [Thetas_R(fr),rho]=cart2pol(vs_R(1),vs_R(2));
+                % convert to spherical coordinates
+                OpFlVec_R= [vs_R(1) vs_R(2)];
+                % store in output vector (r is redundant across all vecs, only using az and el)
+                [Thetas_R(fr),Mags_R(fr)]=cart2pol(vs_R(1),vs_R(2));
+                % store rho in magnitude series
+                % store az and el
+                OutTs_R(F,3,fr) = {vs_R(1)};
+                OutTs_R(F,4,fr) = {vs_R(2)};
+                %%%% angular distance calculations
+                % PG ang d
+                OutTs_R(F,5,fr)={acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )))};
+                % beta g ang d
+                OutTs_R(F,6,fr) ={acosd(min(1,max(-1, Bvec_R(:).' *OpFlVec_R(:) / norm(Bvec_R) / norm(OpFlVec_R) )))};
+                % g1 ang d
+                OutTs_R(F,7,fr) ={acosd(min(1,max(-1, G1vec_R(:).' *OpFlVec_R(:) / norm(G1vec_R) / norm(OpFlVec_R) )))};
+                % g2 ang d
+                OutTs_R(F,8,fr) ={acosd(min(1,max(-1, G2vec_R(:).' *OpFlVec_R(:) / norm(G2vec_R) / norm(OpFlVec_R) )))};
         end
-
-%%%%%%%%%%%% all directions
-
-% delineate this face's resultant vector angle
-R_CM=circ_mean(Thetas_R);
-% circular SD
-R_CSD=circ_std(Thetas_R);
-OutDf_R(F,9)=num2cell(R_CSD);
-% arbitrary but consistent circ_mean
-OutDf_R(F,10)=num2cell(R_CM);
-
-% get angular distance from gPGG
-PGGang_R=cart2pol(gazes_R(F),gels_R(F));
-OutDf_R(F,8)=num2cell(PGGang_R-R_CM);
-
-%%%%%%% Bottom up
-%%%%%%% granular feature extraction
-%if length(BU_Trs_R)>0
-%	BUAngs_R=Thetas_R(BU_Trs_R);
-%	BU_R_CM=circ_mean(BUAngs_R);
-%	BU_R_CM_rel=PGGang_R-BU_R_CM;	
-%	[BUHorzC_R,BUVertC_R]=pol2cart(BU_R_CM_rel,1);
-%	VL_R=circ_r(BUAngs_R);
-%	OutDf_R(F,6)=num2cell(VL_R);
-%	if (std(FaceAngDistPGG_R)~=0)
-%                BUHorzC_R=BUHorzC_R*VL_R;
-%                BUVertC_R=BUVertC_R*VL_R;
-%                OutDf_R(F,2)=num2cell(BUHorzC_R);
-%                OutDf_R(F,3)=num2cell(BUVertC_R);
-%        end
-%end
-
-%%%%%% Top-down
-%%%%%% Granular feature extraction
-%if length(TD_Trs_R)>0
-%        TDAngs_R=Thetas_R(TD_Trs_R);
-%	TD_R_CM=circ_mean(TDAngs_R);
-%	TD_R_CM_rel=PGGang_R-TD_R_CM;
-%        [TDHorzC_R,TDVertC_R]=pol2cart(TD_R_CM_rel,1);
-%        VL_R=circ_r(TDAngs_R);
-%        OutDf_R(F,7)=num2cell(VL_R);	
-%	if (std(FaceAngDistPGG_R)~=0)
-%                TDHorzC_R=TDHorzC_R*VL_R;
-%                TDVertC_R=TDVertC_R*VL_R;
-%                OutDf_R(F,4)=num2cell(TDHorzC_R);
-%                OutDf_R(F,5)=num2cell(TDVertC_R);
-%        end	
-%end
-
-% end looping over every face
+        % delineate this face's resultant vector angle
+        R_CM=circ_mean(Thetas_R);
+        % circular SD
+        R_CSD=circ_std(Thetas_R);
+        OutDf_R(F,9)=num2cell(R_CSD);
+        % arbitrary but consistent circ_mean
+        OutDf_R(F,10)=num2cell(R_CM);
+        % get angular distance from gPGG
+        PGGang_R=cart2pol(gazes_R(F),gels_R(F));
+        OutDf_R(F,8)=num2cell(PGGang_R-R_CM);
+        % add magnitude time series
+        OutTs_R(F,1,:)=num2cell(Mags_R);
+        % add theta time series
+        OutTs_R(F,2,:)=num2cell(Thetas_R);
 end
+
+% make sure medial wall is masked prior to writeout
+
 
 %%% save output df
 outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs.mat'];
 save(outFP_L,'OutDf_L')
 outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs.mat'];
 save(outFP_R,'OutDf_R')
-
-
 toc
+%%% MW MASK
+OutDf_L_masked=OutDf_L(g_noMW_combined_L,:);
+OutDf_R_masked=OutDf_R(g_noMW_combined_R,:);
+% saveout
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_masked.mat'];
+save(outFP_L,'OutDf_L_masked')
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_masked.mat'];
+save(outFP_R,'OutDf_R_masked')
 
+%%%% faces-to-vertices converter
 
-%%% add convert to vertex version for saving out
+% init vertices cell array with []s for each vertex as a cell
+LvertTS=cell(length(vx_l),8,lenOpFl);
+RvertTS=cell(length(vx_r),8,lenOpFl);
 
+% for each face
+for F=g_noMW_combined_L;
+	% get F values
+	Fvalues=OutTs_L(F,:,:);
+	% extract vertices comrpising F
+	curVert=faces_l(F,:);
+	% for each timepoint
+	for tp=1:lenOpFl
+		% append vertex1 cell
+		for m=1:8
+			LvertTS{curVert(1),m,tp}=[LvertTS{curVert(1),m,tp} OutTs_L(F,m,tp)];
+			% append vertex2 cell
+			LvertTS{curVert(2),m,tp}=[LvertTS{curVert(2),m,tp} OutTs_L(F,m,tp)];
+			% append vertex3 cell
+			LvertTS{curVert(3),m,tp}=[LvertTS{curVert(3),m,tp} OutTs_L(F,m,tp)];
+		end
+	end
+end
+% now average over each vertex value per timepoints
+for v=1:Lvertex_nomw
+	for tp=1:lenOpFl
+		for m=1:8
+			InterfacingFaces=LvertTS{v,m,tp};
+			LvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
+		end
+	end
+end
+% right
+for F=g_noMW_combined_R;
+        % get F values
+        Fvalues=OutTs_R(F,:,:);
+        % extract vertices comrpising F
+        curVert=faces_R(F,:);
+        % for each timepoint
+        for tp=1:lenOpFl
+                % append vertex1 cell
+                for m=1:8
+                        RvertTS{curVert(1),m,tp}=[RvertTS{curVert(1),m,tp} OutTs_R(F,m,tp)];
+                        % append vertex2 cell
+                        RvertTS{curVert(2),m,tp}=[RvertTS{curVert(2),m,tp} OutTs_R(F,m,tp)];
+                        % append vertex3 cell
+                        RvertTS{curVert(3),m,tp}=[RvertTS{curVert(3),m,tp} OutTs_R(F,m,tp)];
+                end
+        end
+end
 
+% now average over each vertex value per timepoints
+for v=1:Rvertex_nomw
+        for tp=1:lenOpFl
+                for m=1:8
+                        InterfacingFaces=RvertTS{v,m,tp};
+                        RvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
+                end
+        end
+end
+
+% saveout
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_masked_ts.mat'];
+save(outFP_L,'LvertTS','-v7.3')
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_masked_ts.mat'];
+save(outFP_R,'RvertTS','-v7.3')
