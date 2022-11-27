@@ -136,7 +136,7 @@ goodIndr=g_noMW_combined_R;
 
 
 % dividing all coordinates by scaling factor because vector size is fixed too small relative to coordinate space otherwise
-scalingfactor=4;
+scalingfactor=3;
 
 
 
@@ -189,7 +189,7 @@ numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
 validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=188:205
+for i=194:205
 OpFlVecofInt=i;
 TRofInt=validTRs(OpFlVecofInt);
 u=OpFl.vf_right{OpFlVecofInt};
@@ -211,7 +211,8 @@ hold on
 %%% overlay pgg for ref angle clarity
 PGG_ret=bsxfun(@rdivide, PGg_R, sqrt(sum(PGg_R'.^2))');
 quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[PGG_ret(g_noMW_combined_R,1), PGG_ret(g_noMW_combined_R,2), PGG_ret(g_noMW_combined_R,3)],'b',.7,'arrowRadius',.05)
-quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[-PGG_ret(g_noMW_combined_R,1), -PGG_ret(g_noMW_combined_R,2), -PGG_ret(g_noMW_combined_R,3)],'f',.7,'arrowRadius',.05)
+hold on
+quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[-PGG_ret(g_noMW_combined_R,1), -PGG_ret(g_noMW_combined_R,2), -PGG_ret(g_noMW_combined_R,3)],'r',.7,'arrowRadius',.05)
 trisurf(faces_r, vx_r(:, 1)/scalingfactor, vx_r(:, 2)/scalingfactor, vx_r(:, 3)/scalingfactor, vATTR, 'EdgeColor','none');
 caxis([-200,200])
 axis equal
@@ -227,6 +228,6 @@ c.FontName='Arial';
 view(280,185);;
 %view(60,190)
 i
-fn=['~/boldvec' num2str(i) '_PGGoverlay.png'];
+fn=['~/boldvec_v2_' num2str(i) '_PGGoverlay.png'];
 print(fn,'-dpng')
 end

@@ -1,4 +1,4 @@
-function Extract_BUTD_ResultantVecs(subj)
+function Extract_BUTD_ResultantVecs(subj,runNum)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Take optical flow results, get a bottom-up and top-down resultant vector in x,y coords for each face. Measured relative to gPGG.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -7,10 +7,10 @@ function Extract_BUTD_ResultantVecs(subj)
 tic
 
 % load in gPPG ang dist: for thresholdingdd OFD toolbox to path
-addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
+% addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % Load in fsav4 opflow calc
-OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4.mat'];
+OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_run_' runNum '.mat'];
 data=load(OpFlFp)
 % Load in surface data
 SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
@@ -67,44 +67,38 @@ g_noMW_combined_R=setdiff([1:5120],fmwIndVec_r);
 Lvertex_nomw=setdiff([1:2562],mwIndVec_l);
 Rvertex_nomw=setdiff([1:2562],mwIndVec_l);
 
-% load in GROUP PG
-gLPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_L_3k.func.gii'];
-gLPGf=gifti(gLPGfp);
-gPG_LH=gLPGf.cdata(:,1);
-% right hemi
-gRPGfp=['/cbica/projects/pinesParcels/data/princ_gradients/hcp.gradients_R_3k.func.gii'];
-gRPGf=gifti(gRPGfp);
-gPG_RH=gRPGf.cdata(:,1);
-
-%%% Adding the other 
-%%% B
-B_gLfp=['/cbica/projects/pinesParcels/data/beta3k_L.func.gii'];
-B_gLf=gifti(B_gLfp);
-B_LH=B_gLf.cdata(:,1);
-% right hemi
-B_gRfp=['/cbica/projects/pinesParcels/data/beta3k_R.func.gii'];
-B_gRf=gifti(B_gRfp);
-B_RH=B_gRf.cdata(:,1);
-% G1
-g1_Lfp=['/cbica/projects/pinesParcels/data/gamma1_3k_L.func.gii'];
-g1_Lf=gifti(g1_Lfp);
-g1_LH=g1_Lf.cdata(:,1);
-% right hemi
-g1_Rfp=['/cbica/projects/pinesParcels/data/gamma1_3k_R.func.gii'];
-g1_Rf=gifti(g1_Rfp);
-g1_RH=g1_Rf.cdata(:,1);
-% G2
-g2_Lfp=['/cbica/projects/pinesParcels/data/gamma2_3k_L.func.gii'];
-g2_Lf=gifti(g2_Lfp);
-g2_LH=g2_Lf.cdata(:,1);
-% right hemi
-g2_Rfp=['/cbica/projects/pinesParcels/data/gamma2_3k_R.func.gii'];
-g2_Rf=gifti(g2_Rfp);
-g2_RH=g2_Rf.cdata(:,1);
+% load in GPG
+gpg=load('/cbica/projects/pinesParcels/data/gpg_fs4.mat');
+gPG_LH=gpg.gpg.gPG_LH;
+gPG_RH=gpg.gpg.gPG_RH;
+% pg2
+gpg2=load('/cbica/projects/pinesParcels/data/gpg2_fs4.mat');
+gPG2_LH=gpg2.gpg.gPG_LH;
+gPG2_RH=gpg2.gpg.gPG_RH;
+% pg3
+gpg3=load('/cbica/projects/pinesParcels/data/gpg3_fs4.mat');
+gPG3_LH=gpg3.gpg.gPG_LH;
+gPG3_RH=gpg3.gpg.gPG_RH;
+% beta
+gb=load('/cbica/projects/pinesParcels/data/gB_fs4.mat');
+B_LH=gb.gpg.gPG_LH;
+B_RH=gb.gpg.gPG_RH;
+% gamma 1
+gg1=load('/cbica/projects/pinesParcels/data/g1_fs4.mat');
+g1_LH=gg1.gpg.gPG_LH;
+g1_RH=gg1.gpg.gPG_RH;
+% gamma 2
+gg2=load('/cbica/projects/pinesParcels/data/g2_fs4.mat');
+g2_LH=gg2.gpg.gPG_LH;
+g2_RH=gg2.gpg.gPG_RH;
 
 % calculate group PG gradient on sphere
 gPGg_L = grad(F_L, V_L, gPG_LH);
 gPGg_R = grad(F_R, V_R, gPG_RH);
+gPG2g_L = grad(F_L, V_L, gPG2_LH);
+gPG2g_R = grad(F_R, V_R, gPG2_RH);
+gPG3g_L = grad(F_L, V_L, gPG3_LH);
+gPG3g_R = grad(F_R, V_R, gPG3_RH);
 BgL = grad(F_L, V_L, B_LH);
 BgR = grad(F_R, V_R, B_RH);
 G1gL = grad(F_L, V_L, g1_LH);
@@ -119,7 +113,20 @@ gPGz_L=gPGg_L(:,3);
 gPGx_R=gPGg_R(:,1);
 gPGy_R=gPGg_R(:,2);
 gPGz_R=gPGg_R(:,3);
-
+% pg2
+gPG2x_L=gPG2g_L(:,1);
+gPG2y_L=gPG2g_L(:,2);
+gPG2z_L=gPG2g_L(:,3);
+gPG2x_R=gPG2g_R(:,1);
+gPG2y_R=gPG2g_R(:,2);
+gPG2z_R=gPG2g_R(:,3);
+% pg3
+gPG3x_L=gPG3g_L(:,1);
+gPG3y_L=gPG3g_L(:,2);
+gPG3z_L=gPG3g_L(:,3);
+gPG3x_R=gPG3g_R(:,1);
+gPG3y_R=gPG3g_R(:,2);
+gPG3z_R=gPG3g_R(:,3);
 %%%% grad of freqs
 % B
 gBx_L=BgL(:,1);
@@ -169,6 +176,39 @@ for i=1:length(azd_R)
     gazes_R(i)=gvs_R(1);
     gels_R(i)=gvs_R(2);
 end
+% PG2 translate xyz vector components at coordinates to az/el/r
+pg2azes_L=zeros(1,length(azd_L));
+pg2els_L=zeros(1,length(eld_L));
+for i=1:length(azd_L)
+    pg2vs_L=cart2sphvec(double([gPG2x_L(i);gPG2y_L(i);gPG2z_L(i)]),azd_L(i),eld_L(i));
+    pg2azes_L(i)=pg2vs_L(1);
+    pg2els_L(i)=pg2vs_L(2);
+end
+% right hemi
+pg2azes_R=zeros(1,length(azd_R));
+pg2els_R=zeros(1,length(eld_R));
+for i=1:length(azd_R)
+    pg2vs_R=cart2sphvec(double([gPG2x_R(i);gPG2y_R(i);gPG2z_R(i)]),azd_R(i),eld_R(i));
+    pg2azes_R(i)=pg2vs_R(1);
+    pg2els_R(i)=pg2vs_R(2);
+end
+% translate xyz vector components at coordinates to az/el/r
+pg3azes_L=zeros(1,length(azd_L));
+pg3els_L=zeros(1,length(eld_L));
+for i=1:length(azd_L)
+    pg3vs_L=cart2sphvec(double([gPG3x_L(i);gPG3y_L(i);gPG3z_L(i)]),azd_L(i),eld_L(i));
+    pg3azes_L(i)=pg3vs_L(1);
+    pg3els_L(i)=pg3vs_L(2);
+end
+% right hemi
+pg3azes_R=zeros(1,length(azd_R));
+pg3els_R=zeros(1,length(eld_R));
+for i=1:length(azd_R)
+    pg3vs_R=cart2sphvec(double([gPG3x_R(i);gPG3y_R(i);gPG3z_R(i)]),azd_R(i),eld_R(i));
+    pg3azes_R(i)=pg3vs_R(1);
+    pg3els_R(i)=pg3vs_R(2);
+end
+
 
 %%%% populate azes and els of freq maps
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -230,26 +270,29 @@ for i=1:length(azd_R)
     g2els_R(i)=g2vs_R(2);
 end
 
-
-
-% load in gPGG angular distances for parsing into top-down and bottom-up in the loops
-AngDistFP=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_AngDistMat4.mat'];
-AngDist=load(AngDistFP);
-% collapse redundant 
-AngDist=AngDist.AngDist;
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%
+%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % initialize output (bu_az,bu_el,td_az,td_el,propBu for each face)
 % and last 2 columns are BU vec length, TD vec length
-%%% TS COLUMNS: MAGNITUDE, THETA, AZ, EL, AngD from PG, B, G1, G2
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% TS COLUMNS: MAGNITUDE, THETA, AngD from PG, B, G1, G2, PG2, PG3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%
+%%%%%%%%
+%%%
+%
+
+% initialize output scalars
 OutDf_L=cell(length(F_L),7);
 OutDf_R=cell(length(F_R),7);
 
 % count Number of TRs once rather than iteratively
-NumTRs=size(AngDist.gLeft);
-NumTRs=NumTRs(1);
+NumTRs=size(vfl);
+NumTRs=NumTRs(2);
 lenOpFl=NumTRs;
 
 % time series
@@ -260,18 +303,11 @@ OutTs_R=cell(length(F_R),8,lenOpFl);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note we are loopign over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
 for F=g_noMW_combined_L
-	% extract indices of bottom up (broadly, dist < 90)
-	FaceAngDistPGG_L=AngDist.gLeft(:,F);
-	BU_Trs_L=find(FaceAngDistPGG_L<90);
-	% get inverse indices for top down (broadly, dist > 90)
-	TD_Trs_L=find(FaceAngDistPGG_L>90);
-	% get proportion of TRs that are BU for this face
-	propBU_L=(length(BU_Trs_L))/NumTRs;
-	% plop prop in output df, 1st column
-	OutDf_L(F,1)=num2cell(propBU_L);	
 	% get angles into needed format
 	% note azimuth elevation ordering for atan2d
     	gPGvec_L=[gazes_L(F) gels_L(F)];
+	gPG2vec_L=[pg2azes_L(F) pg2els_L(F)];
+	gPG3vec_L=[pg3azes_L(F) pg3els_L(F)];
     	Bvec_L=[bazes_L(F) bels_L(F)];
     	G1vec_L=[g1azes_L(F) g1els_L(F)];
     	G2vec_L=[g2azes_L(F) g2els_L(F)];
@@ -283,6 +319,8 @@ for F=g_noMW_combined_L
 	BangDist_L=zeros(1,lenOpFl);
 	G1angDist_L=zeros(1,lenOpFl);
 	G2angDist_L=zeros(1,lenOpFl);
+	PG1angDist_L=zeros(1,lenOpFl);
+        PG2angDist_L=zeros(1,lenOpFl);
 	for fr=1:lenOpFl
 		% current vector field
 	        relVf_L=vfl{fr};
@@ -298,17 +336,21 @@ for F=g_noMW_combined_L
 		[Thetas_L(fr),Mags_L(fr)]=cart2pol(vs_L(1),vs_L(2));
 		% store rho in magnitude series
 		% store az and el
-		OutTs_L(F,3,fr) = {vs_L(1)};
-		OutTs_L(F,4,fr) = {vs_L(2)};	
+		%OutTs_L(F,3,fr) = {vs_L(1)};
+		%OutTs_L(F,4,fr) = {vs_L(2)};	
 		%%%% angular distance calculations
 		% PG ang d
-		OutTs_L(F,5,fr)={acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )))};
+		OutTs_L(F,3,fr)={acosd(min(1,max(-1, gPGvec_L(:).' *OpFlVec_L(:) / norm(gPGvec_L) / norm(OpFlVec_L) )))};
         	% beta g ang d
-		OutTs_L(F,6,fr) ={acosd(min(1,max(-1, Bvec_L(:).' *OpFlVec_L(:) / norm(Bvec_L) / norm(OpFlVec_L) )))};
+		OutTs_L(F,4,fr) ={acosd(min(1,max(-1, Bvec_L(:).' *OpFlVec_L(:) / norm(Bvec_L) / norm(OpFlVec_L) )))};
         	% g1 ang d
-		OutTs_L(F,7,fr) ={acosd(min(1,max(-1, G1vec_L(:).' *OpFlVec_L(:) / norm(G1vec_L) / norm(OpFlVec_L) )))};
+		OutTs_L(F,5,fr) ={acosd(min(1,max(-1, G1vec_L(:).' *OpFlVec_L(:) / norm(G1vec_L) / norm(OpFlVec_L) )))};
         	% g2 ang d
-		OutTs_L(F,8,fr) ={acosd(min(1,max(-1, G2vec_L(:).' *OpFlVec_L(:) / norm(G2vec_L) / norm(OpFlVec_L) )))};
+		OutTs_L(F,6,fr) ={acosd(min(1,max(-1, G2vec_L(:).' *OpFlVec_L(:) / norm(G2vec_L) / norm(OpFlVec_L) )))};
+		% PG2 ang d
+                OutTs_L(F,7,fr) ={acosd(min(1,max(-1, gPG2vec_L(:).' *OpFlVec_L(:) / norm(gPG2vec_L) / norm(OpFlVec_L) )))};
+                % PG3 ang d
+                OutTs_L(F,8,fr) ={acosd(min(1,max(-1, gPG3vec_L(:).' *OpFlVec_L(:) / norm(gPG3vec_L) / norm(OpFlVec_L) )))};
 	end
 	% delineate this face's resultant vector angle
 	L_CM=circ_mean(Thetas_L);
@@ -321,9 +363,18 @@ for F=g_noMW_combined_L
 	PGGang_L=cart2pol(gazes_L(F),gels_L(F));
 	OutDf_L(F,8)=num2cell(PGGang_L-L_CM);
 	% add magnitude time series
-	OutTs_L(F,1,:)=num2cell(Mags_L);
+	OutTs_L(F,2,:)=num2cell(Mags_L);
 	% add theta time series
-	OutTs_L(F,2,:)=num2cell(Thetas_L);
+	OutTs_L(F,1,:)=num2cell(Thetas_L);
+	% extract indices of bottom up (broadly, dist < 90)
+        FaceAngDistPGG_L=OutTs_L{F,3,:};
+        BU_Trs_L=find(FaceAngDistPGG_L<90);
+        % get inverse indices for top down (broadly, dist > 90)
+        TD_Trs_L=find(FaceAngDistPGG_L>90);
+        % get proportion of TRs that are BU for this face
+        propBU_L=(length(BU_Trs_L))/NumTRs;
+        % plop prop in output df, 1st column
+        OutDf_L(F,1)=num2cell(propBU_L);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -331,22 +382,15 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note we are loopign over the non-mw-face indices, skipping medial wall faces but leaving 0's in their stead
 for F=g_noMW_combined_R
-        % extract indices of bottom up (broadly, dist < 90)
-        FaceAngDistPGG_R=AngDist.gRight(:,F);
-        BU_Trs_R=find(FaceAngDistPGG_R<90);
-        % get inverse indices for top down (broadly, dist > 90)
-        TD_Trs_R=find(FaceAngDistPGG_R>90);
-        % get proportion of TRs that are BU for this face
-        propBU_R=(length(BU_Trs_R))/NumTRs;
-        % plop prop in output df, 1st column
-        OutDf_R(F,1)=num2cell(propBU_R);
         % get angles into needed format
         % note azimuth elevation ordering for atan2d
         gPGvec_R=[gazes_R(F) gels_R(F)];
-        Bvec_R=[bazes_L(F) bels_R(F)];
+        gPG2vec_R=[pg2azes_R(F) pg2els_R(F)];
+        gPG3vec_R=[pg3azes_R(F) pg3els_R(F)];
+	Bvec_R=[bazes_L(F) bels_R(F)];
         G1vec_R=[g1azes_R(F) g1els_R(F)];
         G2vec_R=[g2azes_R(F) g2els_R(F)];
-        % translate xyz vector fields from opfl to az/el/r to polar angles
+	% translate xyz vector fields from opfl to az/el/r to polar angles
         % note, by not saving rho (just theta), we are discarding magnitude information at this point
         Thetas_R=zeros(1,lenOpFl);
         Mags_R=zeros(1,lenOpFl);
@@ -354,6 +398,8 @@ for F=g_noMW_combined_R
         BangDist_R=zeros(1,lenOpFl);
         G1angDist_R=zeros(1,lenOpFl);
         G2angDist_R=zeros(1,lenOpFl);
+	PG1angDist_R=zeros(1,lenOpFl);
+        PG2angDist_R=zeros(1,lenOpFl);
         for fr=1:lenOpFl
                 % current vector field
                 relVf_R=vfr{fr};
@@ -369,18 +415,22 @@ for F=g_noMW_combined_R
                 [Thetas_R(fr),Mags_R(fr)]=cart2pol(vs_R(1),vs_R(2));
                 % store rho in magnitude series
                 % store az and el
-                OutTs_R(F,3,fr) = {vs_R(1)};
-                OutTs_R(F,4,fr) = {vs_R(2)};
+                %OutTs_R(F,3,fr) = {vs_R(1)};
+                %OutTs_R(F,4,fr) = {vs_R(2)};
                 %%%% angular distance calculations
                 % PG ang d
-                OutTs_R(F,5,fr)={acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )))};
+                OutTs_R(F,3,fr)={acosd(min(1,max(-1, gPGvec_R(:).' *OpFlVec_R(:) / norm(gPGvec_R) / norm(OpFlVec_R) )))};
                 % beta g ang d
-                OutTs_R(F,6,fr) ={acosd(min(1,max(-1, Bvec_R(:).' *OpFlVec_R(:) / norm(Bvec_R) / norm(OpFlVec_R) )))};
+                OutTs_R(F,4,fr) ={acosd(min(1,max(-1, Bvec_R(:).' *OpFlVec_R(:) / norm(Bvec_R) / norm(OpFlVec_R) )))};
                 % g1 ang d
-                OutTs_R(F,7,fr) ={acosd(min(1,max(-1, G1vec_R(:).' *OpFlVec_R(:) / norm(G1vec_R) / norm(OpFlVec_R) )))};
+                OutTs_R(F,5,fr) ={acosd(min(1,max(-1, G1vec_R(:).' *OpFlVec_R(:) / norm(G1vec_R) / norm(OpFlVec_R) )))};
                 % g2 ang d
-                OutTs_R(F,8,fr) ={acosd(min(1,max(-1, G2vec_R(:).' *OpFlVec_R(:) / norm(G2vec_R) / norm(OpFlVec_R) )))};
-        end
+                OutTs_R(F,6,fr) ={acosd(min(1,max(-1, G2vec_R(:).' *OpFlVec_R(:) / norm(G2vec_R) / norm(OpFlVec_R) )))};
+        	% PG2 ang d
+		OutTs_R(F,7,fr) ={acosd(min(1,max(-1, gPG2vec_R(:).' *OpFlVec_R(:) / norm(gPG2vec_R) / norm(OpFlVec_R) )))};
+                % PG3 ang d
+                OutTs_R(F,8,fr) ={acosd(min(1,max(-1, gPG3vec_R(:).' *OpFlVec_R(:) / norm(gPG3vec_R) / norm(OpFlVec_R) )))};
+	end
         % delineate this face's resultant vector angle
         R_CM=circ_mean(Thetas_R);
         % circular SD
@@ -392,27 +442,33 @@ for F=g_noMW_combined_R
         PGGang_R=cart2pol(gazes_R(F),gels_R(F));
         OutDf_R(F,8)=num2cell(PGGang_R-R_CM);
         % add magnitude time series
-        OutTs_R(F,1,:)=num2cell(Mags_R);
+        OutTs_R(F,2,:)=num2cell(Mags_R);
         % add theta time series
-        OutTs_R(F,2,:)=num2cell(Thetas_R);
+        OutTs_R(F,1,:)=num2cell(Thetas_R);
+	 % extract indices of bottom up (broadly, dist < 90)
+        FaceAngDistPGG_R=OutTs_R{F,3,:};
+        BU_Trs_R=find(FaceAngDistPGG_R<90);
+        % get inverse indices for top down (broadly, dist > 90)
+        TD_Trs_R=find(FaceAngDistPGG_R>90);
+        % get proportion of TRs that are BU for this face
+        propBU_R=(length(BU_Trs_R))/NumTRs;
+        % plop prop in output df, 1st column
+        OutDf_R(F,1)=num2cell(propBU_R);
 end
 
-% make sure medial wall is masked prior to writeout
-
-
 %%% save output df
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs.mat'];
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs.mat'];
 save(outFP_L,'OutDf_L')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs.mat'];
 save(outFP_R,'OutDf_R')
 toc
 %%% MW MASK
 OutDf_L_masked=OutDf_L(g_noMW_combined_L,:);
 OutDf_R_masked=OutDf_R(g_noMW_combined_R,:);
 % saveout
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_masked.mat'];
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked.mat'];
 save(outFP_L,'OutDf_L_masked')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_masked.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked.mat'];
 save(outFP_R,'OutDf_R_masked')
 
 %%%% faces-to-vertices converter
@@ -440,11 +496,20 @@ for F=g_noMW_combined_L;
 	end
 end
 % now average over each vertex value per timepoints
-for v=1:Lvertex_nomw
+for v=1:length(vx_l)
 	for tp=1:lenOpFl
-		for m=1:8
-			InterfacingFaces=LvertTS{v,m,tp};
-			LvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
+		% sep mean calc needed for theta
+		for m=1
+			if ~isempty(LvertTS{v,m,tp});
+                                InterfacingFaces=LvertTS{v,m,tp};
+                                LvertTS{v,m,tp}=circ_mean([InterfacingFaces{:}]);
+                        end
+		end
+		for m=2:8
+			if ~isempty(LvertTS{v,m,tp});
+				InterfacingFaces=LvertTS{v,m,tp};
+				LvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
+			end
 		end
 	end
 end
@@ -453,7 +518,7 @@ for F=g_noMW_combined_R;
         % get F values
         Fvalues=OutTs_R(F,:,:);
         % extract vertices comrpising F
-        curVert=faces_R(F,:);
+        curVert=faces_r(F,:);
         % for each timepoint
         for tp=1:lenOpFl
                 % append vertex1 cell
@@ -468,17 +533,26 @@ for F=g_noMW_combined_R;
 end
 
 % now average over each vertex value per timepoints
-for v=1:Rvertex_nomw
+for v=1:length(vx_r)
         for tp=1:lenOpFl
-                for m=1:8
-                        InterfacingFaces=RvertTS{v,m,tp};
-                        RvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
-                end
+                % sep mean calc needed for theta
+		for m=1
+			if ~isempty(RvertTS{v,m,tp});
+				InterfacingFaces=RvertTS{v,m,tp};
+				RvertTS{v,m,tp}=circ_mean([InterfacingFaces{:}]);
+			end
+		end
+		for m=2:8
+                        if ~isempty(RvertTS{v,m,tp});
+				InterfacingFaces=RvertTS{v,m,tp};
+                        	RvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
+                	end
+		end
         end
 end
 
 % saveout
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_L_resultantVecs_masked_ts.mat'];
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked_ts.mat'];
 save(outFP_L,'LvertTS','-v7.3')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_BUTD_R_resultantVecs_masked_ts.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked_ts.mat'];
 save(outFP_R,'RvertTS','-v7.3')

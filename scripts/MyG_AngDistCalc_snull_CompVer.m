@@ -112,13 +112,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % load in spun PGG vectors
-sp_PGGs=load('/cbica/projects/pinesParcels/results/aggregated_data/PGGPermuts_fs4.mat');
+sp_PGGs=load('/cbica/projects/pinesParcels/results/aggregated_data/MyGGPermuts_fs4.mat');
 gazes_L_all=squeeze(sp_PGGs.spGPGGs(1,:,1:5120));
 gels_L_all=squeeze(sp_PGGs.spGPGGs(2,:,1:5120));
 gazes_R_all=squeeze(sp_PGGs.spGPGGs(1,:,5121:10240));
 gels_R_all=squeeze(sp_PGGs.spGPGGs(2,:,5121:10240));
 %load in spun PGG scalar data, for masking (note difference between PG permutations and PGG permutations)
-sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/PGPermuts_fs4.mat';
+sp_fp='/cbica/projects/pinesParcels/results/aggregated_data/MyGPermuts_fs4.mat';
 sp=load(sp_fp);
 % initialize facewise output structs to bear mask indices
 sp_mw_L=struct;

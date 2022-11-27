@@ -61,24 +61,24 @@ subj
 
 %%% RUN 5
 %%% Run Spherical Optical flow with parameter sweeps (4x the runs, intended for subset of subjs)
-cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer_paramSweep.sh $MATLAB_DIR ' subj];
-fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh'], 'w');
-fprintf(fid,cmd);
-system(['qsub -l h_vmem=29G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh']);
+%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_PGG_AngDistCalc_snull_CompVer_paramSweep.sh $MATLAB_DIR ' subj];
+%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh'], 'w');
+%fprintf(fid,cmd);
+%system(['qsub -l h_vmem=29G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_OpFl_pSn.sh']);
 
 %%%% RUN 6
 %%%% Run angular distance calculation on altertative reference hierarchy
-%cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj];
-%fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=11G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh']);
+%% cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc4_CompVer.sh $MATLAB_DIR ' subj];
+%% fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh'], 'w');
+%% fprintf(fid,cmd);
+%% system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_MyG.sh']);
 
 %%%% RUN 7
 %%%%% above with spins
-% cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
-% fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh'], 'w');
-%fprintf(fid,cmd);
-%system(['qsub -l h_vmem=15G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh']);
+cmd=['/cbica/projects/pinesParcels/PWs/scripts/run_MyG_AngDistCalc_snull_CompVer.sh $MATLAB_DIR ' subj];
+fid=fopen(['/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh'], 'w');
+fprintf(fid,cmd);
+system(['qsub -l h_vmem=19G ' '/cbica/projects/pinesParcels/data/CombinedData/' subj '_SMyG.sh']);
 
 %%%% RUN 8
 %%%% Run angular distance calculation using participant's own tertile-derived PG
