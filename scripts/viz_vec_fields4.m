@@ -83,6 +83,15 @@ PG_RH=RPGf.cdata(:,1);
 PGg_L = grad(faces_l, vx_l, PG_LH);
 PGg_R = grad(faces_r, vx_r, PG_RH);
 
+
+% PAG
+gpg=load('~/data/fs4_ap.mat');
+gPG_LH=gpg.gpg.gPG_LH;
+gPG_RH=gpg.gpg.gPG_RH;
+% calculate group PG gradient on sphere
+PGg_L = grad(faces_l, vx_l, gPG_LH);
+PGg_R = grad(faces_r, vx_r, gPG_RH);
+
 % extract face-wise vector cartesian vector components
 PGx_L=PGg_L(:,1);
 PGy_L=PGg_L(:,2);
@@ -163,25 +172,26 @@ roybigbl_cm=roybigbl_cm(15:240,:);
 % then  pairs (1,2) (4,5) and (5,6) are analyzed. 
 % so pull out non-valid TR pairs (i.e., (2,3)) and setdiff to get index of OpFl estimations w/r/t retained TRs
 % the last TR of a continuous segments does not have an opfl vec field ascribed to it
-parentfp=['/cbica/projects/hcpd/data/motMasked_contSegs/'];
-CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
-CSI=readtable(CSIfp);
+%%parentfp=['/cbica/projects/hcpd/data/motMasked_contSegs/'];
+%%CSIfp = [parentfp subj '/' subj '_ses-baselineYear1Arm1_task-rest_ValidSegments_Trunc.txt'];
+%%CSI=readtable(CSIfp);
 % get index of last TR in cont seg
-lastInSegs=CSI{:,1}+CSI{:,2}-1;
+%%lastInSegs=CSI{:,1}+CSI{:,2}-1;
 % set diff between these lastInSegs and sequence of 1:#trs (-1 because of inclusivity of second column)
 % go to motion masking scripts for more detail on that
-numTrs=CSI{end,1}+CSI{end,2}-1;
+%%numTrs=CSI{end,1}+CSI{end,2}-1;
 % invalid TR pairs are those after the last TR in segments
-validTRs=setdiff([1:numTrs],lastInSegs);
+%%validTRs=setdiff([1:numTrs],lastInSegs);
 % now we should be able to index the desired TR based on the tr pair
-for i=194:205
+for i=13
 OpFlVecofInt=i;
 %TRofInt=validTRs(OpFlVecofInt);
+TRofInt=i;
 u=OpFl.vf_right{OpFlVecofInt};
 vATTR=fr.TRs{TRofInt};
 % z-score
 %vATTR=zscore(vATTR);
-figure('units','pixels','position',[0 0 2500 2500])
+figure('units','pixels','position',[0 0 3500 3500])
 axis([-1, 1, -1, 1, 0, 1]);
 %quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
 %%%% souped up vectors
@@ -195,11 +205,11 @@ hold on
 % for OpFl Vecs on BOLD - divide by scaling factor?
 %%% overlay pgg for ref angle clarity
 PGG_ret=bsxfun(@rdivide, PGg_R, sqrt(sum(PGg_R'.^2))');
-quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[PGG_ret(g_noMW_combined_R,1), PGG_ret(g_noMW_combined_R,2), PGG_ret(g_noMW_combined_R,3)],[0.6,0.6,0.6] ,.7,'arrowRadius',.05)
+quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[PGG_ret(g_noMW_combined_R,1), PGG_ret(g_noMW_combined_R,2), PGG_ret(g_noMW_combined_R,3)],[0.63,0.63,0.63] ,.7,'arrowRadius',.05)
 hold on
 %quiver3D([Pr(g_noMW_combined_R,1)./scalingfactor,Pr(g_noMW_combined_R,2)./scalingfactor,Pr(g_noMW_combined_R,3)./scalingfactor],[-PGG_ret(g_noMW_combined_R,1), -PGG_ret(g_noMW_combined_R,2), -PGG_ret(g_noMW_combined_R,3)],'r',.7,'arrowRadius',.05)
 trisurf(faces_r, vx_r(:, 1)/scalingfactor, vx_r(:, 2)/scalingfactor, vx_r(:, 3)/scalingfactor, vATTR, 'EdgeColor','none');
-caxis([-200,200])
+caxis([-2.2,2.2])
 axis equal
 daspect([1, 1, 1]);
 %colormap(roybigbl_cm);
