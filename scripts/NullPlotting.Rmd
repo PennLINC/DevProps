@@ -40,7 +40,6 @@ Subjvec=rep(0,dim(subjList)[1])
 
 # for plopping all null dips into one vector
 NullDips=matrix(ncol=1000,nrow=dim(subjList)[1])
-CNullDips=matrix(ncol=1000,nrow=dim(subjList)[1])
 
 #nonsig counter for tnulls (p = 0.01 or greater)
 nonsig=0
@@ -85,20 +84,20 @@ masterdf=merge(mergeddf,popDfThresh,by='SubjID')
 # note overlapping use of DipSDs variable name
 
 # for spatial
-#ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,25)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(0,25)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 # for temporal
-#ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(-6,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
+ggplot(popDfThresh,aes(x=DipSDs))+geom_histogram(fill='#BC3754')+theme_classic(base_size=20)+xlim(-6,100)+xlab('Distance from Null Distribution (SD)')+theme(axis.text = element_text(size=23))+ylab('Participants')+geom_vline(xintercept = median(popDfThresh$DipSDs),linetype='dashed',size=2)
 
 
-# saved at 510x250
+# saved at 700x250
 ```
 
 
 ```{r, fig.width=6,fig.height=3}
 # individual level, set subj manually
 
-#SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_My.csv'),header=F)
+#SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4.csv'),header=F)
 SpunDips<-read.csv(paste0('Y:/results/PWs/Proced/',subj,'/',subj,'_SpunDips4_cnct.csv'),header=F)
 
 ObsDip<-as.numeric(SpunDips[2,1001])
@@ -107,7 +106,7 @@ plotdf<-data.frame(ObsDip,SpunDips)
 
 ggplot(plotdf,aes(x=SpunDips))+geom_density(size=1.5)+geom_vline(xintercept = plotdf$ObsDip,size=2,color='#BC3754')+theme_classic(base_size=23)+ylab('')+xlab('Dip Statistics')+guides(y="none")+theme(axis.text = element_text(size=22))
 
-# saved out at 350 x 250
+# saved out at 450 x 250
 
 # try one as SD insead of raw
 plotdf$sd<-(plotdf$SpunDips-mean(plotdf$SpunDips))/sd(plotdf$SpunDips)

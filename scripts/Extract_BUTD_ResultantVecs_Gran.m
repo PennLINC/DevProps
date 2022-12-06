@@ -1,4 +1,4 @@
-function Extract_BUTD_ResultantVecs(subj,runNum)
+function Extract_BUTD_ResultantVecs(OpFlFp,outFP_L,outFP_R)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Take optical flow results, get a bottom-up and top-down resultant vector in x,y coords for each face. Measured relative to gPGG.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -10,12 +10,11 @@ tic
 % addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % Load in fsav4 opflow calc
-OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_run_' runNum '.mat'];
+%OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_run_' runNum '.mat'];
 data=load(OpFlFp)
 % Load in surface data
-SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
-surfL = [SubjectsFolder '/surf/lh.sphere'];
-surfR = [SubjectsFolder '/surf/rh.sphere'];
+surfL = ['/oak/stanford/groups/leanew1/users/apines/surf/lh.sphere'];
+surfR = ['/oak/stanford/groups/leanew1/users/apines/surf/rh.sphere'];
 % surface topography
 [vx_l, faces_l] = read_surf(surfL);
 [vx_r, faces_r] = read_surf(surfR);
@@ -42,9 +41,9 @@ P_R = TR_R.incenters;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % use native freesurfer command for mw mask indices
-surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+surfML = '/oak/stanford/groups/leanew1/users/apines/surf/lh.Medial_wall.label';
 mwIndVec_l = read_medial_wall_label(surfML);
-surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+surfMR = '/oak/stanford/groups/leanew1/users/apines/surf/rh.Medial_wall.label';
 mwIndVec_r = read_medial_wall_label(surfMR);
 % make binary "is medial wall" vector for vertices
 mw_L=zeros(1,2562);
@@ -68,27 +67,27 @@ Lvertex_nomw=setdiff([1:2562],mwIndVec_l);
 Rvertex_nomw=setdiff([1:2562],mwIndVec_l);
 
 % load in GPG
-gpg=load('/cbica/projects/pinesParcels/data/gpg_fs4.mat');
+gpg=load('/oak/stanford/groups/leanew1/users/apines/maps/gpg_fs4.mat');
 gPG_LH=gpg.gpg.gPG_LH;
 gPG_RH=gpg.gpg.gPG_RH;
 % pg2
-gpg2=load('/cbica/projects/pinesParcels/data/gpg2_fs4.mat');
+gpg2=load('/oak/stanford/groups/leanew1/users/apines/maps/gpg2_fs4.mat');
 gPG2_LH=gpg2.gpg.gPG_LH;
 gPG2_RH=gpg2.gpg.gPG_RH;
 % pg3
-gpg3=load('/cbica/projects/pinesParcels/data/gpg3_fs4.mat');
+gpg3=load('/oak/stanford/groups/leanew1/users/apines/maps/gpg3_fs4.mat');
 gPG3_LH=gpg3.gpg.gPG_LH;
 gPG3_RH=gpg3.gpg.gPG_RH;
 % beta
-gb=load('/cbica/projects/pinesParcels/data/gB_fs4.mat');
+gb=load('/oak/stanford/groups/leanew1/users/apines/maps/gB_fs4.mat');
 B_LH=gb.gpg.gPG_LH;
 B_RH=gb.gpg.gPG_RH;
 % gamma 1
-gg1=load('/cbica/projects/pinesParcels/data/g1_fs4.mat');
+gg1=load('/oak/stanford/groups/leanew1/users/apines/maps/g1_fs4.mat');
 g1_LH=gg1.gpg.gPG_LH;
 g1_RH=gg1.gpg.gPG_RH;
 % gamma 2
-gg2=load('/cbica/projects/pinesParcels/data/g2_fs4.mat');
+gg2=load('/oak/stanford/groups/leanew1/users/apines/maps/g2_fs4.mat');
 g2_LH=gg2.gpg.gPG_LH;
 g2_RH=gg2.gpg.gPG_RH;
 
@@ -457,19 +456,19 @@ for F=g_noMW_combined_R
 end
 
 %%% save output df
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs.mat'];
-save(outFP_L,'OutDf_L')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs.mat'];
-save(outFP_R,'OutDf_R')
-toc
+%outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs.mat'];
+%save(outFP_L,'OutDf_L')
+%outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs.mat'];
+%save(outFP_R,'OutDf_R')
+%toc
 %%% MW MASK
-OutDf_L_masked=OutDf_L(g_noMW_combined_L,:);
-OutDf_R_masked=OutDf_R(g_noMW_combined_R,:);
+%OutDf_L_masked=OutDf_L(g_noMW_combined_L,:);
+%OutDf_R_masked=OutDf_R(g_noMW_combined_R,:);
 % saveout
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked.mat'];
-save(outFP_L,'OutDf_L_masked')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked.mat'];
-save(outFP_R,'OutDf_R_masked')
+%outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked.mat'];
+%save(outFP_L,'OutDf_L_masked')
+%outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked.mat'];
+%save(outFP_R,'OutDf_R_masked')
 
 %%%% faces-to-vertices converter
 
@@ -552,7 +551,7 @@ for v=1:length(vx_r)
 end
 
 % saveout
-outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked_ts.mat'];
+%outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked_ts.mat'];
 save(outFP_L,'LvertTS','-v7.3')
-outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked_ts.mat'];
+%outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked_ts.mat'];
 save(outFP_R,'RvertTS','-v7.3')
