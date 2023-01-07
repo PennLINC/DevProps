@@ -191,7 +191,7 @@ u=OpFl.vf_right{OpFlVecofInt};
 vATTR=fr.TRs{TRofInt};
 % z-score
 %vATTR=zscore(vATTR);
-figure('units','pixels','position',[0 0 3500 3500])
+figure('units','pixels','position',[0 0 9500 9500])
 axis([-1, 1, -1, 1, 0, 1]);
 %quiver3(Pr(:, 1), Pr(:, 2), Pr(:, 3), u(:, 1), u(:, 2), u(:, 3), 2, 'w');
 %%%% souped up vectors

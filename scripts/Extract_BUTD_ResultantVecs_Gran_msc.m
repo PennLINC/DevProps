@@ -1,4 +1,4 @@
-function Extract_BUTD_ResultantVecs(OpFlFp,outFP_L,outFP_R)
+function Extract_BUTD_ResultantVecs(subj,runNum)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Take optical flow results, get a bottom-up and top-down resultant vector in x,y coords for each face. Measured relative to gPGG.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -10,11 +10,14 @@ tic
 % addpath(genpath('/cbica/projects/pinesParcels/multiscale/scripts/derive_parcels/Toolbox'))
 
 % Load in fsav4 opflow calc
-%OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_run_' runNum '.mat'];
+OpFlFp=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_OpFl_fs4_run_' runNum '.mat'];
 data=load(OpFlFp)
 % Load in surface data
-surfL = ['/oak/stanford/groups/leanew1/users/apines/surf/lh.sphere'];
-surfR = ['/oak/stanford/groups/leanew1/users/apines/surf/rh.sphere'];
+%surfL = ['/oak/stanford/groups/leanew1/users/apines/surf/lh.sphere'];
+%surfR = ['/oak/stanford/groups/leanew1/users/apines/surf/rh.sphere'];
+SubjectsFolder = '/cbica/software/external/freesurfer/centos7/7.2.0/subjects/fsaverage4';
+surfL = [SubjectsFolder '/surf/lh.sphere'];
+surfR = [SubjectsFolder '/surf/rh.sphere'];
 % surface topography
 [vx_l, faces_l] = read_surf(surfL);
 [vx_r, faces_r] = read_surf(surfR);
@@ -41,9 +44,11 @@ P_R = TR_R.incenters;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % use native freesurfer command for mw mask indices
-surfML = '/oak/stanford/groups/leanew1/users/apines/surf/lh.Medial_wall.label';
+surfML = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/lh.Medial_wall.label';
+surfMR = '/cbica/software/external/freesurfer/centos7/6.0.0/subjects/fsaverage4/label/rh.Medial_wall.label';
+%surfML = '/oak/stanford/groups/leanew1/users/apines/surf/lh.Medial_wall.label';
 mwIndVec_l = read_medial_wall_label(surfML);
-surfMR = '/oak/stanford/groups/leanew1/users/apines/surf/rh.Medial_wall.label';
+%surfMR = '/oak/stanford/groups/leanew1/users/apines/surf/rh.Medial_wall.label';
 mwIndVec_r = read_medial_wall_label(surfMR);
 % make binary "is medial wall" vector for vertices
 mw_L=zeros(1,2562);
@@ -67,27 +72,27 @@ Lvertex_nomw=setdiff([1:2562],mwIndVec_l);
 Rvertex_nomw=setdiff([1:2562],mwIndVec_l);
 
 % load in GPG
-gpg=load('/oak/stanford/groups/leanew1/users/apines/maps/gpg_fs4.mat');
+gpg=load('/cbica/projects/pinesParcels/data/gpg_fs4.mat');
 gPG_LH=gpg.gpg.gPG_LH;
 gPG_RH=gpg.gpg.gPG_RH;
 % pg2
-gpg2=load('/oak/stanford/groups/leanew1/users/apines/maps/gpg2_fs4.mat');
+gpg2=load('/cbica/projects/pinesParcels/data/gpg2_fs4.mat');
 gPG2_LH=gpg2.gpg.gPG_LH;
 gPG2_RH=gpg2.gpg.gPG_RH;
 % pg3
-gpg3=load('/oak/stanford/groups/leanew1/users/apines/maps/gpg3_fs4.mat');
+gpg3=load('/cbica/projects/pinesParcels/data/gpg3_fs4.mat');
 gPG3_LH=gpg3.gpg.gPG_LH;
 gPG3_RH=gpg3.gpg.gPG_RH;
 % beta
-gb=load('/oak/stanford/groups/leanew1/users/apines/maps/gB_fs4.mat');
+gb=load('/cbica/projects/pinesParcels/data/gB_fs4.mat');
 B_LH=gb.gpg.gPG_LH;
 B_RH=gb.gpg.gPG_RH;
 % gamma 1
-gg1=load('/oak/stanford/groups/leanew1/users/apines/maps/g1_fs4.mat');
+gg1=load('/cbica/projects/pinesParcels/data/g1_fs4.mat');
 g1_LH=gg1.gpg.gPG_LH;
 g1_RH=gg1.gpg.gPG_RH;
 % gamma 2
-gg2=load('/oak/stanford/groups/leanew1/users/apines/maps/g2_fs4.mat');
+gg2=load('/cbica/projects/pinesParcels/data/g2_fs4.mat');
 g2_LH=gg2.gpg.gPG_LH;
 g2_RH=gg2.gpg.gPG_RH;
 
@@ -277,7 +282,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % initialize output (bu_az,bu_el,td_az,td_el,propBu for each face)
 % and last 2 columns are BU vec length, TD vec length
-%%% TS COLUMNS: MAGNITUDE, THETA, AngD from PG, B, G1, G2, PG2, PG3
+%%% TS COLUMNS: MAGNITUDE, THETA, AngD from PG, B, G1, G2, PG2, PG3, X, Y, Z
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%
@@ -295,8 +300,8 @@ NumTRs=NumTRs(2);
 lenOpFl=NumTRs;
 
 % time series
-OutTs_L=cell(length(F_L),8,lenOpFl);
-OutTs_R=cell(length(F_R),8,lenOpFl);
+OutTs_L=cell(length(F_L),11,lenOpFl);
+OutTs_R=cell(length(F_R),11,lenOpFl);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% Starting for the left hemisphere
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -327,6 +332,9 @@ for F=g_noMW_combined_L
 	        xComp_L=relVf_L(F,1);
 	        yComp_L=relVf_L(F,2);
 	        zComp_L=relVf_L(F,3);
+		OutTs_L(F,9,fr)=num2cell(xComp_L);
+		OutTs_L(F,10,fr)=num2cell(yComp_L);
+		OutTs_L(F,11,fr)=num2cell(zComp_L);
 		% convert to spherical coord system
 	        vs_L=cart2sphvec(double([xComp_L;yComp_L;zComp_L]),azd_L(F),eld_L(F));
 		% convert to spherical coordinates
@@ -406,6 +414,9 @@ for F=g_noMW_combined_R
                 xComp_R=relVf_R(F,1);
                 yComp_R=relVf_R(F,2);
                 zComp_R=relVf_R(F,3);
+		OutTs_R(F,9,fr)=num2cell(xComp_R);
+                OutTs_R(F,10,fr)=num2cell(yComp_R);
+                OutTs_R(F,11,fr)=num2cell(zComp_R);
                 % convert to spherical coord system
                 vs_R=cart2sphvec(double([xComp_R;yComp_R;zComp_R]),azd_R(F),eld_R(F));
                 % convert to spherical coordinates
@@ -473,8 +484,8 @@ end
 %%%% faces-to-vertices converter
 
 % init vertices cell array with []s for each vertex as a cell
-LvertTS=cell(length(vx_l),8,lenOpFl);
-RvertTS=cell(length(vx_r),8,lenOpFl);
+LvertTS=cell(length(vx_l),11,lenOpFl);
+RvertTS=cell(length(vx_r),11,lenOpFl);
 
 % for each face
 for F=g_noMW_combined_L;
@@ -485,7 +496,7 @@ for F=g_noMW_combined_L;
 	% for each timepoint
 	for tp=1:lenOpFl
 		% append vertex1 cell
-		for m=1:8
+		for m=1:11
 			LvertTS{curVert(1),m,tp}=[LvertTS{curVert(1),m,tp} OutTs_L(F,m,tp)];
 			% append vertex2 cell
 			LvertTS{curVert(2),m,tp}=[LvertTS{curVert(2),m,tp} OutTs_L(F,m,tp)];
@@ -504,7 +515,7 @@ for v=1:length(vx_l)
                                 LvertTS{v,m,tp}=circ_mean([InterfacingFaces{:}]);
                         end
 		end
-		for m=2:8
+		for m=2:11
 			if ~isempty(LvertTS{v,m,tp});
 				InterfacingFaces=LvertTS{v,m,tp};
 				LvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
@@ -521,7 +532,7 @@ for F=g_noMW_combined_R;
         % for each timepoint
         for tp=1:lenOpFl
                 % append vertex1 cell
-                for m=1:8
+                for m=1:11
                         RvertTS{curVert(1),m,tp}=[RvertTS{curVert(1),m,tp} OutTs_R(F,m,tp)];
                         % append vertex2 cell
                         RvertTS{curVert(2),m,tp}=[RvertTS{curVert(2),m,tp} OutTs_R(F,m,tp)];
@@ -541,7 +552,7 @@ for v=1:length(vx_r)
 				RvertTS{v,m,tp}=circ_mean([InterfacingFaces{:}]);
 			end
 		end
-		for m=2:8
+		for m=2:11
                         if ~isempty(RvertTS{v,m,tp});
 				InterfacingFaces=RvertTS{v,m,tp};
                         	RvertTS{v,m,tp}=mean([InterfacingFaces{:}]);
@@ -550,10 +561,10 @@ for v=1:length(vx_r)
         end
 end
 % convert to numerical structure rather than cell
-LvertTS_num=zeros(length(vx_l),8,lenOpFl);
-RvertTS_num=zeros(length(vx_r),8,lenOpFl);
+LvertTS_num=zeros(length(vx_l),11,lenOpFl);
+RvertTS_num=zeros(length(vx_r),11,lenOpFl);
 for f=1:1:2562
-    for m=1:1:8
+    for m=1:1:11
         for tp=1:1:lenOpFl
             if isempty(LvertTS{f,m,tp})
                 LvertTS_num(f,m,tp) = -999;
@@ -564,7 +575,7 @@ for f=1:1:2562
     end
 end
 for f=1:1:2562
-    for m=1:1:8
+    for m=1:1:11
         for tp=1:1:lenOpFl
             if isempty(RvertTS{f,m,tp})
                 RvertTS_num(f,m,tp) = -999;
@@ -575,7 +586,7 @@ for f=1:1:2562
     end
 end
 % saveout
-%outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked_ts.mat'];
+outFP_L=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_L_resultantVecs_masked_ts.mat'];
 save(outFP_L,'LvertTS_num','-v7.3')
-%outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked_ts.mat'];
+outFP_R=['/cbica/projects/pinesParcels/results/PWs/Proced/' subj '/' subj '_run_' runNum '_BUTD_R_resultantVecs_masked_ts.mat'];
 save(outFP_R,'RvertTS_num','-v7.3')

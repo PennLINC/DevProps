@@ -195,6 +195,36 @@ p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("D
 
 ```
 
+```{r, fig.width=8,fig.height=9}
+### Same as above, but for myelin map
+# load in permuted old young dif
+MyPermDif=read.csv('Y:/results/PWs/Old_v_young_AngDistDif_MyG_permuted.csv')
+MypermDf<-data.frame(MyPermDif)
+
+# make vectors of mean values of permuted at each bin
+meanVec=colMeans(MypermDf[1:1000,])
+# make vectors of 95 and 5th percentile of permuted at each bin
+topPercVec=unlist(lapply(MypermDf[1:1000,1:18],quantile,prob=.95,names=F))
+botPercVec=unlist(lapply(MypermDf[1:1000,1:18],quantile,prob=.05,names=F))
+
+myplotdataf<-data.frame(seq(1,18),t(MyPermDif[1001,]))
+
+# correct to be degrees rather than histogram bin index
+myplotdataf$seq.1..18.<-myplotdataf$seq.1..18.*10
+
+myplotdataf$meanVec=meanVec
+myplotdataf$topPercVec=topPercVec
+myplotdataf$botPercVec=botPercVec
+
+plotdf<-data.frame(meanVec,topPercVec,botPercVec,seq(1:18),t(MyPermDif[1001,]))
+
+# * 100 for percentage
+p<-ggplot(myplotdataf,aes(x=seq.1..18.,y=X1001*100))
+
+p+geom_bar(stat='identity',color='black',aes(fill= ..x..),binwidth = 10)+xlab("Distance (Degrees)")+theme_classic(base_size = 26)+scale_x_continuous(limits=(c(5,185)))+scale_fill_gradientn("value",colors=c("blue","cyan","green","yellow","orange","red"))+ggtitle("\u2207SH Distance: Difference")+ylab('Percentage of Propagations')+theme(axis.line.x = element_line(colour = 'black', size = 2), axis.line.y = element_line(colour = 'black', size = 2),plot.title= element_text(size=30, face="bold"), axis.title = element_text(size=30, face="bold",vjust=-1),axis.text = element_text(face="bold",size=30),legend.title=element_blank(),legend.text=element_text(size=20),legend.position='none',plot.margin=margin(b=.1,t=.1,l=.1,r=2.3, unit='cm'))+ylab('count')+ylab('Percentage of Propagations')+geom_ribbon(aes(x=seq.1..18.,ymin=botPercVec*100,ymax=topPercVec*100),fill='gray80',alpha=.5)
+# saved out at 850x825
+```
+
 
 ```{r, fig.width=8,fig.height=9}
 # checkup on how BuProp from hists (and rs_subs.csv) maps onto bimodality
