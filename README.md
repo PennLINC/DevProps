@@ -122,6 +122,7 @@ If 9.1 and 9.2 have been completed, most of the processing for this analysis is 
 
 Specifically, lines 342-370 of [group_level_analysis.rmd](https://github.com/PennLINC/PWs/blob/main/scripts/Group_level_analysis.rmd) can be used to evalaute effect size, significance, and plot the developmental effect. Just note that you will need to run the first chunk (for libraries) and the second chunk (for covariate information) first. As for other rmd's, they are currently set to run locally on a cluster mount ('Y:/' filepaths) rather than directly on the cluster. 
 
+Finally, calculation of developmental shifts in the hierarchical/angular distribution relative to an alternative hierarchy (i.e., myelin map version of step 6.3) can be found in [Bin_And_Aggregate_MyGDistribution_180_permSubjs.m](https://github.com/PennLINC/DevProps/blob/main/scripts/Bin_And_Aggregate_MyGDistribution_180_permSubjs.m)
 
 
 
